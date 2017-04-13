@@ -110,15 +110,6 @@ public class Gene {
         this.geneSequence = geneSequence;
     }
 
-    @ManyToOne
-    @JoinColumn(referencedColumnName = "species_id")
-    public Species getSpeciesForGene() {
-        return speciesForGene;
-    }
-
-    public void setSpeciesForGene(Species speciesForGene) {
-        this.speciesForGene = speciesForGene;
-    }
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "parentGene")
     public Set<Transcript> getTranscripts() {

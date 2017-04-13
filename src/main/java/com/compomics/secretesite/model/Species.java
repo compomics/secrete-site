@@ -26,7 +26,7 @@ public class Species {
     /**
      * all the {@link Gene}s that belong to this species
      */
-    private Set<Gene> genesForSpecies = new HashSet<>(0);
+    private Set<Transcript> expressableTranscripts = new HashSet<>(0);
 
     /**
      * human readable name of species
@@ -71,12 +71,15 @@ public class Species {
         this.speciesName = speciesName;
     }
 
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "speciesForGene")
-    public Set<Gene> getGenesForSpecies() {
-        return genesForSpecies;
-    }
+    @ManyToMany
+    @JoinTable(
+            name = "transcripts_expressable_in_species",
+            inverseJoinColumns=@JoinColumn(name = "l_transcript_id", referencedColumnName = "transcript_id"),
+            joinColumns = @JoinColumn(name = "l_species_id",referencedColumnName = "species_id")
+    )
+    public Set<Transcript> getExpressableTranscripts() {return expressableTranscripts;}
 
-    public void setGenesForSpecies(Set<Gene> genesForSpecies) {
-        this.genesForSpecies = genesForSpecies;
+    public void setExpressableTranscripts(Set<Transcript> transcripts){
+        this.expressableTranscripts.addAll(transcripts);
     }
 }

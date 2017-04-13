@@ -1,7 +1,11 @@
 package com.compomics.secretesite.model;
 
+import org.hibernate.annotations.NaturalId;
+
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The model class for a transcript.
@@ -16,7 +20,7 @@ public class Transcript implements Serializable {
     /**
      * internal database id
      */
-    private Integer transcriptId;
+    private Integer transcript_id;
 
     /**
      * the ensembl identifier for the transcript
@@ -34,10 +38,7 @@ public class Transcript implements Serializable {
      */
     private Gene parentGene;
 
-    /**
-     * if the transcript is secretable
-     */
-    private String secretable = "0";
+    private Set<Species> expressableIn = new HashSet<>(0);
 
     //TODO either write on the fly DNA to protein translator or just store the sequences.
 
@@ -81,11 +82,15 @@ public class Transcript implements Serializable {
         return parentGene;
     }
 
+    public void setParentGene(Gene parentGene){
+        this.parentGene = parentGene;
+    }
+
     @Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Integer getTranscriptId() {
-        return transcriptId;
+    public Integer getTranscript_id() {
+        return transcript_id;
     }
 
     @Column(length = 12200)
@@ -94,6 +99,7 @@ public class Transcript implements Serializable {
     }
 
     @Column
+    @NaturalId
     public String getEnsembleTranscriptId() {
         return ensembleTranscriptId;
     }
@@ -102,25 +108,21 @@ public class Transcript implements Serializable {
         this.ensembleTranscriptId = ensembleTranscriptId;
     }
 
-    public void setTranscriptId(Integer transcriptId) {
-        this.transcriptId = transcriptId;
+    public void setTranscript_id(Integer transcript_id) {
+        this.transcript_id = transcript_id;
     }
 
     public void setTranscript_sequence(String transcript_sequence) {
         this.transcript_sequence = transcript_sequence;
     }
 
-    public void setParentGene(Gene parentGene) {
-        this.parentGene = parentGene;
+    @ManyToMany(mappedBy = "expressableTranscripts")
+    public Set<Species> getExpressableInSpecies() {
+        return expressableIn;
     }
 
-    @Column
-    public String getSecretable() {
-        return secretable;
-    }
-
-    public void setSecretable(String secretable) {
-        this.secretable = secretable;
+    public void setExpressableInSpecies(Set<Species> expressableSpecies){
+        expressableIn.addAll(expressableSpecies);
     }
 }
 
