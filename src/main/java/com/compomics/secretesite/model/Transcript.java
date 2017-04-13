@@ -1,7 +1,5 @@
 package com.compomics.secretesite.model;
 
-import org.hibernate.annotations.NaturalId;
-
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -20,6 +18,9 @@ public class Transcript implements Serializable {
      */
     private Integer transcriptId;
 
+    /**
+     * the ensembl identifier for the transcript
+     */
     private String ensembleTranscriptId;
 
 
@@ -36,7 +37,7 @@ public class Transcript implements Serializable {
     /**
      * if the transcript is secretable
      */
-    private Boolean secretable;
+    private String secretable = "0";
 
     //TODO either write on the fly DNA to protein translator or just store the sequences.
 
@@ -64,13 +65,11 @@ public class Transcript implements Serializable {
 
     /**
      * full constructor for a transcript
-     * @param transcriptId database id of the transcript
      * @param ensembleTranscriptId the ensembl transcript ID
      * @param transcript_sequence the sequence of the transcript
      * @param parentGene the {@link Gene} this transcript is derived from
      */
-    public Transcript(Integer transcriptId, String ensembleTranscriptId, String transcript_sequence, Gene parentGene) {
-        this.transcriptId = transcriptId;
+    public Transcript(String ensembleTranscriptId, String transcript_sequence, Gene parentGene) {
         this.ensembleTranscriptId = ensembleTranscriptId;
         this.transcript_sequence = transcript_sequence;
         this.parentGene = parentGene;
@@ -89,13 +88,12 @@ public class Transcript implements Serializable {
         return transcriptId;
     }
 
-    @Column
+    @Column(length = 12200)
     public String getTranscript_sequence() {
         return transcript_sequence;
     }
 
     @Column
-    @NaturalId
     public String getEnsembleTranscriptId() {
         return ensembleTranscriptId;
     }
@@ -117,11 +115,11 @@ public class Transcript implements Serializable {
     }
 
     @Column
-    public Boolean getSecretable() {
+    public String getSecretable() {
         return secretable;
     }
 
-    public void setSecretable(Boolean secretable) {
+    public void setSecretable(String secretable) {
         this.secretable = secretable;
     }
 }

@@ -8,5 +8,5 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
  * Created by davy on 4/11/2017.
  */
 @RepositoryRestResource
-public interface SpeciesRepository extends PagingAndSortingRepository<Species, Long> {
+public interface SpeciesRepository extends PagingAndSortingRepository<Species, Integer> {
 }

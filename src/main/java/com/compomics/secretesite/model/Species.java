@@ -1,8 +1,10 @@
 package com.compomics.secretesite.model;
 
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -24,7 +26,7 @@ public class Species {
     /**
      * all the {@link Gene}s that belong to this species
      */
-    private Set<Gene> genesForSpecies;
+    private Set<Gene> genesForSpecies = new HashSet<>(0);
 
     /**
      * human readable name of species
@@ -33,8 +35,7 @@ public class Species {
 
     public Species(){}
 
-    public Species(Integer species_id, Integer speciesTaxonomyNumber, String speciesName) {
-        this.species_id = species_id;
+    public Species(Integer speciesTaxonomyNumber, String speciesName) {
         this.speciesTaxonomyNumber = speciesTaxonomyNumber;
         this.speciesName = speciesName;
     }

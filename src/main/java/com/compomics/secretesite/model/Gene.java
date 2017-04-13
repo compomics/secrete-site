@@ -3,6 +3,7 @@ package com.compomics.secretesite.model;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -44,7 +45,7 @@ public class Gene {
     /**
      * {@link Transcript}s this gene encodes for
      */
-    private Set<Transcript> transcripts;
+    private Set<Transcript> transcripts = new HashSet<>(0);
 
     public Gene(){}
 
@@ -53,9 +54,8 @@ public class Gene {
         this.speciesForGene = speciesForGene;
     }
 
-    public Gene(String geneAccession, Integer gene_id, String chromosome, String geneName, String geneSequence, Species speciesForGene) {
+    public Gene(String geneAccession, String chromosome, String geneName, String geneSequence, Species speciesForGene) {
         this.geneAccession = geneAccession;
-        this.gene_id = gene_id;
         this.chromosome = chromosome;
         this.geneName = geneName;
         this.geneSequence = geneSequence;
@@ -120,7 +120,7 @@ public class Gene {
         this.speciesForGene = speciesForGene;
     }
 
-    @OneToMany(mappedBy = "parentGene")
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "parentGene")
     public Set<Transcript> getTranscripts() {
         return transcripts;
     }
