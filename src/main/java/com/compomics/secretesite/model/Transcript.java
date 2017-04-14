@@ -27,6 +27,9 @@ public class Transcript implements Serializable {
      */
     private String ensembleTranscriptId;
 
+    private Integer sequence_start;
+
+    private Integer sequence_end;
 
     /**
      * cDNA sequence of the experimental transcript
@@ -70,9 +73,11 @@ public class Transcript implements Serializable {
      * @param transcript_sequence the sequence of the transcript
      * @param parentGene the {@link Gene} this transcript is derived from
      */
-    public Transcript(String ensembleTranscriptId, String transcript_sequence, Gene parentGene) {
+    public Transcript(String ensembleTranscriptId, String transcript_sequence,Integer sequence_start,Integer sequence_end, Gene parentGene) {
         this.ensembleTranscriptId = ensembleTranscriptId;
         this.transcript_sequence = transcript_sequence;
+        this.sequence_start = sequence_start;
+        this.sequence_end = sequence_end;
         this.parentGene = parentGene;
     }
 
@@ -99,13 +104,30 @@ public class Transcript implements Serializable {
     }
 
     @Column
-    @NaturalId
     public String getEnsembleTranscriptId() {
         return ensembleTranscriptId;
     }
 
     public void setEnsembleTranscriptId(String ensembleTranscriptId) {
         this.ensembleTranscriptId = ensembleTranscriptId;
+    }
+
+    @Column
+    public Integer getSequence_start() {
+        return sequence_start;
+    }
+
+    public void setSequence_start(Integer sequence_start) {
+        this.sequence_start = sequence_start;
+    }
+
+    @Column
+    public Integer getSequence_end() {
+        return sequence_end;
+    }
+
+    public void setSequence_end(Integer sequence_end) {
+        this.sequence_end = sequence_end;
     }
 
     public void setTranscript_id(Integer transcript_id) {

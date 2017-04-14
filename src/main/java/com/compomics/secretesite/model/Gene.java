@@ -38,28 +38,21 @@ public class Gene {
     private String geneSequence;
 
     /**
-     * {@link Species} this gene belongs to
-     */
-    private Species speciesForGene;
-
-    /**
      * {@link Transcript}s this gene encodes for
      */
     private Set<Transcript> transcripts = new HashSet<>(0);
 
     public Gene(){}
 
-    public Gene(String geneName,Species speciesForGene){
+    public Gene(String geneName){
         this.geneName = geneName;
-        this.speciesForGene = speciesForGene;
     }
 
-    public Gene(String geneAccession, String chromosome, String geneName, String geneSequence, Species speciesForGene) {
+    public Gene(String geneAccession, String chromosome, String geneName, String geneSequence) {
         this.geneAccession = geneAccession;
         this.chromosome = chromosome;
         this.geneName = geneName;
         this.geneSequence = geneSequence;
-        this.speciesForGene = speciesForGene;
     }
 
     @Column
