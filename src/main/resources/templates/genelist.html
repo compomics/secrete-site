@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>genelist</title>
+
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <link th:src="@{/css/overview.css}"/>
+
+
+</head>
+<body>
+<div th:insert="~{fragments/header :: header}"></div>
+<div class="gene-list active">
+    <!--/*@thymesVar id="genes" type="List<com.compomics.secretesite.model.Gene>"*/-->
+    <ul class="list-group">
+        <!--/*@thymesVar id="gene" type="com.compomics.secretesite.model.Gene"*/-->
+        <li th:each=" gene : ${genes}"><a th:href="@{~/geneview(gene=${gene.getGeneName()})}" th:text="${gene.getGeneName()}"></a></li>
+    </ul>
+</div>
+</body>
+</html>

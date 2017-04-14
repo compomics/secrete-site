@@ -22,8 +22,13 @@ public class GeneViewController {
     }
 
     @RequestMapping("/geneview")
-    String geneView(@RequestParam(value="id",defaultValue = "P53") String geneAccession, Model model){
+    String geneView(@RequestParam(value="id",defaultValue = "") String geneAccession, Model model){
+
         Map<String,Object> attr = new HashMap<>();
+        if (geneAccession.isEmpty()){
+            model.addAttribute("genes",geneRepository.findAll());
+            return "genelist";
+       }
         attr.put("gene",geneRepository.findByGeneAccession(geneAccession));
         model.addAllAttributes(attr);
         return "geneview";

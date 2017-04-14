@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <title>Title</title>
 
-    <script th:src="@{/static/js/jquery.min.js}"></script>
-    <script th:src="@{/static/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
 </head>
 <body>
 <div th:include="fragments/header"></div>
 <div class="dna-pane active">
-    <ul class="list-group" th:for="${gene}">
+    <ul class="list-group" th:for="${gene.transcripts}">
     <li></li>
     </ul>
 </div>
