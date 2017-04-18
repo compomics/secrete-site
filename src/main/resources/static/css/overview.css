@@ -1,5 +1,5 @@
-.dna-pane{
+.gene-list.panel-body.panel-body{
     overflow-y: scroll;
     max-height: 300px;
-    width:100%;
+    max-width: 30%;
 }

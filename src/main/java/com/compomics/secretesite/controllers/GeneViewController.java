@@ -29,6 +29,7 @@ public class GeneViewController {
             model.addAttribute("genes",geneRepository.findAll());
             return "genelist";
        }
+
         attr.put("gene",geneRepository.findByGeneAccession(geneAccession));
         model.addAllAttributes(attr);
         return "geneview";

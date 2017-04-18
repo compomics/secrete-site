@@ -1,7 +1,5 @@
 package com.compomics.secretesite.model;
 
-import org.hibernate.annotations.NaturalId;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -25,7 +23,7 @@ public class Transcript implements Serializable {
     /**
      * the ensembl identifier for the transcript
      */
-    private String ensembleTranscriptId;
+    private String ensembleTranscriptAccession;
 
     private Integer sequence_start;
 
@@ -59,22 +57,22 @@ public class Transcript implements Serializable {
     /**
      * natural constructor for a transcript
      *
-     * @param ensembleTranscriptId the ensembl transcript ID
+     * @param ensembleTranscriptAccession the ensembl transcript ID
      * @param parentGene           the (@link {@link Gene}) this transcript is derived from
      */
-    public Transcript(String ensembleTranscriptId, Gene parentGene) {
-        this.ensembleTranscriptId = ensembleTranscriptId;
+    public Transcript(String ensembleTranscriptAccession, Gene parentGene) {
+        this.ensembleTranscriptAccession = ensembleTranscriptAccession;
         this.parentGene = parentGene;
     }
 
     /**
      * full constructor for a transcript
-     * @param ensembleTranscriptId the ensembl transcript ID
+     * @param ensembleTranscriptAccession the ensembl transcript ID
      * @param transcript_sequence the sequence of the transcript
      * @param parentGene the {@link Gene} this transcript is derived from
      */
-    public Transcript(String ensembleTranscriptId, String transcript_sequence,Integer sequence_start,Integer sequence_end, Gene parentGene) {
-        this.ensembleTranscriptId = ensembleTranscriptId;
+    public Transcript(String ensembleTranscriptAccession, String transcript_sequence, Integer sequence_start, Integer sequence_end, Gene parentGene) {
+        this.ensembleTranscriptAccession = ensembleTranscriptAccession;
         this.transcript_sequence = transcript_sequence;
         this.sequence_start = sequence_start;
         this.sequence_end = sequence_end;
@@ -104,12 +102,12 @@ public class Transcript implements Serializable {
     }
 
     @Column
-    public String getEnsembleTranscriptId() {
-        return ensembleTranscriptId;
+    public String getEnsembleTranscriptAccession() {
+        return ensembleTranscriptAccession;
     }
 
-    public void setEnsembleTranscriptId(String ensembleTranscriptId) {
-        this.ensembleTranscriptId = ensembleTranscriptId;
+    public void setEnsembleTranscriptAccession(String ensembleTranscriptAccession) {
+        this.ensembleTranscriptAccession = ensembleTranscriptAccession;
     }
 
     @Column

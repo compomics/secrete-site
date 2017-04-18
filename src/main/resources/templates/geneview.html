@@ -10,9 +10,11 @@
 <body>
 <div th:include="fragments/header"></div>
 <div class="dna-pane active">
-    <ul class="list-group" th:for="${gene.transcripts}">
-    <li></li>
-    </ul>
+    <!--/*@thymesVar id="gene" type="com.compomics.secretesite.model.Gene"*/-->
+    <table class="table">
+        <thead></thead>
+    <tr th:each ="transcripts:${gene.getTranscripts()}"></tr>
+    </table>
 </div>
 
 </body>
