@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>genelist</title>
+
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <link th:src="@{/css/overview.css}"/>
+
+
+</head>
+<body>
+<div th:insert="~{fragments/header :: header}"></div>
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+    <div class="panel panel-default">
+        <div id="genelist-panel-body" class="panel-body">
+            <!--/*@thymesVar id="genes" type="java.lang.Iterable<com.compomics.secretesite.model.Gene>"*/-->
+            <ul class="list-group">
+                <!--/*@thymesVar id="gene" type="com.compomics.secretesite.model.Gene"*/-->
+                <th:block th:each="gene : ${genes}">
+                    <div class="panel-heading" role="tab" id="heading-" th:attrappend="id=${gene.geneAccession}">
+                        <li class="list-group-item" id="list-item" th:attrappend="id=${gene.getGeneAccession()}">
+                            <span class="badge" th:text="${gene.getTranscripts().size()}"></span>
+                            <a th:href="getTranscriptsForGeneAccession(${gene.getGeneAccession()})"
+                               th:text="${gene.getGeneName()}"
+                               role="button" data-toggle="collapse" data-parent="#accordion" aria-expanded="false"
+                               th:with="aria-controls=${gene.geneAccession}"></a>
+                        </li>
+                    </div>
+                </th:block>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    function getTranscriptsForGeneAccession(geneAccession) {
+        JQuery.get(genetranscripts("genes/search/geneaccession=geneAccession", function (data) {
+                var items = []
+                JQuery.each(data, function (key, val) {
+                    items.push();
+                })
+
+                $("<div id='" + val.transcript_id + "' class='panel-collapse collapse in' role='tabpanel' aria-labelledby='heading-" + val.transcript_id + "'>" +
+                    "" +
+                    "")
+
+            }
+        ))
+    }
+</script>
+</html>

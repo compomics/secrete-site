@@ -4,18 +4,35 @@
     <meta charset="UTF-8">
     <title>Title</title>
 
-    <script th:src="@{/js/jquery.min.js}"></script>
+    <link th:href="@{/css/bootstrap.min.css}"
+          rel="stylesheet" media="screen" />
+
+    <script th:src="@{/js/jquery-3.2.1.min.js}"></script>
     <script th:src="@{/js/bootstrap.min.js}"></script>
 </head>
 <body>
-<div th:include="fragments/header"></div>
-<div class="dna-pane active">
-    <!--/*@thymesVar id="gene" type="com.compomics.secretesite.model.Gene"*/-->
-    <table class="table">
-        <thead></thead>
-    <tr th:each ="transcripts:${gene.getTranscripts()}"></tr>
-    </table>
+<div th:insert="~{fragments/header :: header}"></div>
+<div class="jumbotron">
+    <div class="dna-pane active">
+        <!--/*@thymesVar id="gene" type="com.compomics.secretesite.model.Gene"*/-->
+        <div th:text="${gene.getGeneName()}"></div>
+        <table class="table table-hover table-sticky-header">
+            <thead>
+                <th>id</th>
+                <th>sequence</th>
+            </thead>
+            <tbody>
+                <tr th:each="transcripts:${gene.getTranscripts()}">
+                    <td th:text="${transcripts.getTranscript_id()}"></td>
+                    <td th:text="${transcripts.getTranscript_sequence()}"></td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
 </div>
 
+<div th:insert="~{fragments/footer :: footer}"></div>
 </body>
 </html>
