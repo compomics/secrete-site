@@ -1,10 +1,10 @@
 package com.compomics.secretesite;
 
-import com.compomics.secretesite.model.repositories.GeneRepository;
-import com.compomics.secretesite.model.repositories.SpeciesRepository;
-import com.compomics.secretesite.model.Gene;
-import com.compomics.secretesite.model.Species;
-import com.compomics.secretesite.model.Transcript;
+import com.compomics.secretesite.domain.repositories.GeneRepository;
+import com.compomics.secretesite.domain.repositories.SpeciesRepository;
+import com.compomics.secretesite.domain.Gene;
+import com.compomics.secretesite.domain.Species;
+import com.compomics.secretesite.domain.Transcript;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Bean;

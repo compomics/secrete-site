@@ -1,4 +1,4 @@
-package com.compomics.secretesite.model;
+package com.compomics.secretesite.domain;
 
 import org.hibernate.annotations.NaturalId;
 

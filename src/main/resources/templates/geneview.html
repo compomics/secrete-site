@@ -14,7 +14,7 @@
 <div th:insert="~{fragments/header :: header}"></div>
 <div class="jumbotron">
     <div class="dna-pane active">
-        <!--/*@thymesVar id="gene" type="com.compomics.secretesite.model.Gene"*/-->
+        <!--/*@thymesVar id="gene" type="com.compomics.secretesite.domain.Gene"*/-->
         <div th:text="${gene.getGeneName()}"></div>
         <table class="table table-hover table-sticky-header">
             <thead>

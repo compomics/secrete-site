@@ -1,6 +1,6 @@
-package com.compomics.secretesite.model.repositories;
+package com.compomics.secretesite.domain.repositories;
 
-import com.compomics.secretesite.model.Transcript;
+import com.compomics.secretesite.domain.Transcript;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 

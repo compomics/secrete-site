@@ -15,9 +15,9 @@
 <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
     <div class="panel panel-default">
         <div id="genelist-panel-body" class="panel-body">
-            <!--/*@thymesVar id="genes" type="java.lang.Iterable<com.compomics.secretesite.model.Gene>"*/-->
+            <!--/*@thymesVar id="genes" type="java.lang.Iterable<com.compomics.secretesite.domain.Gene>"*/-->
             <ul class="list-group">
-                <!--/*@thymesVar id="gene" type="com.compomics.secretesite.model.Gene"*/-->
+                <!--/*@thymesVar id="gene" type="com.compomics.secretesite.domain.Gene"*/-->
                 <th:block th:each="gene : ${genes}">
                     <div class="panel-heading" role="tab" id="heading-" th:attrappend="id=${gene.geneAccession}">
                         <li class="list-group-item" id="list-item" th:attrappend="id=${gene.getGeneAccession()}">
