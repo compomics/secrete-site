@@ -1,4 +1,4 @@
-package com.compomics.secretesite.controllers.repositories;
+package com.compomics.secretesite.model.repositories;
 
 import com.compomics.secretesite.model.Species;
 import org.springframework.data.repository.PagingAndSortingRepository;

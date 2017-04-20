@@ -1,5 +1,7 @@
 package com.compomics.secretesite.model;
 
+import com.compomics.secretesite.controllers.services.SequenceService;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -41,15 +43,17 @@ public class Transcript implements Serializable {
 
     private Set<Species> expressableIn = new HashSet<>(0);
 
-    //TODO either write on the fly DNA to protein translator or just store the sequences.
+    @Transient
+    private SequenceService sequenceService;
 
     /**
      * private String proteinProduct
-     * @Transient or @Column
-     * public String getProteinProduct(){
-     *     return this.proteinProdutc;
-     * }
      */
+     @Transient
+      public String getProteinProduct(){
+          return sequenceService.translateDNAtoProtein(this.transcript_sequence);
+      }
+
 
     public Transcript() {
     }

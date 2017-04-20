@@ -20,7 +20,7 @@ public class Gene {
     /**
      * The database specific identifier
      */
-    private Integer gene_id;
+    private Integer geneId;
 
     /**
      * The chromosome the gene is located on
@@ -68,12 +68,12 @@ public class Gene {
     @Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Integer getGene_id() {
-        return gene_id;
+    public Integer getGeneId() {
+        return geneId;
     }
 
-    public void setGene_id(Integer gene_id) {
-        this.gene_id = gene_id;
+    public void setGeneId(Integer geneId) {
+        this.geneId = geneId;
     }
 
     @Column

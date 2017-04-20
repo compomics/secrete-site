@@ -1,7 +1,7 @@
 package com.compomics.secretesite;
 
-import com.compomics.secretesite.controllers.repositories.GeneRepository;
-import com.compomics.secretesite.controllers.repositories.SpeciesRepository;
+import com.compomics.secretesite.model.repositories.GeneRepository;
+import com.compomics.secretesite.model.repositories.SpeciesRepository;
 import com.compomics.secretesite.model.Gene;
 import com.compomics.secretesite.model.Species;
 import com.compomics.secretesite.model.Transcript;

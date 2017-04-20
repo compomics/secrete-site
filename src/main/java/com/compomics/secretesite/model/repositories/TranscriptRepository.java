@@ -1,9 +1,8 @@
-package com.compomics.secretesite.controllers.repositories;
+package com.compomics.secretesite.model.repositories;
 
 import com.compomics.secretesite.model.Transcript;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.scheduling.annotation.Async;
 
 import java.util.List;
 

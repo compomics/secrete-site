@@ -1,6 +1,6 @@
 package com.compomics.secretesite.controllers;
 
-import com.compomics.secretesite.controllers.repositories.GeneRepository;
+import com.compomics.secretesite.model.repositories.GeneRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
