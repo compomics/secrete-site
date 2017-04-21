@@ -40,11 +40,7 @@ public class Species {
     /**
      * all the {@link Gene}s that belong to this species
      */
-    @ManyToMany
-    @JoinTable(
-            name = "transcripts_expressable_in_species",
-            joinColumns = @JoinColumn(name = "l_species_id",referencedColumnName = "species_id")
-    )
+    @ManyToMany(mappedBy = "expressableIn")
     private Set<Transcript> expressableTranscripts = new HashSet<>(0);
 
     public Species(Integer speciesTaxonomyNumber, String speciesName) {
