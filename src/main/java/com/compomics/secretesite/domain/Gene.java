@@ -1,5 +1,6 @@
 package com.compomics.secretesite.domain;
 
+import lombok.Data;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
@@ -10,106 +11,52 @@ import java.util.Set;
  * Created by davy on 4/10/2017.
  */
 @Entity
+@Data
 public class Gene {
 
     /**
      * The ensembl gene accession
      */
+    @Column
+    @NaturalId
     private String geneAccession;
 
     /**
      * The database specific identifier
      */
+    @Column
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer geneId;
 
     /**
      * The chromosome the gene is located on
      */
+    @Column
     private String chromosome;
 
     /**
      * Human readable gene name
      */
+    @Column
     private String geneName;
 
     /**
      * Full genetic canonical sequence
      */
+    @Column
     private String geneSequence;
 
     /**
      * {@link Transcript}s this gene encodes for
      */
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "parentGene")
     private Set<Transcript> transcripts = new HashSet<>(0);
-
-    public Gene(){}
-
-    public Gene(String geneName){
-        this.geneName = geneName;
-    }
 
     public Gene(String geneAccession, String chromosome, String geneName, String geneSequence) {
         this.geneAccession = geneAccession;
         this.chromosome = chromosome;
         this.geneName = geneName;
         this.geneSequence = geneSequence;
-    }
-
-    @Column
-    @NaturalId
-    public String getGeneAccession() {
-        return geneAccession;
-    }
-
-    public void setGeneAccession(String geneAccession) {
-        this.geneAccession = geneAccession;
-    }
-
-    @Column
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Integer getGeneId() {
-        return geneId;
-    }
-
-    public void setGeneId(Integer geneId) {
-        this.geneId = geneId;
-    }
-
-    @Column
-    public String getChromosome() {
-        return chromosome;
-    }
-
-    public void setChromosome(String chromosome) {
-        this.chromosome = chromosome;
-    }
-
-    @Column
-    public String getGeneName() {
-        return geneName;
-    }
-
-    public void setGeneName(String geneName) {
-        this.geneName = geneName;
-    }
-
-    @Column
-    public String getGeneSequence() {
-        return geneSequence;
-    }
-
-    public void setGeneSequence(String geneSequence) {
-        this.geneSequence = geneSequence;
-    }
-
-
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "parentGene")
-    public Set<Transcript> getTranscripts() {
-        return transcripts;
-    }
-
-    public void setTranscripts(Set<Transcript> transcripts) {
-        this.transcripts = transcripts;
     }
 }

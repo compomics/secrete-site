@@ -58,7 +58,7 @@ public class SecreteSiteApplicationCopy {
 
                     Transcript transcript = new Transcript(splitline[2], splitline[9],Integer.valueOf(splitline[3]),Integer.valueOf(splitline[4]), gene);
 
-                    transcript.getExpressableInSpecies().add(pichiaPastoris);
+                    transcript.getExpressableIn().add(pichiaPastoris);
 
                     gene.getTranscripts().add(transcript);
                     line = reader.readLine();
@@ -116,9 +116,9 @@ public class SecreteSiteApplicationCopy {
                             .collect(Collectors.toList());
 
                     if (!transcripts.isEmpty()) {
-                        transcripts.forEach(transcript1 -> transcript1.getExpressableInSpecies().add(saccharomyces));
+                        transcripts.forEach(transcript1 -> transcript1.getExpressableIn().add(saccharomyces));
                     } else {
-                        transcript.getExpressableInSpecies().add(saccharomyces);
+                        transcript.getExpressableIn().add(saccharomyces);
                         gene.getTranscripts().add(transcript);
                     }
                     line = reader.readLine();
@@ -147,7 +147,7 @@ public class SecreteSiteApplicationCopy {
                             .collect(Collectors.toList());
 
                     if (transcripts.isEmpty()) {
-                        transcript.getExpressableInSpecies().add(saccharomyces);
+                        transcript.getExpressableIn().add(saccharomyces);
                         gene.getTranscripts().add(transcript);
                     }
                 line = reader.readLine();
