@@ -1,10 +1,7 @@
 package com.compomics.secretesite.domain;
 
 import com.compomics.secretesite.controllers.services.SequenceService;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -19,6 +16,7 @@ import java.util.Set;
  */
 @Data
 @Entity
+@EqualsAndHashCode(exclude = {"parentGene","foundIn","expressableIn"})
 public class Transcript implements Serializable {
 
     /**
@@ -54,8 +52,16 @@ public class Transcript implements Serializable {
     @JoinColumn(name = "gene_id", nullable = false)
     private Gene parentGene;
 
-    @ManyToMany(mappedBy = "expressableTranscripts")
+    @ManyToMany
+    @JoinTable(
+            name = "transcripts_expressable_in_species",
+            joinColumns = @JoinColumn(name = "transcript_id"),
+            inverseJoinColumns = @JoinColumn(name = "species_id")
+    )
     private Set<Species> expressableIn = new HashSet<>(0);
+
+    @OneToMany(mappedBy = "transcript",cascade = CascadeType.ALL)
+    private Set<TranscriptsFoundInStructure> foundIn = new HashSet<>();
 
     @Transient
     private static SequenceService sequenceService;

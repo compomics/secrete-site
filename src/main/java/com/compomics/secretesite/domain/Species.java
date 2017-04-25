@@ -1,6 +1,7 @@
 package com.compomics.secretesite.domain;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
@@ -12,6 +13,7 @@ import java.util.Set;
  */
 @Data
 @Entity
+@EqualsAndHashCode(exclude = "expressableTranscripts")
 public class Species {
 
     /**
@@ -38,12 +40,7 @@ public class Species {
     /**
      * all the {@link Gene}s that belong to this species
      */
-    @ManyToMany
-    @JoinTable(
-            name = "transcripts_expressable_in_species",
-            inverseJoinColumns=@JoinColumn(name = "l_transcript_id", referencedColumnName = "transcript_id"),
-            joinColumns = @JoinColumn(name = "l_species_id",referencedColumnName = "species_id")
-    )
+    @ManyToMany(mappedBy = "expressableIn")
     private Set<Transcript> expressableTranscripts = new HashSet<>(0);
 
     public Species(Integer speciesTaxonomyNumber, String speciesName) {
