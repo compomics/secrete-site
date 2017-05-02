@@ -22,7 +22,7 @@ public class GeneViewController {
     }
 
     @RequestMapping("/geneview")
-    String geneView(@RequestParam(value="id",defaultValue = "") String geneAccession, Model model){
+    public String geneView(@RequestParam(value="id",defaultValue = "") String geneAccession, Model model){
 
         Map<String,Object> attr = new HashMap<>();
         if (geneAccession.isEmpty()){
