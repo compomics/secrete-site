@@ -18,7 +18,8 @@ public class SequenceService {
     /**
      * hashmap containing all non stop codons and their resulting amino acid after translating
      */
-    private static final Map<String,String> DNA_TO_PROTEIN = new HashMap(){
+
+    private static final Map<String,String> DNA_TO_PROTEIN = new HashMap<String, String>(){
         {
             put("ATT","I");
             put("ATC","I");

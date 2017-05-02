@@ -70,9 +70,12 @@ public class Transcript implements Serializable {
      * private String proteinProduct
      */
      @Transient
-      public String getProteinProduct(){
+     public String getProteinProduct(){
           return sequenceService.translateDNAtoProtein(this.transcript_sequence);
       }
+
+    public Transcript() {
+    }
 
     public Transcript(String ensembleTranscriptAccession, String transcript_sequence, Integer sequence_end, Integer sequence_start, Gene parentGene) {
         this.ensembleTranscriptAccession = ensembleTranscriptAccession;

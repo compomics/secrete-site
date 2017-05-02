@@ -55,6 +55,9 @@ public class Gene {
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "parentGene")
     private Set<Transcript> transcripts = new HashSet<>(0);
 
+    public Gene() {
+    }
+
     public Gene(String geneAccession, String chromosome, String geneName, String geneSequence) {
         this.geneAccession = geneAccession;
         this.chromosome = chromosome;

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>NGL @ arose.github.io</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" href="css/font-awesome.min.css" />
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="subresource" href="css/light.css" />
+    <link th:href="@{/css/bootstrap.min.css}"
+          rel="stylesheet" media="screen" />
+</head>
+
+<body>
+<!-- NGL -->
+<script src="js/ngl.js"></script>
+
+<!-- UI -->
+<script src="js/lib/signals.min.js"></script>
+<script src="js/lib/tether.min.js"></script>
+<script src="js/lib/colorpicker.min.js"></script>
+<script src="js/ui/ui.js"></script>
+<script src="js/ui/ui.extra.js"></script>
+<script src="js/ui/ui.ngl.js"></script>
+
+<script th:src="@{/js/jquery-3.2.1.min.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+
+<script>
+    // picking message
+    NGL.getPickingMessage = function( d, prefix ){
+        var msg = "nothing";
+        if( d ){
+            if( d.arrow ){
+                msg = "arrow: " + d.pid + " (" + d.arrow.shape.name + ")";
+            }else if( d.atom ){
+                msg = "atom: " +
+                    d.atom.qualifiedName() +
+                    " (" + d.atom.structure.name + ")";
+            }else if( d.bond ){
+                msg = "bond: " +
+                    d.bond.atom1.qualifiedName() + " - " + d.bond.atom2.qualifiedName() +
+                    " (" + d.bond.structure.name + ")";
+            }else if( d.cone ){
+                msg = "cone: " + d.pid + " (" + d.cone.shape.name + ")";
+            }else if( d.clash ){
+                msg = "clash: " + d.clash.clash.sele1 + " - " + d.clash.clash.sele2;
+            }else if( d.contact ){
+                msg = "contact: " +
+                    d.contact.atom1.qualifiedName() + " - " + d.contact.atom2.qualifiedName() +
+                    " (" + d.contact.structure.name + ")";
+            }else if( d.cylinder ){
+                msg = "cylinder: " + d.pid + " (" + d.cylinder.shape.name + ")";
+            }else if( d.ellipsoid ){
+                msg = "ellipsoid: " + d.pid + " (" + d.ellipsoid.shape.name + ")";
+            }else if( d.mesh ){
+                msg = "mesh: " + d.mesh.serial + " (" + d.mesh.shape.name + ")";
+            }else if( d.slice ){
+                msg = "slice: " +
+                    d.slice.value.toPrecision( 3 ) +
+                    " (" + d.slice.volume.name + ")";
+            }else if( d.sphere ){
+                msg = "sphere: " + d.pid + " (" + d.sphere.shape.name + ")";
+            }else if( d.surface ){
+                msg = "surface: " + d.surface.surface.name;
+            }else if( d.volume ){
+                msg = "volume: " +
+                    d.volume.value.toPrecision( 3 ) +
+                    " (" + d.volume.volume.name + ")";
+            }
+        }
+        return prefix ? prefix + " " + msg : msg;
+    };
+
+    function createCustomScheme(schemeValue){
+        if(schemeValue != 'custom'){
+            return schemeValue
+        }else{
+            var schemeId = NGL.ColormakerRegistry.addScheme( function( params ){
+                this.atomColor = function( atom ){
+                    if( atom.serial < 1000 && atom.serial >500){
+                        return 0xFF0000;  // red
+                    }else{
+                        return 0xC0C0C0;  // grey
+                    }
+                };
+            } );
+            return schemeId;
+        }
+    }
+    function loadFile(stage, schemeId, molecularRepresentation, ligand){
+        stage.loadFile("http://files.rcsb.org/view/4HHB.pdb" ).then( function( o ){
+            if(molecularRepresentation != ""){
+                o.addRepresentation( molecularRepresentation, {
+                    colorScheme: schemeId,
+                    useWorker: false
+                } );
+            }
+            o.addRepresentation( "label", {
+                sele: "( 135 or 223 or 347 or 296 ) and .CB",
+                color: "black", scale: 1.7
+            } );
+
+            if(ligand != ""){
+                o.addRepresentation( ligand, {
+                    sele: "HEM and :B"
+                } );
+            }
+
+            o.autoView();
+        });
+    }
+
+    function create3d(schemeId, molecularRepresentation, ligand){
+        var stage = new NGL.Stage( "viewport3d" );
+        loadFile(stage, schemeId, molecularRepresentation, ligand);
+        var selectedStyle = $("#styleSelect").val();
+        document.getElementById("colorSchemeSelect").addEventListener( "change", function( event ){
+            var targetElm = event.target;
+            var value = targetElm.options[ targetElm.selectedIndex ].value;
+            for(var i =0; i<stage.compList[0].reprList.length; i++){
+                if(Object.values(Object.values(stage.compList[0].reprList[i]))[0] == selectedStyle){
+                    stage.compList[0].removeRepresentation(stage.compList[0].reprList[i]);
+                }
+            }
+            stage.compList[0].addRepresentation(selectedStyle, {
+                colorScheme: createCustomScheme(value)
+            });
+
+        } );
+
+        document.getElementById("styleSelect").addEventListener( "change", function( event ){
+            var targetElm = event.target;
+            var value = targetElm.options[ targetElm.selectedIndex ].value;
+            for(var i =0; i<stage.compList[0].reprList.length; i++){
+                if(Object.values(Object.values(stage.compList[0].reprList[i]))[0] == selectedStyle){
+                    stage.compList[0].removeRepresentation(stage.compList[0].reprList[i]);
+                }
+            }
+            selectedStyle = value;
+
+            stage.compList[0].addRepresentation(value, {
+                colorScheme: createCustomScheme($("#colorSchemeSelect").val())
+            });
+        } );
+        var selectedLigand = $("#ligandSelect").val();
+        document.getElementById("ligandSelect").addEventListener( "change", function( event ){
+            var targetElm = event.target;
+            var value = targetElm.options[ targetElm.selectedIndex ].value;
+            for(var i =0; i<stage.compList[0].reprList.length; i++){
+                if(Object.values(Object.values(stage.compList[0].reprList)[i])[0] == selectedLigand){
+                    stage.compList[0].removeRepresentation(stage.compList[0].reprList[i]);
+                }
+            }
+            stage.compList[0].addRepresentation(value, {
+                sele: "HEM and :B"
+            });
+            selectedLigand = value;
+        } );
+
+        document.getElementById("spinCheckbox").addEventListener("change",function( event ){
+            if(event.target.checked){
+                stage.setSpin( [ 0, 1, 0 ], 0.005 );
+            }else{
+                stage.setSpin( null, null );
+            }
+        } );
+
+        var pickingElement = document.getElementById( "pickingInfo" );
+        stage.signals.clicked.add( function( d ){
+            var text = NGL.getPickingMessage( d, "" );
+            if( text !== "nothing" ){
+                pickingElement.innerHTML = text;
+            }else{
+                pickingElement.innerHTML = "";
+            }
+
+        } );
+        var cssPath, bgColor;
+        cssPath = "css/light.css";
+        bgColor = "white";
+        var cssLinkElement = document.createElement( "link" );
+        cssLinkElement.rel = "stylesheet";
+        cssLinkElement.id = "theme";
+        cssLinkElement.href = cssPath;
+        stage.setParameters( { backgroundColor: bgColor } );
+
+    }
+
+    document.addEventListener( "DOMContentLoaded", function(){
+        document.getElementById("colorSchemeSelect").value = "residueindex";
+        document.getElementById("styleSelect").value = "cartoon";
+        document.getElementById("ligandSelect").value = "ball+stick";
+        create3d($("#colorSchemeSelect").val(), $("#styleSelect").val(), $("#ligandSelect").val());
+    } );
+</script>
+<div th:insert="~{fragments/header :: header}"></div>
+<div class="container-fluid">
+    <style>
+        #viewport3d { height: 200px;}
+        @media (min-height:  450px) { #viewport3d { height: 250px; } }
+        @media (min-height:  500px) { #viewport3d { height: 300px; } }
+        @media (min-height:  550px) { #viewport3d { height: 350px; } }
+        @media (min-height:  600px) { #viewport3d { height: 400px; } }
+        @media (min-height:  650px) { #viewport3d { height: 500px; } }
+        @media (min-height:  700px) { #viewport3d { height: 500px; } }
+        @media (min-height:  750px) { #viewport3d { height: 500px; } }
+        @media (min-height:  800px) { #viewport3d { height: 550px; } }
+        @media (min-height:  850px) { #viewport3d { height: 550px; } }
+        @media (min-height:  900px) { #viewport3d { height: 600px; } }
+        @media (min-height:  950px) { #viewport3d { height: 650px; } }
+        @media (min-height: 1000px) { #viewport3d { height: 700px; } }
+        @media (min-height: 1050px) { #viewport3d { height: 750px; } }
+        @media (min-height: 1100px) { #viewport3d { height: 800px; } }
+
+
+        #pickingInfo {
+            position: absolute;
+            margin-left: 5px;
+            padding: 6px;
+            top: 50px;
+            z-index: 100;
+            background-color: rgba( 255, 255, 255, 0.7 );
+        }
+        .panel > .panel-heading {
+            background-color: #5E6973;
+            color: white;
+        }
+        .panel-default {
+            border-color: #5e5e5e;
+            border: 1px solid transparent;
+        }
+    </style>
+    <div class="row">
+        <div id="alertMsg" class="alert alert-info alert-dismissible" role="alert" style="width: 73%; margin-left: 1%;">
+            <div style="margin-bottom:15px;"><button type="button" class="close" data-dismiss="alert" aria-label="Close" ><span aria-hidden="true">&#215;</span></button></div>
+            Use your mouse to drag, rotate, and zoom in and out of the structure. Click to identify atoms and bonds.
+        </div>
+        <div class="col-lg-9 col-md-8 col-sm-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">THE CRYSTAL STRUCTURE OF HUMAN DEOXYHAEMOGLOBIN AT 1.74 ANGSTROMS RESOLUTION</div>
+                <div class="panel-body" style="padding: 1px;">
+                    <div id="viewport3d" style="min-width: 100%; padding: 1px;"></div>
+                    <div id="pickingInfo"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">Display Settings</div>
+                <div class="panel-body form-horizontal" style="padding: 1px;">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label" for="styleSelect" style="text-align: left">
+                            Style<span class="fa fa-question-circle ngl-ui-help" data-toggle="tooltip" data-placement="top" title="View the structure in different presentation styles"></span>
+                        </label>
+                        <div class="col-sm-8">
+                            <select id="styleSelect" class="form-control input-sm">
+                                <option value="">None</option>
+                                <option value="backbone">Backbone</option>
+                                <option value="surface">Surface</option>
+                                <option value="cartoon">Cartoon</option>
+                                <option value="spacefill">Spacefill</option>
+                                <option value="licorice">Licorice</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label" for="colorSchemeSelect" style="text-align: left">
+                            Color<span class="fa fa-question-circle ngl-ui-help" data-toggle="tooltip" data-placement="top" title="Color the structure in different schemes"></span>
+                        </label>
+                        <div class="col-sm-8">
+                            <select id="colorSchemeSelect" class="form-control input-sm">
+                                <option value="residueindex">Rainbow</option>
+                                <option value="chainindex">By Chain</option>
+                                <option value="element">By Element</option>
+                                <option value="bfactor">By B-factor</option>
+                                <option value="sstruc">By Secondary Structure</option>
+                                <option value="custom">By Custom</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label" for="ligandSelect" style="text-align: left">
+                            Ligand<span class="fa fa-question-circle ngl-ui-help" data-toggle="tooltip" data-placement="top" title="Change ligand presentation style"></span>
+                        </label>
+                        <div class="col-sm-8">
+                            <select id="ligandSelect" class="form-control input-sm">
+                                <option value="">None</option>
+                                <option value="ball+stick">Ball & Stick</option>
+                                <option value="spacefill">Spacefill</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <div class="col-sm-6 checkbox">
+                            <label>
+                                <input type="checkbox" id="spinCheckbox"/>
+                                Spin<span class="fa fa-question-circle ngl-ui-help" data-toggle="tooltip" data-placement="top" title="Start/stop spinning the structure along the y-axis"></span>
+                            </label>
+                        </div>
+
+                        <div class="col-sm-6 checkbox" style="padding-top: 0px;">
+                            <div class="btn btn-primary btn-sm" id="centerButton">
+                                Center<span class="fa fa-question-circle ngl-ui-help" data-toggle="tooltip" data-placement="top" title="Reset molecule position"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:insert="~{fragments/footer :: footer}"></div>
+</body>
+</html>
