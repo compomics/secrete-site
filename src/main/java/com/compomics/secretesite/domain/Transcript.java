@@ -16,7 +16,7 @@ import java.util.Set;
  */
 @Data
 @Entity
-@EqualsAndHashCode(exclude = {"parentGene","foundIn","expressableIn"})
+@EqualsAndHashCode(exclude = {"parentGene","foundIn","expressableIn","earlyFoldingLocations"})
 public class Transcript implements Serializable {
 
     /**
@@ -65,6 +65,9 @@ public class Transcript implements Serializable {
 
     @Transient
     private static SequenceService sequenceService;
+
+    @OneToMany(mappedBy = "transcript",cascade = CascadeType.ALL)
+    private Set<TranscriptEarlyFolding>  earlyFoldingLocations = new HashSet<>();
 
     /**
      * private String proteinProduct
