@@ -1,7 +1,6 @@
 package com.compomics.secretesite.domain;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -9,30 +8,20 @@ import javax.persistence.*;
  * Created by davy on 4/21/2017.
  */
 @Entity
+@Data
+@EqualsAndHashCode(exclude = {"transcript","transcriptstructure"})
+@ToString(exclude = {"transcript","transcriptstructure"})
 public class TranscriptsFoundInStructure {
 
     @Id
     @GeneratedValue
-    @Getter
-    public Integer id;
+    public Integer transcripts_found_in_structure_id;
 
     @ManyToOne(targetEntity = Transcript.class)
     @JoinColumn(name = "l_transcript_id",referencedColumnName = "transcript_id")
-    @Getter
-    @Setter
     public Transcript transcript;
 
     @ManyToOne(targetEntity = TranscriptStructure.class,cascade = CascadeType.ALL)
-    @JoinColumn(name = "l_transcriptstructure_id",referencedColumnName = "transcriptstructure_id")
-    @Getter
-    @Setter
+    @JoinColumn(name = "l_transcript_structure_id",referencedColumnName = "transcript_structure_id")
     public TranscriptStructure transcriptstructure;
-
-    @Column
-    @Getter
-    @Setter
-    public String clusterRepresentative;
-
-    public TranscriptsFoundInStructure() {
-    }
 }

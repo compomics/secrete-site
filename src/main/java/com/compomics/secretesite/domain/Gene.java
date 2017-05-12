@@ -21,34 +21,29 @@ public class Gene {
     /**
      * The ensembl gene accession
      */
-    @Column
     @NaturalId
     private String geneAccession;
 
     /**
      * The database specific identifier
      */
-    @Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer geneId;
+    private Integer geneid;
 
     /**
      * The chromosome the gene is located on
      */
-    @Column
     private String chromosome;
 
     /**
      * Human readable gene name
      */
-    @Column
     private String geneName;
 
     /**
      * Full genetic canonical sequence
      */
-    @Column
     private String geneSequence;
 
     /**
@@ -57,8 +52,6 @@ public class Gene {
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "parentGene")
     private Set<Transcript> transcripts = new HashSet<>(0);
 
-    public Gene() {
-    }
 
     public Gene(String geneAccession, String chromosome, String geneName, String geneSequence) {
         this.geneAccession = geneAccession;

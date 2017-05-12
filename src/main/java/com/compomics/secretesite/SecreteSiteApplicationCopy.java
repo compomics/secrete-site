@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import java.io.File;
 import java.io.FileReader;
 import java.io.LineNumberReader;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class SecreteSiteApplicationCopy {
 
     public SecreteSiteApplicationCopy(SpeciesRepository speciesRepository, GeneRepository geneRepository) {
         this.speciesRepository = speciesRepository;
-     //   this.geneRepository = geneRepository;
+        this.geneRepository = geneRepository;
     }
 
     public static void main(String[] args) {
@@ -43,7 +44,7 @@ public class SecreteSiteApplicationCopy {
 
             Map<String, Gene> referenceGenes = new HashMap<>();
 
-            Species pichiaPastoris = new Species(4922, "Picha pastoris");
+            Species pichiaPastoris = new Species(4922, "Pichia pastoris");
 
             speciesRepository.save(pichiaPastoris);
 
@@ -58,8 +59,6 @@ public class SecreteSiteApplicationCopy {
 
                     String[] splitdata = data.split("\t");
 
-                    data = reader.readLine();
-
                     TranscriptStructure structure = new TranscriptStructure();
 
                     structure.setPdbId(splitdata[1].split("\\|")[3]);
@@ -69,9 +68,47 @@ public class SecreteSiteApplicationCopy {
                     structure.setIdentityScore(Double.parseDouble(splitdata[8]));
                     structure.setNumberOfMatchedResidues(Integer.parseInt(splitdata[9]));
 
-
                     transcriptStructureMap.put(Integer.parseInt(splitdata[0].split("Seq_")[1]), structure);
+
+                    data = reader.readLine();
                 }
+            }
+
+            final ArrayListValuedHashMap<String, TranscriptEarlyFolding> foldingMap = new ArrayListValuedHashMap<>();
+
+            try (LineNumberReader reader = new LineNumberReader(new FileReader(new File(args[0], "PpE_EF_positions.txt")))) {
+
+                reader.readLine();
+
+                String[] splitdata;
+
+                String data = reader.readLine();
+
+                while (data != null) {
+
+                    splitdata = data.split("\t");
+
+
+                    String seqid = splitdata[0].split("Seq_")[1];
+
+                    if (splitdata.length > 1) {
+                        String[] numberarray = splitdata[1].split(",");
+                        if (numberarray.length == 1) {
+                            TranscriptEarlyFolding folding = new TranscriptEarlyFolding();
+                            folding.setFoldingLocation(Integer.parseInt(splitdata[1]));
+                            foldingMap.put(seqid, folding);
+                        } else {
+                            Arrays.stream(numberarray).map(e -> {
+                                TranscriptEarlyFolding folding = new TranscriptEarlyFolding();
+                                folding.setFoldingLocation(Integer.parseInt(e));
+                                return folding;
+                            }).forEach(e2 -> foldingMap.put(seqid, e2));
+
+                        }
+                    }
+                    data = reader.readLine();
+                }
+
             }
 
             try (LineNumberReader reader = new LineNumberReader(new FileReader(new File(args[0], "Pp_resultstable_enriched.txt")))) {
@@ -101,6 +138,11 @@ public class SecreteSiteApplicationCopy {
                         found.setTranscriptstructure(e);
                     });
 
+                    foldingMap.get(splitline[0]).forEach(e -> {
+                        e.setTranscript(transcript);
+                        transcript.getEarlyFoldingLocations().add(e);
+                    });
+
                     line = reader.readLine();
 
                 }
@@ -118,8 +160,6 @@ public class SecreteSiteApplicationCopy {
 
                     String[] splitdata = data.split("\t");
 
-                    data = reader.readLine();
-
                     TranscriptStructure structure = new TranscriptStructure();
 
                     structure.setPdbId(splitdata[1].split("\\|")[3]);
@@ -129,10 +169,50 @@ public class SecreteSiteApplicationCopy {
                     structure.setIdentityScore(Double.parseDouble(splitdata[8]));
                     structure.setNumberOfMatchedResidues(Integer.parseInt(splitdata[9]));
 
-
                     transcriptStructureMap.put(Integer.parseInt(splitdata[0].split("Seq_")[1]), structure);
+
+                    data = reader.readLine();
+
                 }
             }
+
+            foldingMap.clear();
+
+            try (LineNumberReader reader = new LineNumberReader(new FileReader(new File(args[0], "PpD_EF_positions.txt")))) {
+
+                reader.readLine();
+
+                String[] splitdata;
+
+                String data = reader.readLine();
+
+                while (data != null) {
+
+                    splitdata = data.split("\t");
+
+
+                    String seqid = splitdata[0].split("Seq_")[1];
+
+                    if (splitdata.length > 1) {
+                        String[] numberarray = splitdata[1].split(",");
+                        if (numberarray.length == 1) {
+                            TranscriptEarlyFolding folding = new TranscriptEarlyFolding();
+                            folding.setFoldingLocation(Integer.parseInt(splitdata[1]));
+                            foldingMap.put(seqid, folding);
+                        } else {
+                            Arrays.stream(numberarray).map(e -> {
+                                TranscriptEarlyFolding folding = new TranscriptEarlyFolding();
+                                folding.setFoldingLocation(Integer.parseInt(e));
+                                return folding;
+                            }).forEach(e2 -> foldingMap.put(seqid, e2));
+
+                        }
+                    }
+                    data = reader.readLine();
+                }
+
+            }
+
 
             try (LineNumberReader reader = new LineNumberReader(new FileReader(new File(args[0], "Pp_resultstable_depleted.txt")))) {
                 reader.readLine();
@@ -159,6 +239,11 @@ public class SecreteSiteApplicationCopy {
                         transcript.getFoundIn().add(found);
                         found.setTranscript(transcript);
                         found.setTranscriptstructure(e);
+                    });
+
+                    foldingMap.get(splitline[0]).forEach(e -> {
+                        e.setTranscript(transcript);
+                        transcript.getEarlyFoldingLocations().add(e);
                     });
 
                     line = reader.readLine();
@@ -194,6 +279,43 @@ public class SecreteSiteApplicationCopy {
 
                     transcriptStructureMap.put(Integer.parseInt(splitdata[0].split("Seq_")[1]), structure);
                 }
+            }
+
+            foldingMap.clear();
+
+            try (LineNumberReader reader = new LineNumberReader(new FileReader(new File(args[0], "ScE_EF_positions.txt")))) {
+
+                reader.readLine();
+
+                String[] splitdata;
+
+                String data = reader.readLine();
+
+                while (data != null) {
+
+                    splitdata = data.split("\t");
+
+
+                    String seqid = splitdata[0].split("Seq_")[1];
+
+                    if (splitdata.length > 1) {
+                        String[] numberarray = splitdata[1].split(",");
+                        if (numberarray.length == 1) {
+                            TranscriptEarlyFolding folding = new TranscriptEarlyFolding();
+                            folding.setFoldingLocation(Integer.parseInt(splitdata[1]));
+                            foldingMap.put(seqid, folding);
+                        } else {
+                            Arrays.stream(numberarray).map(e -> {
+                                TranscriptEarlyFolding folding = new TranscriptEarlyFolding();
+                                folding.setFoldingLocation(Integer.parseInt(e));
+                                return folding;
+                            }).forEach(e2 -> foldingMap.put(seqid, e2));
+
+                        }
+                    }
+                    data = reader.readLine();
+                }
+
             }
 
             try (LineNumberReader reader = new LineNumberReader(new FileReader(new File(args[0], "Sc_resultstable_enriched.txt")))) {
@@ -232,6 +354,11 @@ public class SecreteSiteApplicationCopy {
                         found.setTranscriptstructure(e);
                     });
 
+                    foldingMap.get(splitline[0]).forEach(e -> {
+                        e.setTranscript(transcript);
+                        transcript.getEarlyFoldingLocations().add(e);
+                    });
+
                     line = reader.readLine();
                 }
             }
@@ -262,6 +389,44 @@ public class SecreteSiteApplicationCopy {
                     transcriptStructureMap.put(Integer.parseInt(splitdata[0].split("Seq_")[1]), structure);
                 }
             }
+
+
+            foldingMap.clear();
+
+            try (LineNumberReader reader = new LineNumberReader(new FileReader(new File(args[0], "ScD_EF_positions.txt")))) {
+
+                reader.readLine();
+
+                String[] splitdata;
+
+                String data = reader.readLine();
+
+                while (data != null) {
+
+                    splitdata = data.split("\t");
+
+
+                    String seqid = splitdata[0].split("Seq_")[1];
+
+                    if (splitdata.length > 1) {
+                        String[] numberarray = splitdata[1].split(",");
+                        if (numberarray.length == 1) {
+                            TranscriptEarlyFolding folding = new TranscriptEarlyFolding();
+                            folding.setFoldingLocation(Integer.parseInt(splitdata[1]));
+                            foldingMap.put(seqid, folding);
+                        } else {
+                            Arrays.stream(numberarray).map(e -> {
+                                TranscriptEarlyFolding folding = new TranscriptEarlyFolding();
+                                folding.setFoldingLocation(Integer.parseInt(e));
+                                return folding;
+                            }).forEach(e2 -> foldingMap.put(seqid, e2));
+
+                        }
+                    }
+                    data = reader.readLine();
+                }
+            }
+
 
             try (LineNumberReader reader = new LineNumberReader(new FileReader(new File(args[0], "Sc_resultstable_depleted.txt")))) {
                 reader.readLine();
@@ -296,12 +461,15 @@ public class SecreteSiteApplicationCopy {
                         found.setTranscriptstructure(e);
                     });
 
+                    foldingMap.get(splitline[0]).forEach(e -> {
+                        e.setTranscript(transcript);
+                        transcript.getEarlyFoldingLocations().add(e);
+                    });
+
                     line = reader.readLine();
                 }
-             //   geneRepository.save(referenceGenes.values());
+                geneRepository.saveAll(referenceGenes.values());
             }
-        }
-                ;
+        };
     }
-
 }
