@@ -2,6 +2,7 @@ package com.compomics.secretesite.domain;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
@@ -15,31 +16,26 @@ import java.util.Set;
 @Data
 @Entity
 @EqualsAndHashCode(exclude = "transcriptscontained")
+@ToString(exclude = "transcriptscontained")
 public class TranscriptStructure {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "transcriptstructure_id")
-    private Integer transcriptStructure_id;
+    @Column(name = "transcript_structure_id")
+    private Integer transcript_structure_id;
 
     @OneToMany(mappedBy = "transcriptstructure")
     private Set<TranscriptsFoundInStructure> transcriptscontained = new HashSet<>();
 
-    @Column
     private String pdbId;
 
-    @Column
     private String chain;
 
-    @Column
     private Integer fragmentStart;
 
-    @Column
     private Integer fragmentEnd;
 
-    @Column
     private Integer numberOfMatchedResidues;
 
-    @Column
     private Double identityScore;
 }

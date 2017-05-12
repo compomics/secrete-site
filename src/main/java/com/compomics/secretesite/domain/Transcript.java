@@ -17,12 +17,12 @@ import java.util.Set;
 @Data
 @Entity
 @EqualsAndHashCode(exclude = {"parentGene","foundIn","expressableIn","earlyFoldingLocations"})
+@ToString(exclude = {"parentGene","foundIn","expressableIn","earlyFoldingLocations"})
 public class Transcript implements Serializable {
 
     /**
      * internal database id
      */
-    @Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer transcript_id;
@@ -30,13 +30,10 @@ public class Transcript implements Serializable {
     /**
      * the ensembl identifier for the transcript
      */
-    @Column
     private String ensembleTranscriptAccession;
 
-    @Column
     private Integer sequence_start;
 
-    @Column
     private Integer sequence_end;
 
     /**
@@ -68,6 +65,16 @@ public class Transcript implements Serializable {
 
     @OneToMany(mappedBy = "transcript",cascade = CascadeType.ALL)
     private Set<TranscriptEarlyFolding>  earlyFoldingLocations = new HashSet<>();
+
+    private String secretionStatus;
+
+    @ManyToMany
+    @JoinTable(
+            name="translation_products",
+            joinColumns = @JoinColumn(name = "transcript_id"),
+            inverseJoinColumns = @JoinColumn(name = "protein_id")
+    )
+    private Set<Protein> proteinProducts;
 
     /**
      * private String proteinProduct

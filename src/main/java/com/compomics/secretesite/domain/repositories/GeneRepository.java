@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface GeneRepository extends PagingAndSortingRepository<Gene,Integer> {
 
     @RestResource(path = "filterbyid")
-    Gene findByGeneId(@RequestParam  Integer id);
+    Gene findBygeneid(@RequestParam  Integer id);
 
     @RestResource(path = "filterbyaccession")
     Gene findByGeneAccession(@RequestParam String accession);
