@@ -2,6 +2,7 @@ package com.compomics.secretesite.domain;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
@@ -14,6 +15,7 @@ import java.util.Set;
 @Entity
 @Data
 @EqualsAndHashCode(exclude = "transcripts")
+@ToString(exclude = "transcripts")
 public class Gene {
 
     /**
