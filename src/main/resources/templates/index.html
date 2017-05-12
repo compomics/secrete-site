@@ -2,14 +2,59 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Index</title>
+    <title>Secrete-site</title>
 
     <link th:href="@{/css/bootstrap.min.css}"
           rel="stylesheet" media="screen" />
-
+    <script src="//cdn.bio.sh/msa/latest/msa.min.gz.js"></script>
+    <script th:src="@{/js/jquery-3.2.1.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
 </head>
 <body>
 <div th:insert="~{fragments/header :: header}"></div>
+<p>Current Track: <span id="trackinfo">No track information available at this time</span></p>
+<div id="msa">Loading Multiple Alignment...</div>
+<script th:inline="javascript">
+    //<![CDATA[
+    function radioTitle() {
+
+        var url = 'http://www.uniprot.org/uniprot/P04637.fasta';
+        var fasta = "";
+        $.ajax({
+            type: 'GET',
+            url: url,
+            dataType: 'text',
+            success: function (data) {
+
+                fasta = data;
+                fasta += "\n" +
+                    ">transcript1\n\   PQSDPSV";
+                $("#trackinfo").html(fasta);
+                var seqs = msa.io.fasta.parse(fasta);
+
+                var m = msa({
+                    el: document.getElementById("msa"),
+                    seqs: seqs
+                });
+                var features = msa.io.gff.parseSeqs("transcript1 . gene	5 	9	.	.  .  Name=A feature;Color=blue");
+                m.seqs.addFeatures(features);
+                m.render();
+            },
+
+            error: function (e) {
+                console.log(e.message);
+            }
+        });
+    }
+    document.addEventListener( "DOMContentLoaded", function(){
+        setTimeout(function(){radioTitle();}, 2000);
+        setInterval(function(){radioTitle();}, 15000);
+    });
+    //]]>
+</script>
+
+
+<div th:insert="~{fragments/footer :: footer}"></div>
 
 </body>
 </html>

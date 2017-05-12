@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Secrete-site</title>
+
+    <link th:href="@{/css/bootstrap.min.css}"
+          rel="stylesheet" media="screen" />
+    <link th:href="@{/css/overview.css}"
+          rel="stylesheet" media="screen" />
+    <script th:src="@{/js/jquery-3.2.1.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+</head>
+<body>
+<div th:insert="~{fragments/header :: header}"></div>
+<div class="container">
+    <div class="col-sm-6 col-sm-offset-3">
+        <p style="font-size: medium;">Search by gene accession or name.</p>
+    </div>
+    <div class="col-sm-6 col-sm-offset-3">
+        <div class="panel panel-default" style="display: block;">
+            <div class="panel-heading panel-heading-custom text-center"><h3 class="panel-title">SEARCH</h3></div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-10 col-sm-offset-1">
+                        <span style="float: right; font-size: 11px;">
+                            <a href="#" style="text-decoration: underline; color: #62605E;"
+                               onclick="setExample2()">#ex2</a>
+                        </span>
+                        <span style="float: right; font-size: 11px;">
+                            <a href="#" style="text-decoration: underline; color: #62605E;"
+                               onclick="setExample1()">#ex1</a>&#160;&#160;
+                        </span>
+                    </div>
+                    <br/>
+                    <div class="input-group input-group-lg col-sm-10 col-sm-offset-1">
+                        <input type="text" class="form-control" placeholder="Gene Accession" id="geneAccession">
+                    </div>
+                    <br/>
+                    <div class="input-group input-group-lg col-sm-10 col-sm-offset-1">
+                        <input type="text" class="form-control" placeholder="Gene Name" id="geneName">
+                    </div>
+                    <br/>
+                    <div align="center">
+                        <button type="button" class="btn btn-primary " id="btnSearchGene" style="width: 104px;">Search
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script th:inline="javascript">
+
+        //<![CDATA[
+            $('#btnSearchGene').on('click', function () {
+                if($('#geneAccession').val() != ""){
+                    window.location = '/geneview?id='+ $('#geneAccession').val();
+                }else if($('#geneAccession').val() == "" && $('#geneName').val() != ""){
+                    window.location = '/geneview?id='+ $('#geneName').val();
+                }else{
+                    var dialogInstance = new BootstrapDialog();
+                    dialogInstance.setTitle('INPUT ERROR');
+                    dialogInstance.setMessage('Accession cannot be empty!');
+                    dialogInstance.setType(BootstrapDialog.TYPE_DANGER);
+                    dialogInstance.open();
+                }
+                return false;
+            });
+            $("#geneAccession").keyup(function(event){
+                if(event.keyCode == 13){
+                    $("#btnSearchGene").click();
+                }
+            });
+            $("#geneName").keyup(function(event){
+                if(event.keyCode == 13){
+                    $("#btnSearchGene").click();
+                }
+            });
+            function setExample1() {
+                document.getElementById('geneAccession').value = 'ENSG00000131089';
+                document.getElementById('geneName').value = 'ARHGEF9';
+                return false;
+            }
+
+            function setExample2() {
+                document.getElementById('geneAccession').value = 'ENSG00000144339';
+                document.getElementById('geneName').value = 'TMEFF2';
+                return false;
+            }
+        //]]>
+    </script>
+</div>
+<div th:insert="~{fragments/footer :: footer}"></div>
+</body>
+</html>

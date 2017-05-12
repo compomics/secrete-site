@@ -2,57 +2,95 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head >
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Secrete-site</title>
 
     <link th:href="@{/css/bootstrap.min.css}"
           rel="stylesheet" media="screen" />
 
+    <link th:href="@{/css/bootstrap-table-expandable.css}" rel="stylesheet" media="screen"/>
+
     <script th:src="@{/js/jquery-3.2.1.min.js}"></script>
     <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/bootstrap-table-expandable.js}"></script>
+
 </head>
 <body>
 <div th:insert="~{fragments/header :: header}"></div>
-<div class="jumbotron">
+<div class="container">
     <div class="dna-pane active">
         <!--/*@thymesVar id="gene" type="com.compomics.secretesite.domain.Gene"*/-->
-        <div th:text="${gene.getGeneName()}"></div>
-        <table class="table table-hover table-sticky-header">
+        <div id="alertMsg" class="alert alert-warning" role="alert" style="width: 73%; margin-left: 1%;" th:if="${gene == null}">
+            <div style="margin-bottom:15px;"><button type="button" class="close" data-dismiss="alert" aria-label="Close" ><span aria-hidden="true">&#215;</span></button></div>
+            No transcript found by the provided gene accession/name.<a th:href="@{'/search'}" class="alert-link">Please try to search again.</a>
+        </div>
+        <table class="table table-hover table-sticky-header table-expandable" style="table-layout: fixed" th:unless="${gene == null}">
             <thead>
-                <th>id</th>
-                <th>sequence</th>
-                <th></th>
+                <th style="width: 3%"></th>
+                <th style="width: 15%">transcript accession</th>
+                <th style="width: 82%">transcript sequence</th>
+
             </thead>
             <tbody>
-                <tr th:each="transcripts:${gene.getTranscripts()}">
-                    <td th:text="${transcripts.getTranscript_id()}"></td>
-                    <td th:text="${transcripts.getTranscript_sequence()}"></td>
-                    <td th:text="${transcripts.getFoundIn().size()}"></td>
-                </tr>
+                <th:block th:each="transcripts:${gene.getTranscripts()}">
+                    <tr data-toggle="collapse" th:attr="data-target='#accordion_'+${transcripts.getTranscript_id()}" class="clickable" th:unless="${#lists.isEmpty(transcripts.getFoundIn())}">
+                        <td><span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></td>
+                        <td th:text="${transcripts.getEnsembleTranscriptAccession()}"></td>
+                        <td colspan="3" th:id="'seq_'+${transcripts.getTranscript_id()}" style="word-wrap: break-word;" >
+
+                            <script th:inline="javascript">
+                                /*<![CDATA[*/
+                                document.addEventListener( "DOMContentLoaded", function(){
+
+                                    var trID = [[${transcripts.getTranscript_id()}]];
+
+                                    var seq = [[${transcripts.getTranscript_sequence()}]] ;
+                                    var start = [[${transcripts.getFoundIn()[0].getTranscriptstructure().getFragmentStart()}]];
+                                    var end = [[${transcripts.getFoundIn()[0].getTranscriptstructure().getFragmentEnd()}]];
+                                    var structure = seq.substr(parseInt(start), parseInt(end)).fontcolor("red");
+                                    if(parseInt(start) > 0 && parseInt(end) < seq.length-1){
+                                        document.getElementById('seq_' + trID).innerHTML = seq.substr(0, parseInt(start)).concat(structure).concat(seq.substring(parseInt(end)+1));
+                                    }else if(parseInt(start) == 0 && parseInt(end) < seq.length-1){
+                                        document.getElementById('seq_' + trID).innerHTML = structure.concat(seq.substring(parseInt(end)+1));
+                                    }else if(parseInt(start) > 0 && parseInt(end) == seq.length-1){
+                                        document.getElementById('seq_' + trID).innerHTML = seq.substr(0, parseInt(start)).concat(structure);
+                                    }else if(parseInt(start) == 0 && parseInt(end) == seq.length-1){
+                                        document.getElementById('seq_' + trID).innerHTML = structure;
+                                    }
+
+                                });
+                                /*]]>*/
+                            </script>
+
+                        </td>
+
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(transcripts.getFoundIn())}" >
+                        <td><span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span></td>
+                        <td th:text="${transcripts.getEnsembleTranscriptAccession()}"></td>
+                        <td colspan="3" th:text="${transcripts.getTranscript_sequence()}" style="word-wrap: break-word;" ></td>
+                    </tr>
+                    <tr>
+                        <td colspan="1">
+                            <div th:id="'accordion_'+${transcripts.getTranscript_id()}" class="collapse" th:unless="${#lists.isEmpty(transcripts.getFoundIn())}">
+                                <h4>PDBIDs</h4>
+                                <input th:type="hidden" th:value="${transcripts.getFoundIn()[0].getTranscriptstructure().getFragmentStart()}" th:id="'start_'+${transcripts.getTranscript_id()}">
+                                <input th:type="hidden" th:value="${transcripts.getFoundIn()[0].getTranscriptstructure().getFragmentEnd()}" th:id="'end_'+${transcripts.getTranscript_id()}">
+                                <ul th:each="foundIn:${transcripts.getFoundIn()}">
+                                    <li>
+                                        <a th:text="${foundIn.getTranscriptstructure().getPdbId()}" th:href="@{'/3dProtein?structureId=' + ${foundIn.getTranscriptstructure().getTranscriptStructureId()}}"></a>
+                                    </li>
+
+                                </ul>
+                            </div>
+
+                        </td>
+                    </tr>
+                </th:block>
             </tbody>
         </table>
-
-    </div>
-    <div class="modal fade">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Modal title</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>Modal body text goes here.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
-
+<h1></h1>
 <div th:insert="~{fragments/footer :: footer}"></div>
 </body>
 </html>

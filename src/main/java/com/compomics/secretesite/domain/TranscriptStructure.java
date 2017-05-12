@@ -20,7 +20,7 @@ public class TranscriptStructure {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "transcriptstructure_id")
-    private Integer transcriptStructure_id;
+    private Integer transcriptStructureId;
 
     @OneToMany(mappedBy = "transcriptstructure")
     private Set<TranscriptsFoundInStructure> transcriptscontained = new HashSet<>();

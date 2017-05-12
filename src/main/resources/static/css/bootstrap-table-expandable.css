@@ -1,0 +1,12 @@
+table.table-expandable > tbody > tr:nth-child(odd) {
+    cursor: pointer;
+}
+
+table.table-expandable.table-hover > tbody > tr:nth-child(even):hover td {
+    background-color: white;
+}
+
+table.table-sticky-header th {
+    color: #62605E;
+	background-color: #ededed;
+}

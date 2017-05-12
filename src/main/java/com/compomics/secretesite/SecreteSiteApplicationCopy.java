@@ -28,7 +28,7 @@ public class SecreteSiteApplicationCopy {
 
     public SecreteSiteApplicationCopy(SpeciesRepository speciesRepository, GeneRepository geneRepository) {
         this.speciesRepository = speciesRepository;
-        this.geneRepository = geneRepository;
+     //   this.geneRepository = geneRepository;
     }
 
     public static void main(String[] args) {
@@ -298,7 +298,7 @@ public class SecreteSiteApplicationCopy {
 
                     line = reader.readLine();
                 }
-                geneRepository.save(referenceGenes.values());
+             //   geneRepository.save(referenceGenes.values());
             }
         }
                 ;

@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title>NGL @ arose.github.io</title>
+    <title>Secrete-site</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <link rel="stylesheet" href="css/font-awesome.min.css" />
@@ -26,9 +26,10 @@
 
 <script th:src="@{/js/jquery-3.2.1.min.js}"></script>
 <script th:src="@{/js/bootstrap.min.js}"></script>
+<!--/*@thymesVar id="structure" type="com.compomics.secretesite.domain.TranscriptStructure"*/-->
+<script th:inline="javascript">
+    /*<![CDATA[*/
 
-<script>
-    // picking message
     NGL.getPickingMessage = function( d, prefix ){
         var msg = "nothing";
         if( d ){
@@ -85,12 +86,13 @@
                         return 0xC0C0C0;  // grey
                     }
                 };
+
             } );
             return schemeId;
         }
     }
-    function loadFile(stage, schemeId, molecularRepresentation, ligand){
-        stage.loadFile("http://files.rcsb.org/view/4HHB.pdb" ).then( function( o ){
+    function loadFile(stage, schemeId, molecularRepresentation, ligand, pdbId){
+        stage.loadFile("http://files.rcsb.org/view/" +pdbId+ ".pdb" ).then( function( o ){
             if(molecularRepresentation != ""){
                 o.addRepresentation( molecularRepresentation, {
                     colorScheme: schemeId,
@@ -112,9 +114,9 @@
         });
     }
 
-    function create3d(schemeId, molecularRepresentation, ligand){
+    function create3d(schemeId, molecularRepresentation, ligand, pdbId){
         var stage = new NGL.Stage( "viewport3d" );
-        loadFile(stage, schemeId, molecularRepresentation, ligand);
+        loadFile(stage, schemeId, molecularRepresentation, ligand, pdbId);
         var selectedStyle = $("#styleSelect").val();
         document.getElementById("colorSchemeSelect").addEventListener( "change", function( event ){
             var targetElm = event.target;
@@ -192,11 +194,15 @@
         document.getElementById("colorSchemeSelect").value = "residueindex";
         document.getElementById("styleSelect").value = "cartoon";
         document.getElementById("ligandSelect").value = "ball+stick";
-        create3d($("#colorSchemeSelect").val(), $("#styleSelect").val(), $("#ligandSelect").val());
+        var pdbId = [[${structure.getPdbId()}]];
+
+        create3d($("#colorSchemeSelect").val(), $("#styleSelect").val(), $("#ligandSelect").val(), pdbId);
     } );
+    /*]]>*/
 </script>
 <div th:insert="~{fragments/header :: header}"></div>
-<div class="container-fluid">
+<div class="container">
+
     <style>
         #viewport3d { height: 200px;}
         @media (min-height:  450px) { #viewport3d { height: 250px; } }

@@ -15,6 +15,8 @@ import java.util.Map;
 @Controller
 public class GeneViewController {
 
+    private static final String ENSEMBLEGENE = "ENSG";
+
     private final GeneRepository geneRepository;
 
     public GeneViewController(GeneRepository geneRepository) {
@@ -28,11 +30,19 @@ public class GeneViewController {
         if (geneAccession.isEmpty()){
             model.addAttribute("genes",geneRepository.findAll());
             return "genelist";
-       }
-
-        attr.put("gene",geneRepository.findByGeneAccession(geneAccession));
+        }
+        if(geneAccession.length() == 15 && geneAccession.toUpperCase().startsWith(ENSEMBLEGENE)){
+            attr.put("gene",geneRepository.findByGeneAccession(geneAccession.toUpperCase()));
+        }else{
+            attr.put("gene", geneRepository.findByGeneName(geneAccession));
+            if(attr.get("gene") == null || attr.get("gene").equals("null")){
+                attr.put("gene", geneRepository.findByGeneName(geneAccession.toUpperCase()));
+            }
+            if(attr.get("gene") == null || attr.get("gene").equals("null")){
+                attr.put("gene", geneRepository.findByGeneName(geneAccession.toLowerCase()));
+            }
+        }
         model.addAllAttributes(attr);
         return "geneview";
     }
-
 }

@@ -32,4 +32,7 @@ public class TranscriptsFoundInStructure {
     @Getter
     @Setter
     public String clusterRepresentative;
+
+    public TranscriptsFoundInStructure() {
+    }
 }

@@ -17,5 +17,8 @@ public interface GeneRepository extends PagingAndSortingRepository<Gene,Integer>
     @RestResource(path = "filterbyaccession")
     Gene findByGeneAccession(@RequestParam String accession);
 
+    @RestResource(path = "filterbyname")
+    Gene findByGeneName(@RequestParam String geneName);
+
 
 }
