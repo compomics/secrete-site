@@ -68,13 +68,8 @@ public class Transcript implements Serializable {
 
     private String secretionStatus;
 
-    @ManyToMany
-    @JoinTable(
-            name="translation_products",
-            joinColumns = @JoinColumn(name = "transcript_id"),
-            inverseJoinColumns = @JoinColumn(name = "protein_id")
-    )
-    private Set<Protein> proteinProducts;
+    @OneToMany
+    private Set<TranslationProduct> proteinProducts;
 
     /**
      * private String proteinProduct

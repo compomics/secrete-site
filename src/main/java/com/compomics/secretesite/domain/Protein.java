@@ -32,8 +32,8 @@ public class Protein {
     private Set<ProteinDomain> domainsContainedInProtein;
 
 
-    @ManyToMany(mappedBy = "proteinProducts")
+    @OneToMany(mappedBy = "proteinProducts")
     @Column(name = "translation_products")
-    private Set<Transcript> parent_transcripts;
+    private Set<TranslationProduct> parent_transcripts;
 
 }
