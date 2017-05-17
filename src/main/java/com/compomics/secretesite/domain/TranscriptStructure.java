@@ -22,7 +22,7 @@ public class TranscriptStructure {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "transcript_structure_id")
-    private Integer transcript_structure_id;
+    private Integer transcriptStructureId;
 
     @OneToMany(mappedBy = "transcriptstructure")
     private Set<TranscriptsFoundInStructure> transcriptscontained = new HashSet<>();
@@ -38,4 +38,7 @@ public class TranscriptStructure {
     private Integer numberOfMatchedResidues;
 
     private Double identityScore;
+
+    public TranscriptStructure() {
+    }
 }
