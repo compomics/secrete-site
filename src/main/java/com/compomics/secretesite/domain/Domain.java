@@ -5,9 +5,8 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.hibernate.annotations.NaturalId;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -21,6 +20,7 @@ import java.util.Set;
 public class Domain {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer domain_id;
 
     @NaturalId
@@ -29,7 +29,7 @@ public class Domain {
     private String domainName;
 
     @OneToMany(mappedBy = "domain")
-    private Set<ProteinDomain> proteinsContainingDomain;
+    private Set<ProteinDomain> proteinsContainingDomain = new HashSet<>();
 
 
 }

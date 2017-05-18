@@ -16,8 +16,8 @@ import java.util.Set;
  */
 @Data
 @Entity
-@EqualsAndHashCode(exclude = {"parentGene","foundIn","expressableIn","earlyFoldingLocations"})
-@ToString(exclude = {"parentGene","foundIn","expressableIn","earlyFoldingLocations"})
+@EqualsAndHashCode(exclude = {"parentGene","foundIn","expressableIn","earlyFoldingLocations","proteinProducts"})
+@ToString(exclude = {"parentGene","foundIn","expressableIn","earlyFoldingLocations","proteinProducts"})
 public class Transcript implements Serializable {
 
     /**
@@ -68,8 +68,8 @@ public class Transcript implements Serializable {
 
     private String secretionStatus;
 
-    @OneToMany
-    private Set<TranslationProduct> proteinProducts;
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<TranslationProduct> proteinProducts = new HashSet<>();
 
     /**
      * private String proteinProduct
@@ -82,7 +82,7 @@ public class Transcript implements Serializable {
     public Transcript() {
     }
 
-    public Transcript(String ensembleTranscriptAccession, String transcript_sequence, Integer sequence_end, Integer sequence_start, Gene parentGene) {
+    public Transcript(String ensembleTranscriptAccession, String transcript_sequence, Integer sequence_start,Integer sequence_end, Gene parentGene) {
         this.ensembleTranscriptAccession = ensembleTranscriptAccession;
         this.sequence_start = sequence_start;
         this.sequence_end = sequence_end;

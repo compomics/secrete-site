@@ -6,6 +6,7 @@ import lombok.ToString;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -20,6 +21,7 @@ public class Protein {
 
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer protein_id;
 
     @NaturalId
@@ -28,12 +30,12 @@ public class Protein {
     @Column(length = 2000)
     private String proteinSequence;
 
-    @OneToMany(mappedBy = "protein")
-    private Set<ProteinDomain> domainsContainedInProtein;
+    @OneToMany(mappedBy = "protein",cascade = CascadeType.ALL)
+    private Set<ProteinDomain> domainsContainedInProtein = new HashSet<>();
 
 
-    @OneToMany(mappedBy = "proteinProducts")
+    @OneToMany(mappedBy = "proteinProduct")
     @Column(name = "translation_products")
-    private Set<TranslationProduct> parent_transcripts;
+    private Set<TranslationProduct> parent_transcripts = new HashSet<>();
 
 }

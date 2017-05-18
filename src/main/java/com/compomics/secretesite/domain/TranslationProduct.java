@@ -1,12 +1,8 @@
 package com.compomics.secretesite.domain;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 /**
  * Created by davy on 5/12/2017.
@@ -14,20 +10,17 @@ import javax.persistence.ManyToOne;
 
 @Data
 @Entity
-@EqualsAndHashCode(exclude = {"proteinProduct","parentTranscript"})
-@ToString(exclude = {"proteinProduct","parentTranscript"})
 public class TranslationProduct {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer translationproductid;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(referencedColumnName = "protein_id", name = "l_protein_id")
     private Protein proteinProduct;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(referencedColumnName = "transcript_id",name = "l_transcript_id")
     private Transcript parentTranscript;
-
-    private Integer transcriptStart;
-
-    private Integer transcriptEnd;
 }

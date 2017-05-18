@@ -20,7 +20,7 @@ public class TranscriptEarlyFolding {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer transcript_earlyFolding_id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "transcript_id", nullable = false)
     private Transcript transcript;
 

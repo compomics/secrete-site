@@ -2,10 +2,7 @@ package com.compomics.secretesite.domain;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 /**
  * Created by davy on 5/10/2017.
@@ -15,13 +12,14 @@ import javax.persistence.ManyToOne;
 public class ProteinDomain {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer protein_domain_id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "l_domain_id",referencedColumnName = "domain_id")
     private Domain domain;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "l_protein_id",referencedColumnName = "protein_id")
     private Protein protein;
 
