@@ -59,4 +59,7 @@ public class Gene {
         this.geneName = geneName;
         this.geneSequence = geneSequence;
     }
+
+    public Gene() {
+    }
 }

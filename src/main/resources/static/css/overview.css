@@ -3,3 +3,7 @@
     max-height: 300px;
     max-width: 30%;
 }
+
+.panel-default > .panel-heading-custom {
+    background: #ededed !important;
+}

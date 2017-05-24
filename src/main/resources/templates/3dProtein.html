@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title>NGL @ arose.github.io</title>
+    <title>Secrete-site</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <link rel="stylesheet" href="css/font-awesome.min.css" />
@@ -10,6 +10,7 @@
     <link rel="subresource" href="css/light.css" />
     <link th:href="@{/css/bootstrap.min.css}"
           rel="stylesheet" media="screen" />
+    <script src="js/myGenie.js"></script>
 </head>
 
 <body>
@@ -27,8 +28,98 @@
 <script th:src="@{/js/jquery-3.2.1.min.js}"></script>
 <script th:src="@{/js/bootstrap.min.js}"></script>
 
-<script>
-    // picking message
+<div th:insert="~{fragments/header :: header}"></div>
+<div class="container">
+    <div class="row">
+        <div id="alertMsg" class="alert alert-info alert-dismissible" role="alert" style="width: 73%; margin-left: 1%;">
+            <div style="margin-bottom:15px;"><button type="button" class="close" data-dismiss="alert" aria-label="Close" ><span aria-hidden="true">&#215;</span></button></div>
+            Use your mouse to drag, rotate, and zoom in and out of the structure. Click to identify atoms and bonds.
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div id="pickingInfo"></div>
+                <div  id="viewport3d" style="width: 100%; border-right:1px solid #5E6973;"></div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default ">
+        <div class="panel-heading">Display Settings</div>
+        <div class="panel-body form-horizontal" style="padding: 1px;">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label" for="styleSelect" style="text-align: left">
+                            Style<span class="fa fa-question-circle ngl-ui-help" data-toggle="tooltip" data-placement="top" title="View the structure in different presentation styles"></span>
+                        </label>
+                        <div class="col-sm-8">
+                            <select id="styleSelect" class="form-control input-sm">
+                                <option value="">None</option>
+                                <option value="backbone">Backbone</option>
+                                <option value="surface">Surface</option>
+                                <option value="cartoon">Cartoon</option>
+                                <option value="spacefill">Spacefill</option>
+                                <option value="licorice">Licorice</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label" for="colorSchemeSelect" style="text-align: left">
+                            Color<span class="fa fa-question-circle ngl-ui-help" data-toggle="tooltip" data-placement="top" title="Color the structure in different schemes"></span>
+                        </label>
+                        <div class="col-sm-8">
+                            <select id="colorSchemeSelect" class="form-control input-sm">
+                                <option value="residueindex">Rainbow</option>
+                                <option value="chainindex">By Chain</option>
+                                <option value="element">By Element</option>
+                                <option value="bfactor">By B-factor</option>
+                                <option value="sstruc">By Secondary Structure</option>
+                                <option value="custom">By Custom</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label" for="ligandSelect" style="text-align: left">
+                            Ligand<span class="fa fa-question-circle ngl-ui-help" data-toggle="tooltip" data-placement="top" title="Change ligand presentation style"></span>
+                        </label>
+                        <div class="col-sm-8">
+                            <select id="ligandSelect" class="form-control input-sm">
+                                <option value="">None</option>
+                                <option value="ball+stick">Ball & Stick</option>
+                                <option value="spacefill">Spacefill</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group checkbox-group">
+                        <div class="col-sm-6 checkbox">
+                            <label>
+                                <input type="checkbox" id="spinCheckbox"/>
+                                Spin<span class="fa fa-question-circle ngl-ui-help" data-toggle="tooltip" data-placement="top" title="Start/stop spinning the structure along the y-axis"></span>
+                            </label>
+                        </div>
+
+                        <div class="col-sm-6 checkbox" style="padding-top: 0px;">
+                            <div class="btn btn-primary btn-sm" id="centerButton">
+                                Center<span class="fa fa-question-circle ngl-ui-help" data-toggle="tooltip" data-placement="top" title="Reset molecule position"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<!--/*@thymesVar id="structure" type="com.compomics.secretesite.domain.TranscriptStructure"*/-->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
     NGL.getPickingMessage = function( d, prefix ){
         var msg = "nothing";
         if( d ){
@@ -77,23 +168,20 @@
         if(schemeValue != 'custom'){
             return schemeValue
         }else{
-            var schemeId = NGL.ColormakerRegistry.addScheme( function( params ){
-                this.atomColor = function( atom ){
-                    if( atom.serial < 1000 && atom.serial >500){
-                        return 0xFF0000;  // red
-                    }else{
-                        return 0xC0C0C0;  // grey
-                    }
-                };
-            } );
+            var schemeId = NGL.ColormakerRegistry.addSelectionScheme( [
+
+                [ "red", "10-20 and :A" ]
+            ]);
+
             return schemeId;
         }
     }
-    function loadFile(stage, schemeId, molecularRepresentation, ligand){
-        stage.loadFile("http://files.rcsb.org/view/4HHB.pdb" ).then( function( o ){
+    function loadFile(stage, schemeValue, molecularRepresentation, ligand, pdbId){
+        stage.loadFile("http://files.rcsb.org/view/" +pdbId+ ".pdb" ).then( function( o ){
+
             if(molecularRepresentation != ""){
                 o.addRepresentation( molecularRepresentation, {
-                    colorScheme: schemeId,
+                    colorScheme : schemeValue,
                     useWorker: false
                 } );
             }
@@ -112,9 +200,17 @@
         });
     }
 
-    function create3d(schemeId, molecularRepresentation, ligand){
-        var stage = new NGL.Stage( "viewport3d" );
-        loadFile(stage, schemeId, molecularRepresentation, ligand);
+    function createMulti3d(schemeId, molecularRepresentation, ligand, pdbs) {
+
+        for(i=0; i<pdbs.length; i++) {
+            var stage = new NGL.Stage("port" +i);
+            create3d(schemeId, molecularRepresentation, ligand, pdbs[i], stage);
+        }
+    }
+
+    function create3d(schemeId, molecularRepresentation, ligand, pdbId, stage){
+
+        loadFile(stage, schemeId, molecularRepresentation, ligand, pdbId);
         var selectedStyle = $("#styleSelect").val();
         document.getElementById("colorSchemeSelect").addEventListener( "change", function( event ){
             var targetElm = event.target;
@@ -125,7 +221,8 @@
                 }
             }
             stage.compList[0].addRepresentation(selectedStyle, {
-                colorScheme: createCustomScheme(value)
+                colorScheme: createCustomScheme(value),
+                color : createCustomScheme(value)
             });
 
         } );
@@ -192,125 +289,87 @@
         document.getElementById("colorSchemeSelect").value = "residueindex";
         document.getElementById("styleSelect").value = "cartoon";
         document.getElementById("ligandSelect").value = "ball+stick";
-        create3d($("#colorSchemeSelect").val(), $("#styleSelect").val(), $("#ligandSelect").val());
+        var pdbs = ["4HHB", "5EZR", "5UEW"];
+        for(counter=0; counter<pdbs.length; counter++){
+            var width = parseInt($('#viewport3d').css('width'))/pdbs.length;
+            jQuery('<div/>', {
+                id: 'label'+ counter,
+                text: pdbs[counter],
+                addClass : 'labeldiv'
+            }).css("width", width-pdbs.length).appendTo('#viewport3d');
+            $('#label' + counter).wrapInner('<a href="http://files.rcsb.org/view/' + pdbs[counter] + '.pdb" target="_blank"/>');
+        }
+        for(counter=0; counter<pdbs.length; counter++){
+            var width = parseInt($('#viewport3d').css('width'))/pdbs.length;
+            jQuery('<div/>', {
+                id: 'port'+ counter,
+
+                addClass : 'portdiv'
+            }).css("width", width-pdbs.length).appendTo('#viewport3d');
+
+        }
+
+        var pdbId = "4HHB";
+
+
+        createMulti3d($("#colorSchemeSelect").val(), $("#styleSelect").val(), $("#ligandSelect").val(), pdbs);
     } );
+    /*]]>*/
 </script>
-<div th:insert="~{fragments/header :: header}"></div>
-<div class="container-fluid">
-    <style>
-        #viewport3d { height: 200px;}
-        @media (min-height:  450px) { #viewport3d { height: 250px; } }
-        @media (min-height:  500px) { #viewport3d { height: 300px; } }
-        @media (min-height:  550px) { #viewport3d { height: 350px; } }
-        @media (min-height:  600px) { #viewport3d { height: 400px; } }
-        @media (min-height:  650px) { #viewport3d { height: 500px; } }
-        @media (min-height:  700px) { #viewport3d { height: 500px; } }
-        @media (min-height:  750px) { #viewport3d { height: 500px; } }
-        @media (min-height:  800px) { #viewport3d { height: 550px; } }
-        @media (min-height:  850px) { #viewport3d { height: 550px; } }
-        @media (min-height:  900px) { #viewport3d { height: 600px; } }
-        @media (min-height:  950px) { #viewport3d { height: 650px; } }
-        @media (min-height: 1000px) { #viewport3d { height: 700px; } }
-        @media (min-height: 1050px) { #viewport3d { height: 750px; } }
-        @media (min-height: 1100px) { #viewport3d { height: 800px; } }
+<style>
+
+    #viewport3d { height: 100px;}
+    @media (min-height:  450px) { #viewport3d { height: 150px; }}
+    @media (min-height:  500px) { #viewport3d { height: 200px; }}
+    @media (min-height:  550px) { #viewport3d { height: 250px; }}
+    @media (min-height:  600px) { #viewport3d { height: 300px; }}
+    @media (min-height:  650px) { #viewport3d { height: 400px; }}
+    @media (min-height:  700px) { #viewport3d { height: 400px; }}
+    @media (min-height:  750px) { #viewport3d { height: 400px; }}
+    @media (min-height:  800px) { #viewport3d { height: 450px; }}
+    @media (min-height:  850px) { #viewport3d { height: 450px; }}
+    @media (min-height:  900px) { #viewport3d { height: 500px; }}
+    @media (min-height:  950px) { #viewport3d { height: 550px; }}
+    @media (min-height: 1000px) { #viewport3d { height: 600px; }}
+    @media (min-height: 1050px) { #viewport3d { height: 650px; }}
+    @media (min-height: 1100px) { #viewport3d { height: 700px; }}
 
 
-        #pickingInfo {
-            position: absolute;
-            margin-left: 5px;
-            padding: 6px;
-            top: 50px;
-            z-index: 100;
-            background-color: rgba( 255, 255, 255, 0.7 );
-        }
-        .panel > .panel-heading {
-            background-color: #5E6973;
-            color: white;
-        }
-        .panel-default {
-            border-color: #5e5e5e;
-            border: 1px solid transparent;
-        }
-    </style>
-    <div class="row">
-        <div id="alertMsg" class="alert alert-info alert-dismissible" role="alert" style="width: 73%; margin-left: 1%;">
-            <div style="margin-bottom:15px;"><button type="button" class="close" data-dismiss="alert" aria-label="Close" ><span aria-hidden="true">&#215;</span></button></div>
-            Use your mouse to drag, rotate, and zoom in and out of the structure. Click to identify atoms and bonds.
-        </div>
-        <div class="col-lg-9 col-md-8 col-sm-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">THE CRYSTAL STRUCTURE OF HUMAN DEOXYHAEMOGLOBIN AT 1.74 ANGSTROMS RESOLUTION</div>
-                <div class="panel-body" style="padding: 1px;">
-                    <div id="viewport3d" style="min-width: 100%; padding: 1px;"></div>
-                    <div id="pickingInfo"></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-4 col-sm-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">Display Settings</div>
-                <div class="panel-body form-horizontal" style="padding: 1px;">
-                    <div class="form-group">
-                        <label class="col-sm-4 control-label" for="styleSelect" style="text-align: left">
-                            Style<span class="fa fa-question-circle ngl-ui-help" data-toggle="tooltip" data-placement="top" title="View the structure in different presentation styles"></span>
-                        </label>
-                        <div class="col-sm-8">
-                            <select id="styleSelect" class="form-control input-sm">
-                                <option value="">None</option>
-                                <option value="backbone">Backbone</option>
-                                <option value="surface">Surface</option>
-                                <option value="cartoon">Cartoon</option>
-                                <option value="spacefill">Spacefill</option>
-                                <option value="licorice">Licorice</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-4 control-label" for="colorSchemeSelect" style="text-align: left">
-                            Color<span class="fa fa-question-circle ngl-ui-help" data-toggle="tooltip" data-placement="top" title="Color the structure in different schemes"></span>
-                        </label>
-                        <div class="col-sm-8">
-                            <select id="colorSchemeSelect" class="form-control input-sm">
-                                <option value="residueindex">Rainbow</option>
-                                <option value="chainindex">By Chain</option>
-                                <option value="element">By Element</option>
-                                <option value="bfactor">By B-factor</option>
-                                <option value="sstruc">By Secondary Structure</option>
-                                <option value="custom">By Custom</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-4 control-label" for="ligandSelect" style="text-align: left">
-                            Ligand<span class="fa fa-question-circle ngl-ui-help" data-toggle="tooltip" data-placement="top" title="Change ligand presentation style"></span>
-                        </label>
-                        <div class="col-sm-8">
-                            <select id="ligandSelect" class="form-control input-sm">
-                                <option value="">None</option>
-                                <option value="ball+stick">Ball & Stick</option>
-                                <option value="spacefill">Spacefill</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group checkbox-group">
-                        <div class="col-sm-6 checkbox">
-                            <label>
-                                <input type="checkbox" id="spinCheckbox"/>
-                                Spin<span class="fa fa-question-circle ngl-ui-help" data-toggle="tooltip" data-placement="top" title="Start/stop spinning the structure along the y-axis"></span>
-                            </label>
-                        </div>
+    #pickingInfo {
+        margin-left: 5px;
+        height: 20px;
+        z-index: 100;
+        background-color: rgba( 255, 255, 255, 0.7 );
+    }
+    .panel > .panel-heading {
+        background-color: #5E6973;
+        color: white;
+    }
+    .panel-default {
+        border-color: #5e5e5e;
+        border: 1px solid transparent;
+    }
 
-                        <div class="col-sm-6 checkbox" style="padding-top: 0px;">
-                            <div class="btn btn-primary btn-sm" id="centerButton">
-                                Center<span class="fa fa-question-circle ngl-ui-help" data-toggle="tooltip" data-placement="top" title="Reset molecule position"></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+    .portdiv{
+        background-color: #FFF;
+        display: inline-block;
+        text-align: center;
+        border:1px solid #5E6973;
+        margin-right: 1px;
+        margin-bottom: 20px;
+        height : inherit;
+    }
+    .labeldiv{
+        background-color: #FFF;
+        display: inline-block;
+        text-align: center;
+        border:1px solid #5E6973;
+        margin-right: 1px;
+    }
+
+
+</style>
+<h1></h1>
 <div th:insert="~{fragments/footer :: footer}"></div>
 </body>
 </html>

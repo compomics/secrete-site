@@ -2,14 +2,62 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Index</title>
+    <title>Secrete-site</title>
 
     <link th:href="@{/css/bootstrap.min.css}"
           rel="stylesheet" media="screen" />
-
+    <script src="//cdn.bio.sh/msa/latest/msa.min.gz.js"></script>
+    <script th:src="@{/js/jquery-3.2.1.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
 </head>
 <body>
 <div th:insert="~{fragments/header :: header}"></div>
+
+<div id="msa" style="height: 100px">Loading Multiple Alignment...</div>
+<script th:inline="javascript">
+    //<![CDATA[
+    function proteinView() {
+
+        var url = 'http://www.uniprot.org/uniprot/P04637.fasta';
+
+        $.ajax({
+            type: 'GET',
+            url: url,
+            dataType: 'text',
+            success: function (data) {
+                var label = data.split("|")[2].split(" ")[0];
+
+                var seqs = msa.io.fasta.parse(data);
+
+                var m = msa({
+                    el: document.getElementById("msa"),
+                    seqs: seqs
+                });
+
+                var features = msa.io.gff.parseSeqs(label +" . gene	5 	35	.	.  .  Name=Transcript 1;Color=#ff8080");
+                m.seqs.addFeatures(features);
+                m.g.vis.set("labelId", false);
+                m.g.vis.set("scaleslider", true);
+
+
+                m.render();
+
+            },
+
+            error: function (e) {
+                console.log(e.message);
+            }
+        });
+    }
+    document.addEventListener( "DOMContentLoaded", function(){
+        setTimeout(function(){proteinView();}, 2000);
+
+    });
+    //]]>
+</script>
+
+
+<div th:insert="~{fragments/footer :: footer}"></div>
 
 </body>
 </html>

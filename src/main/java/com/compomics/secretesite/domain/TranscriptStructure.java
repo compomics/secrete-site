@@ -1,13 +1,13 @@
-package com.compomics.secretesite.domain;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import org.hibernate.annotations.NaturalId;
+        package com.compomics.secretesite.domain;
 
-import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+        import lombok.Data;
+        import lombok.EqualsAndHashCode;
+        import lombok.ToString;
+
+        import javax.persistence.*;
+        import java.util.HashSet;
+        import java.util.Set;
 
 /**
  * Created by davy on 4/20/2017.
@@ -22,7 +22,7 @@ public class TranscriptStructure {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "transcript_structure_id")
-    private Integer transcript_structure_id;
+    private Integer transcriptStructureId;
 
     @OneToMany(mappedBy = "transcriptstructure")
     private Set<TranscriptsFoundInStructure> transcriptscontained = new HashSet<>();
@@ -38,4 +38,7 @@ public class TranscriptStructure {
     private Integer numberOfMatchedResidues;
 
     private Double identityScore;
+
+    public TranscriptStructure() {
+    }
 }
