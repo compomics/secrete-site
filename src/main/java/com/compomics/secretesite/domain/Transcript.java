@@ -69,7 +69,7 @@ public class Transcript implements Serializable {
     private String secretionStatus;
 
     @OneToMany(cascade = CascadeType.ALL)
-    private Set<TranslationProduct> proteinProducts = new HashSet<>();
+    private Set<TranscriptProtein> proteinProducts = new HashSet<>();
 
     /**
      * private String proteinProduct

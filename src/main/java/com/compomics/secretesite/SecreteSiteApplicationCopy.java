@@ -3,15 +3,11 @@ package com.compomics.secretesite;
 
 import com.compomics.secretesite.domain.*;
 import com.compomics.secretesite.domain.repositories.GeneRepository;
-import com.compomics.secretesite.domain.repositories.ProteinRepository;
 import com.compomics.secretesite.domain.repositories.SpeciesRepository;
-import com.compomics.secretesite.domain.repositories.TranscriptRepository;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.io.File;
 import java.io.FileReader;
@@ -528,7 +524,7 @@ public class SecreteSiteApplicationCopy {
                         List<Transcript> transcriptsofinterest = transcripts.get(filteredlines[1]);
                         transcriptsofinterest.forEach(transcript -> {
 
-                                    TranslationProduct product = new TranslationProduct();
+                                    TranscriptProtein product = new TranscriptProtein();
                                     product.setProteinProduct(aProtein);
                                     aProtein.getParent_transcripts().add(product);
                                     transcript.getProteinProducts().add(product);

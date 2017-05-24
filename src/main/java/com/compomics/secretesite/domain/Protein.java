@@ -27,15 +27,12 @@ public class Protein {
     @NaturalId
     private String proteinAccession;
 
-    @Column(length = 2000)
-    private String proteinSequence;
-
     @OneToMany(mappedBy = "protein",cascade = CascadeType.ALL)
     private Set<ProteinDomain> domainsContainedInProtein = new HashSet<>();
 
 
     @OneToMany(mappedBy = "proteinProduct")
     @Column(name = "translation_products")
-    private Set<TranslationProduct> parent_transcripts = new HashSet<>();
+    private Set<TranscriptProtein> parent_transcripts = new HashSet<>();
 
 }

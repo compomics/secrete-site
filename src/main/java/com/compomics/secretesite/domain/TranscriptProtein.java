@@ -10,7 +10,7 @@ import javax.persistence.*;
 
 @Data
 @Entity
-public class TranslationProduct {
+public class TranscriptProtein {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
