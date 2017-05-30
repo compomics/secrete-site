@@ -1,6 +1,8 @@
 package com.compomics.secretesite.domain;
 
 import com.compomics.secretesite.controllers.services.SequenceService;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
 import javax.persistence.*;
@@ -16,8 +18,9 @@ import java.util.Set;
  */
 @Data
 @Entity
-@EqualsAndHashCode(exclude = {"parentGene","foundIn","expressableIn","earlyFoldingLocations","proteinProducts"})
-@ToString(exclude = {"parentGene","foundIn","expressableIn","earlyFoldingLocations","proteinProducts"})
+@EqualsAndHashCode(exclude = {"parentGene","foundIn","expressableIn","earlyFoldingLocations","transcriptProteins"})
+@ToString(exclude = {"parentGene","foundIn","expressableIn","earlyFoldingLocations","transcriptProteins"})
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@transcriptId")
 public class Transcript implements Serializable {
 
     /**
@@ -25,22 +28,22 @@ public class Transcript implements Serializable {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer transcript_id;
+    private Integer transcriptId;
 
     /**
      * the ensembl identifier for the transcript
      */
     private String ensembleTranscriptAccession;
 
-    private Integer sequence_start;
+    private Integer sequenceStart;
 
-    private Integer sequence_end;
+    private Integer sequenceEnd;
 
     /**
      * cDNA sequence of the experimental transcript
      */
     @Column(length = 12200)
-    private String transcript_sequence;
+    private String transcriptSequence;
 
     /**
      * the gene this transcript has been mapped back to
@@ -49,45 +52,38 @@ public class Transcript implements Serializable {
     @JoinColumn(name = "gene_id", nullable = false)
     private Gene parentGene;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "transcripts_expressable_in_species",
-            joinColumns = @JoinColumn(name = "transcript_id"),
+            joinColumns = @JoinColumn(name = "transcriptId"),
             inverseJoinColumns = @JoinColumn(name = "species_id")
     )
     private Set<Species> expressableIn = new HashSet<>(0);
 
-    @OneToMany(mappedBy = "transcript",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "transcript",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<TranscriptsFoundInStructure> foundIn = new HashSet<>();
 
-    @Transient
-    private static SequenceService sequenceService;
 
-    @OneToMany(mappedBy = "transcript",cascade = CascadeType.ALL)
+
+    @OneToMany(mappedBy = "transcript",cascade = CascadeType.ALL , fetch = FetchType.LAZY)
     private Set<TranscriptEarlyFolding>  earlyFoldingLocations = new HashSet<>();
 
     private String secretionStatus;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private Set<TranscriptProtein> proteinProducts = new HashSet<>();
+    @OneToMany(mappedBy = "parentTranscript",cascade = CascadeType.ALL)
+    private Set<TranscriptProtein> transcriptProteins = new HashSet<>();
 
-    /**
-     * private String proteinProduct
-     */
-     @Transient
-     public String getProteinProduct(){
-          return sequenceService.translateDNAtoProtein(this.transcript_sequence);
-      }
 
-    public Transcript() {
-    }
 
     public Transcript(String ensembleTranscriptAccession, String transcript_sequence, Integer sequence_start,Integer sequence_end, Gene parentGene) {
         this.ensembleTranscriptAccession = ensembleTranscriptAccession;
-        this.sequence_start = sequence_start;
-        this.sequence_end = sequence_end;
-        this.transcript_sequence = transcript_sequence;
+        this.sequenceStart = sequence_start;
+        this.sequenceEnd = sequence_end;
+        this.transcriptSequence = transcript_sequence;
         this.parentGene = parentGene;
+    }
+
+    public Transcript() {
     }
 }
 

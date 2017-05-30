@@ -13,10 +13,10 @@ import javax.persistence.Id;
 public class ProteinCluster {
 
     @Id
-    private Integer proteincluster_id;
+    private Integer proteinClusterId;
 
-    private Integer protein_rep;
+    private Integer proteinRep;
 
-    private Integer protein_cluster_member;
+    private Integer proteinClusterMember;
 
 }

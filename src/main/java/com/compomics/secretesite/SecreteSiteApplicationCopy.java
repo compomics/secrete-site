@@ -134,7 +134,7 @@ public class SecreteSiteApplicationCopy {
 
                     transcript.getExpressableIn().add(pichiaPastoris);
 
-                    gene.getTranscripts().add(transcript);
+          //          gene.getTranscripts().add(transcript);
 
 
                     transcriptStructureMap.get(Integer.parseInt(splitline[0])).forEach(e -> {
@@ -239,9 +239,9 @@ public class SecreteSiteApplicationCopy {
 
                     transcript.setSecretionStatus("depleted");
 
-                    if (!gene.getTranscripts().contains((transcript))) {
-                        gene.getTranscripts().add(transcript);
-                    }
+          //          if (!gene.getTranscripts().contains((transcript))) {
+       //                 gene.getTranscripts().add(transcript);
+        //            }
 
 
                     transcriptStructureMap.get(Integer.parseInt(splitline[0])).forEach(e -> {
@@ -348,17 +348,17 @@ public class SecreteSiteApplicationCopy {
 
                     transcripts.put(transcript.getEnsembleTranscriptAccession(),transcript);
 
-                    List<Transcript> genetranscripts = gene.getTranscripts()
-                            .stream()
-                            .filter(e -> e.getEnsembleTranscriptAccession().equals(transcript.getEnsembleTranscriptAccession()) && e.getTranscript_sequence().equals(transcript.getTranscript_sequence()))
-                            .collect(Collectors.toList());
+              //      List<Transcript> genetranscripts = gene.getTranscripts()
+           //                 .stream()
+           //                 .filter(e -> e.getEnsembleTranscriptAccession().equals(transcript.getEnsembleTranscriptAccession()) && e.getTranscriptSequence().equals(transcript.getTranscriptSequence()))
+           //                .collect(Collectors.toList());
 
-                    if (!genetranscripts.isEmpty()) {
-                        genetranscripts.forEach(transcript1 -> transcript1.getExpressableIn().add(saccharomyces));
-                    } else {
-                        transcript.getExpressableIn().add(saccharomyces);
-                        gene.getTranscripts().add(transcript);
-                    }
+             //       if (!genetranscripts.isEmpty()) {
+           //            genetranscripts.forEach(transcript1 -> transcript1.getExpressableIn().add(saccharomyces));
+            //        } else {
+            //            transcript.getExpressableIn().add(saccharomyces);
+            //            gene.getTranscripts().add(transcript);
+           //         }
 
 
                     transcriptStructureMap.get(Integer.parseInt(splitline[0])).forEach(e -> {
@@ -462,15 +462,15 @@ public class SecreteSiteApplicationCopy {
 
                     transcripts.put(transcript.getEnsembleTranscriptAccession(),transcript);
 
-                    List<Transcript> genetranscripts = gene.getTranscripts()
-                            .stream()
-                            .filter(e -> e.equals(transcript))
-                            .collect(Collectors.toList());
+           //         List<Transcript> genetranscripts = gene.getTranscripts()
+            //                .stream()
+          //                  .filter(e -> e.equals(transcript))
+          //                  .collect(Collectors.toList());
 
-                    if (genetranscripts.isEmpty()) {
-                        transcript.getExpressableIn().add(saccharomyces);
-                        gene.getTranscripts().add(transcript);
-                    }
+           //         if (genetranscripts.isEmpty()) {
+         //               transcript.getExpressableIn().add(saccharomyces);
+         //               gene.getTranscripts().add(transcript);
+          //          }
 
                     transcriptStructureMap.get(Integer.parseInt(splitline[0])).forEach(e -> {
                         TranscriptsFoundInStructure found = new TranscriptsFoundInStructure();
@@ -519,15 +519,15 @@ public class SecreteSiteApplicationCopy {
                         aProteinDomain.setDomainStart(Integer.parseInt(filteredlines[4]));
 
                         aProtein.getDomainsContainedInProtein().add(aProteinDomain);
-                        aDomain.getProteinsContainingDomain().add(aProteinDomain);
+                   //     aDomain.getProteinsContainingDomain().add(aProteinDomain);
 
                         List<Transcript> transcriptsofinterest = transcripts.get(filteredlines[1]);
                         transcriptsofinterest.forEach(transcript -> {
 
                                     TranscriptProtein product = new TranscriptProtein();
                                     product.setProteinProduct(aProtein);
-                                    aProtein.getParent_transcripts().add(product);
-                                    transcript.getProteinProducts().add(product);
+                                    aProtein.getParentTranscripts().add(product);
+                         //           transcript.getTranscriptProteins().add(product);
                                     product.setParentTranscript(transcript);
 
 

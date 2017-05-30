@@ -32,18 +32,18 @@
             </thead>
             <tbody>
                 <th:block th:each="transcripts:${gene.getTranscripts()}">
-                    <tr data-toggle="collapse" th:attr="data-target='#accordion_'+${transcripts.getTranscript_id()}" class="clickable" th:unless="${#lists.isEmpty(transcripts.getFoundIn())}">
+                    <tr data-toggle="collapse" th:attr="data-target='#accordion_'+${transcripts.getTranscriptId()}" class="clickable" th:unless="${#lists.isEmpty(transcripts.getFoundIn())}">
                         <td><span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></td>
                         <td th:text="${transcripts.getEnsembleTranscriptAccession()}"></td>
-                        <td colspan="3" th:id="'seq_'+${transcripts.getTranscript_id()}" style="word-wrap: break-word;" >
+                        <td colspan="3" th:id="'seq_'+${transcripts.getTranscriptId()}" style="word-wrap: break-word;" >
 
                             <script th:inline="javascript">
                                 /*<![CDATA[*/
                                 document.addEventListener( "DOMContentLoaded", function(){
 
-                                    var trID = [[${transcripts.getTranscript_id()}]];
+                                    var trID = [[${transcripts.getTranscriptId()}]];
 
-                                    var seq = [[${transcripts.getTranscript_sequence()}]] ;
+                                    var seq = [[${transcripts.getTranscriptSequence()}]] ;
                                     var start = [[${transcripts.getFoundIn()[0].getTranscriptstructure().getFragmentStart()}]];
                                     var end = [[${transcripts.getFoundIn()[0].getTranscriptstructure().getFragmentEnd()}]];
                                     var structure = seq.substr(parseInt(start), parseInt(end)).fontcolor("red");
@@ -67,14 +67,14 @@
                     <tr th:if="${#lists.isEmpty(transcripts.getFoundIn())}" >
                         <td><span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span></td>
                         <td th:text="${transcripts.getEnsembleTranscriptAccession()}"></td>
-                        <td colspan="3" th:text="${transcripts.getTranscript_sequence()}" style="word-wrap: break-word;" ></td>
+                        <td colspan="3" th:text="${transcripts.getTranscriptSequence()}" style="word-wrap: break-word;" ></td>
                     </tr>
                     <tr>
                         <td colspan="1">
-                            <div th:id="'accordion_'+${transcripts.getTranscript_id()}" class="collapse" th:unless="${#lists.isEmpty(transcripts.getFoundIn())}">
+                            <div th:id="'accordion_'+${transcripts.getTranscriptId()}" class="collapse" th:unless="${#lists.isEmpty(transcripts.getFoundIn())}">
                                 <h4>PDBIDs</h4>
-                                <input th:type="hidden" th:value="${transcripts.getFoundIn()[0].getTranscriptstructure().getFragmentStart()}" th:id="'start_'+${transcripts.getTranscript_id()}">
-                                <input th:type="hidden" th:value="${transcripts.getFoundIn()[0].getTranscriptstructure().getFragmentEnd()}" th:id="'end_'+${transcripts.getTranscript_id()}">
+                                <input th:type="hidden" th:value="${transcripts.getFoundIn()[0].getTranscriptstructure().getFragmentStart()}" th:id="'start_'+${transcripts.getTranscriptId()}">
+                                <input th:type="hidden" th:value="${transcripts.getFoundIn()[0].getTranscriptstructure().getFragmentEnd()}" th:id="'end_'+${transcripts.getTranscriptId()}">
                                 <ul th:each="foundIn:${transcripts.getFoundIn()}">
                                     <li>
                                         <a th:text="${foundIn.getTranscriptstructure().getPdbId()}" th:href="@{'/3dProtein?structureId=' + ${foundIn.getTranscriptstructure().getTranscriptStructureId()}}"></a>

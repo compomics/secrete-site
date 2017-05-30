@@ -12,13 +12,13 @@
 </head>
 <body>
 <div th:insert="~{fragments/header :: header}"></div>
-
+<!--/*@thymesVar id="protein" type="com.compomics.secretesite.domain.Protein"*/-->
 <div id="msa" style="height: 100px">Loading Multiple Alignment...</div>
 <script th:inline="javascript">
     //<![CDATA[
     function proteinView() {
-
-        var url = 'http://www.uniprot.org/uniprot/P04637.fasta';
+        var accession =  [[${protein.proteinAccession}]];
+        var url = 'http://www.uniprot.org/uniprot/'+accession+'.fasta';
 
         $.ajax({
             type: 'GET',
@@ -33,8 +33,14 @@
                     el: document.getElementById("msa"),
                     seqs: seqs
                 });
-
-                var features = msa.io.gff.parseSeqs(label +" . gene	5 	35	.	.  .  Name=Transcript 1;Color=#ff8080");
+                var domain = [[${protein.domainsContainedInProtein}]];
+                alert(domain);
+                for(i=0; i<domain.length; i++){
+                    var feature = " . domain " + [[${domain[i].domainStart}]]+"  "+[[${domain[i].domainEnd}]]+
+                        "	.	.  .  Name=" + [[${domain[i].domain.domainAccession}]] + " 1;Color=#ff8080";
+                    m.seqs.addFeatures(msa.io.gff.parseSeqs(label + feature));
+                }
+                var features = msa.io.gff.parseSeqs(label +" . gene	5 	35	.	.  .  Name=Transcript 1;Color=red");
                 m.seqs.addFeatures(features);
                 m.g.vis.set("labelId", false);
                 m.g.vis.set("scaleslider", true);

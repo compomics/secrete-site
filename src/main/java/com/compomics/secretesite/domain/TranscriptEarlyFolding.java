@@ -18,10 +18,10 @@ public class TranscriptEarlyFolding {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer transcript_earlyFolding_id;
+    private Integer transcriptEarlyFoldingId;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "transcript_id", nullable = false)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "transcriptId", nullable = false)
     private Transcript transcript;
 
     private int foldingLocation;

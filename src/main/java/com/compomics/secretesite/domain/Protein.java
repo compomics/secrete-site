@@ -1,5 +1,7 @@
 package com.compomics.secretesite.domain;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -15,14 +17,15 @@ import java.util.Set;
 
 @Data
 @Entity
-@EqualsAndHashCode(exclude = {"domainsContainedInProtein","parent_transcripts"})
-@ToString(exclude = {"domainsContainedInProtein","parent_transcripts"})
+@EqualsAndHashCode(exclude = {"domainsContainedInProtein","parentTranscripts"})
+@ToString(exclude = {"domainsContainedInProtein","parentTranscripts"})
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@proteinId")
 public class Protein {
 
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer protein_id;
+    private Integer proteinId;
 
     @NaturalId
     private String proteinAccession;
@@ -31,8 +34,9 @@ public class Protein {
     private Set<ProteinDomain> domainsContainedInProtein = new HashSet<>();
 
 
-    @OneToMany(mappedBy = "proteinProduct")
-    @Column(name = "translation_products")
-    private Set<TranscriptProtein> parent_transcripts = new HashSet<>();
+    @OneToMany(mappedBy = "proteinProduct",cascade = CascadeType.ALL)
+    private Set<TranscriptProtein> parentTranscripts = new HashSet<>();
 
+    public Protein() {
+    }
 }
