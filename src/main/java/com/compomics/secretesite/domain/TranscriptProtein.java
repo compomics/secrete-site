@@ -23,4 +23,8 @@ public class TranscriptProtein {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(referencedColumnName = "transcript_id",name = "l_transcript_id")
     private Transcript parentTranscript;
+
+    private Integer transcriptStart;
+
+    private Integer transcriptEnd;
 }

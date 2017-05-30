@@ -7,7 +7,9 @@ import com.compomics.secretesite.domain.repositories.SpeciesRepository;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.io.File;
 import java.io.FileReader;
@@ -21,8 +23,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-//@SpringBootApplication
-//@EnableAsync
+@SpringBootApplication
+@EnableAsync
 public class SecreteSiteApplicationCopy {
 
     private SpeciesRepository speciesRepository;
@@ -130,7 +132,7 @@ public class SecreteSiteApplicationCopy {
 
                     transcripts.put(transcript.getEnsembleTranscriptAccession(),transcript);
 
-                    transcript.setSecretionStatus("enriched");
+                    transcript.setSecretionstatus("enriched");
 
                     transcript.getExpressableIn().add(pichiaPastoris);
 
@@ -237,7 +239,7 @@ public class SecreteSiteApplicationCopy {
 
                     transcripts.put(transcript.getEnsembleTranscriptAccession(),transcript);
 
-                    transcript.setSecretionStatus("depleted");
+                    transcript.setSecretionstatus("depleted");
 
                     if (!gene.getTranscripts().contains((transcript))) {
                         gene.getTranscripts().add(transcript);
@@ -344,7 +346,7 @@ public class SecreteSiteApplicationCopy {
 
                     Transcript transcript = new Transcript(splitline[2], splitline[9], Integer.valueOf(splitline[3]), Integer.valueOf(splitline[4]), gene);
 
-                    transcript.setSecretionStatus("enriched");
+                    transcript.setSecretionstatus("enriched");
 
                     transcripts.put(transcript.getEnsembleTranscriptAccession(),transcript);
 
@@ -458,7 +460,7 @@ public class SecreteSiteApplicationCopy {
 
                     Transcript transcript = new Transcript(splitline[2], splitline[9], Integer.valueOf(splitline[3]), Integer.valueOf(splitline[4]), gene);
 
-                    transcript.setSecretionStatus("depleted");
+                    transcript.setSecretionstatus("depleted");
 
                     transcripts.put(transcript.getEnsembleTranscriptAccession(),transcript);
 
@@ -526,6 +528,8 @@ public class SecreteSiteApplicationCopy {
 
                                     TranscriptProtein product = new TranscriptProtein();
                                     product.setProteinProduct(aProtein);
+                                    product.setTranscriptStart(Integer.parseInt(filteredlines[4]));
+                                    product.setTranscriptEnd(Integer.parseInt(filteredlines[5]));
                                     aProtein.getParent_transcripts().add(product);
                                     transcript.getProteinProducts().add(product);
                                     product.setParentTranscript(transcript);
