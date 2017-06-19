@@ -23,7 +23,7 @@ create table if NOT EXISTS secretesite.hibernate_sequence
 
 create table if NOT EXISTS secretesite.species
 (
-	species_id int not null auto_increment
+	speciesId int not null auto_increment
 		primary key,
 	species_name varchar(255) null,
 	species_taxonomy_number int null,
@@ -34,12 +34,12 @@ create table if NOT EXISTS secretesite.species
 
 create table if NOT EXISTS secretesite.transcript
 (
-	transcript_id int not null auto_increment
+	transcriptId int not null auto_increment
 		primary key,
 	ensemble_transcript_accession varchar(255) null,
-	sequence_end int null,
-	sequence_start int null,
-	transcript_sequence varchar(12200) null,
+	sequenceEnd int null,
+	sequenceStart int null,
+	transcriptSequence varchar(12200) null,
 	gene_id int not null,
 	index transcript (gene_id)
 )
@@ -73,9 +73,9 @@ create table if NOT EXISTS secretesite.transcript_structure
 
 create table if NOT EXISTS secretesite.transcripts_expressable_in_species
 (
-	transcript_id int not null,
-	species_id int not null,
-	primary key (transcript_id, species_id)
+	transcriptId int not null,
+	speciesId int not null,
+	primary key (transcriptId, speciesId)
 )
 ;
 

@@ -15,21 +15,16 @@ import java.util.Set;
 
 @Entity
 @Data
-@EqualsAndHashCode(exclude = "proteinsContainingDomain")
-@ToString(exclude = "proteinsContainingDomain")
 public class Domain {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer domain_id;
+    @Column(name = "domain_id")
+    private Integer domainId;
 
     @NaturalId
     private String domainAccession;
 
     private String domainName;
-
-    @OneToMany(mappedBy = "domain")
-    private Set<ProteinDomain> proteinsContainingDomain = new HashSet<>();
-
 
 }

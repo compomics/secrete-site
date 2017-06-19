@@ -18,9 +18,9 @@ public class TranscriptEarlyFolding {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer transcript_earlyFolding_id;
+    private Integer transcriptEarlyFoldingId;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "transcript_id", nullable = false)
     private Transcript transcript;
 

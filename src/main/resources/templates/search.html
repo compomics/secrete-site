@@ -34,15 +34,11 @@
                     </div>
                     <br/>
                     <div class="input-group input-group-lg col-sm-10 col-sm-offset-1">
-                        <input type="text" class="form-control" placeholder="Gene Accession" id="geneAccession">
-                    </div>
-                    <br/>
-                    <div class="input-group input-group-lg col-sm-10 col-sm-offset-1">
-                        <input type="text" class="form-control" placeholder="Gene Name" id="geneName">
+                        <input type="text" class="form-control" placeholder="Uniprot Accession" id="uniprotAccession">
                     </div>
                     <br/>
                     <div align="center">
-                        <button type="button" class="btn btn-primary " id="btnSearchGene" style="width: 104px;">Search
+                        <button type="button" class="btn btn-primary " id="btnSearchProtein" style="width: 104px;">Search
                         </button>
                     </div>
                 </div>
@@ -54,11 +50,9 @@
     <script th:inline="javascript">
 
         //<![CDATA[
-            $('#btnSearchGene').on('click', function () {
-                if($('#geneAccession').val() != ""){
-                    window.location = '/geneview?id='+ $('#geneAccession').val();
-                }else if($('#geneAccession').val() == "" && $('#geneName').val() != ""){
-                    window.location = '/geneview?id='+ $('#geneName').val();
+            $('#btnSearchProtein').on('click', function () {
+                if($('#uniprotAccession').val() != ""){
+                    window.location = '/index?id='+ $('#uniprotAccession').val();
                 }else{
                     var dialogInstance = new BootstrapDialog();
                     dialogInstance.setTitle('INPUT ERROR');
@@ -68,25 +62,19 @@
                 }
                 return false;
             });
-            $("#geneAccession").keyup(function(event){
+            $("#uniprotAccession").keyup(function(event){
                 if(event.keyCode == 13){
                     $("#btnSearchGene").click();
                 }
             });
-            $("#geneName").keyup(function(event){
-                if(event.keyCode == 13){
-                    $("#btnSearchGene").click();
-                }
-            });
+
             function setExample1() {
-                document.getElementById('geneAccession').value = 'ENSG00000131089';
-                document.getElementById('geneName').value = 'ARHGEF9';
+                document.getElementById('uniprotAccession').value = 'P04637';
                 return false;
             }
 
             function setExample2() {
-                document.getElementById('geneAccession').value = 'ENSG00000144339';
-                document.getElementById('geneName').value = 'TMEFF2';
+                document.getElementById('uniprotAccession').value = 'P04637';
                 return false;
             }
         //]]>

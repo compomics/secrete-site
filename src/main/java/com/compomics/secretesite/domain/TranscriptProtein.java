@@ -1,6 +1,8 @@
 package com.compomics.secretesite.domain;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -10,6 +12,8 @@ import javax.persistence.*;
 
 @Data
 @Entity
+@EqualsAndHashCode(exclude = {"proteinProduct","parentTranscript"})
+@ToString(exclude = {"proteinProduct","parentTranscript"})
 public class TranscriptProtein {
 
     @Id

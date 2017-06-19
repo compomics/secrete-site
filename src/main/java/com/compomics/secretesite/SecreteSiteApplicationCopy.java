@@ -23,8 +23,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@SpringBootApplication
-@EnableAsync
+//@SpringBootApplication
+//@EnableAsync
 public class SecreteSiteApplicationCopy {
 
     private SpeciesRepository speciesRepository;
@@ -40,7 +40,7 @@ public class SecreteSiteApplicationCopy {
     }
 
 
-    @Bean
+   /** @Bean
     public CommandLineRunner commandLineRunner() {
         return args -> {
 
@@ -543,5 +543,5 @@ public class SecreteSiteApplicationCopy {
             geneRepository.saveAll(referenceGenes.values());
 
         };
-    }
+    })*/
 }

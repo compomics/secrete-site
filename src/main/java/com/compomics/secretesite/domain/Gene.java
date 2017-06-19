@@ -1,5 +1,8 @@
 package com.compomics.secretesite.domain;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -14,8 +17,8 @@ import java.util.Set;
  */
 @Entity
 @Data
-@EqualsAndHashCode(exclude = "transcripts")
-@ToString(exclude = "transcripts")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@geneId")
 public class Gene {
 
     /**
@@ -29,7 +32,7 @@ public class Gene {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer geneid;
+    private Integer geneId;
 
     /**
      * The chromosome the gene is located on
@@ -46,11 +49,6 @@ public class Gene {
      */
     private String geneSequence;
 
-    /**
-     * {@link Transcript}s this gene encodes for
-     */
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "parentGene")
-    private Set<Transcript> transcripts = new HashSet<>(0);
 
 
     public Gene(String geneAccession, String chromosome, String geneName, String geneSequence) {

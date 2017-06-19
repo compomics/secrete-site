@@ -1,7 +1,10 @@
 package com.compomics.secretesite.domain;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
@@ -14,6 +17,8 @@ import java.util.Set;
 @Data
 @Entity
 @EqualsAndHashCode(exclude = "expressableTranscripts")
+@ToString(exclude = {"expressableTranscripts"})
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@speciesId")
 public class Species {
 
     /**
@@ -22,7 +27,7 @@ public class Species {
     @Column(name = "species_id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer species_id;
+    private Integer speciesId;
 
     /**
      * the ensembl taxonomy identifier
@@ -40,11 +45,14 @@ public class Species {
     /**
      * all the {@link Gene}s that belong to this species
      */
-    @ManyToMany(mappedBy = "expressableIn")
+    @ManyToMany(mappedBy = "expressableIn",fetch = FetchType.LAZY)
     private Set<Transcript> expressableTranscripts = new HashSet<>(0);
 
     public Species(Integer speciesTaxonomyNumber, String speciesName) {
         this.speciesTaxonomyNumber = speciesTaxonomyNumber;
         this.speciesName = speciesName;
+    }
+
+    public Species() {
     }
 }
