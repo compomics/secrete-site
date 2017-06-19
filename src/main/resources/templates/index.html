@@ -13,12 +13,15 @@
 <body>
 <div th:insert="~{fragments/header :: header}"></div>
 <!--/*@thymesVar id="protein" type="com.compomics.secretesite.domain.Protein"*/-->
-<div id="msa" style="height: 100px">Loading Multiple Alignment...</div>
+<div class="container">
+<div id="msa" style="height: 200px">Loading protein view...</div>
 <script th:inline="javascript">
     //<![CDATA[
     function proteinView() {
         var accession =  [[${protein.proteinAccession}]];
+        alert([[${protein.parentTranscripts}]]);
         var url = 'http://www.uniprot.org/uniprot/'+accession+'.fasta';
+        var url2 = 'http://www.uniprot.org/uniprot/P04637.fasta';
 
         $.ajax({
             type: 'GET',
@@ -33,15 +36,11 @@
                     el: document.getElementById("msa"),
                     seqs: seqs
                 });
-                var domain = [[${protein.domainsContainedInProtein}]];
-                alert(domain);
-                for(i=0; i<domain.length; i++){
-                    var feature = " . domain " + [[${domain[i].domainStart}]]+"  "+[[${domain[i].domainEnd}]]+
-                        "	.	.  .  Name=" + [[${domain[i].domain.domainAccession}]] + " 1;Color=#ff8080";
-                    m.seqs.addFeatures(msa.io.gff.parseSeqs(label + feature));
-                }
-                var features = msa.io.gff.parseSeqs(label +" . gene	5 	35	.	.  .  Name=Transcript 1;Color=red");
-                m.seqs.addFeatures(features);
+                m.seqs.addFeatures( msa.io.gff.parseSeqs(label +" . gene	5 	35	.	.  .  Name=ENST00000269305 ;Color=red"));
+                m.seqs.addFeatures( msa.io.gff.parseSeqs(label +" . gene	40 	80	.	.  .  Name=ENST00000269306 ;Color=red"));
+                m.seqs.addFeatures( msa.io.gff.parseSeqs(label +" . gene	50 	85	.	.  .  Name=domain1 ;Color=yellow"));
+                m.seqs.addFeatures( msa.io.gff.parseSeqs(label +" . gene	90 	100	.	.  .  Name=domain2 ;Color=yellow"));
+                m.seqs.addFeatures( msa.io.gff.parseSeqs(label +" . gene	1 	25	.	.  .  Name=domain3 ;Color=yellow"));
                 m.g.vis.set("labelId", false);
                 m.g.vis.set("scaleslider", true);
 
@@ -63,6 +62,79 @@
 </script>
 
 
+
+        <table class="table table-hover table-sticky-header table-expandable" style="table-layout: fixed">
+            <thead>
+            <th style="width: 3%"></th>
+            <th style="width: 15%">transcript accession</th>
+            <th style="width: 82%">secretion status</th>
+
+            </thead>
+            <tbody>
+
+                <tr data-toggle="collapse" th:attr="data-target='#accordion1'" class="clickable" >
+                    <td><span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></td>
+                    <td>ENST00000269305</td>
+                    <td>depleted</td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div th:id="'accordion1'" class="collapse" >
+                            <h4>PDBIDs</h4>
+                            <ul>
+                                <li>
+                                    <a>4HHB</a>
+                                    <a>5EZR</a>
+                                    <a>5UEW</a>
+                                </li>
+                            </ul>
+                            <button type="button" class="btn btn-primary " id="btn1">Go to 3D view</button>
+                        </div>
+                    </td>
+                </tr>
+                <tr data-toggle="collapse" th:attr="data-target='#accordion2'" class="clickable" >
+                    <td><span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></td>
+                    <td>ENST00000269306</td>
+                    <td>depleted</td>
+                </tr>
+
+                <tr>
+                    <td colspan="2">
+                        <div th:id="'accordion2'" class="collapse" >
+                            <h4>PDBIDs</h4>
+                            <ul>
+                                <li>
+                                    <a>4HHB</a>
+                                    <a>5EZR</a>
+                                </li>
+                            </ul>
+                            <button type="button" class="btn btn-primary" id="btn2">Go to 3D view</button>
+                        </div>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    <script th:inline="javascript">
+
+        //<![CDATA[
+        $('#btn1').on('click', function () {
+
+            window.location = '/3dProtein?structureId=3';
+
+            return false;
+        });
+        $('#btn2').on('click', function () {
+
+            window.location = '/3dProtein?structureId=2';
+
+            return false;
+        });
+
+        //]]>
+    </script>
+
+</div>
 <div th:insert="~{fragments/footer :: footer}"></div>
 
 </body>
