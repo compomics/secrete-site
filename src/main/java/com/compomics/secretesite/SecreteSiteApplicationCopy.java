@@ -37,7 +37,7 @@ public class SecreteSiteApplicationCopy {
         SpringApplication.run(SecreteSiteApplicationCopy.class, args);
     }
 
-
+/**
     @Bean
     public CommandLineRunner commandLineRunner() {
         return args -> {
@@ -540,4 +540,5 @@ public class SecreteSiteApplicationCopy {
 
         };
     }
+    */
 }

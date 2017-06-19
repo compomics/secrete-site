@@ -75,7 +75,7 @@
                                 <option value="element">By Element</option>
                                 <option value="bfactor">By B-factor</option>
                                 <option value="sstruc">By Secondary Structure</option>
-                                <option value="custom">By Custom</option>
+                                <option value="custom">By Transcript Structure</option>
                             </select>
                         </div>
                     </div>
@@ -289,7 +289,13 @@
         document.getElementById("colorSchemeSelect").value = "residueindex";
         document.getElementById("styleSelect").value = "cartoon";
         document.getElementById("ligandSelect").value = "ball+stick";
-        var pdbs = ["4HHB", "5EZR", "5UEW"];
+        var pdbLength = [[${structure}]];
+        if(pdbLength == 3){
+            var pdbs = ["4HHB", "5EZR", "5UEW"];
+        }else if(pdbLength == 2){
+            var pdbs = ["4HHB", "5EZR"];
+        }
+
         for(counter=0; counter<pdbs.length; counter++){
             var width = parseInt($('#viewport3d').css('width'))/pdbs.length;
             jQuery('<div/>', {
@@ -308,10 +314,6 @@
             }).css("width", width-pdbs.length).appendTo('#viewport3d');
 
         }
-
-        var pdbId = "4HHB";
-
-
         createMulti3d($("#colorSchemeSelect").val(), $("#styleSelect").val(), $("#ligandSelect").val(), pdbs);
     } );
     /*]]>*/

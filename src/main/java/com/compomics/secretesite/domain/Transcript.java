@@ -65,9 +65,6 @@ public class Transcript implements Serializable {
 
 
 
-    @OneToMany(mappedBy = "transcript",cascade = CascadeType.ALL , fetch = FetchType.LAZY)
-    private Set<TranscriptEarlyFolding>  earlyFoldingLocations = new HashSet<>();
-
     private String secretionStatus;
 
     @OneToMany(mappedBy = "parentTranscript",cascade = CascadeType.ALL)

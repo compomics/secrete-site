@@ -24,6 +24,7 @@ public class TranscriptStructureController {
     @RequestMapping("/3dProtein")
     String protein(@RequestParam(value="structureId",defaultValue = "") String structureId,Model model){
         Map<String,Object> attr = new HashMap<>();
+        /**
         if(structureId != null && !structureId.equals("")){
           //  attr.put("structure", transcriptStructureRepository.findByTranscriptStructureId(Integer.valueOf(structureId)));
 
@@ -33,6 +34,13 @@ public class TranscriptStructureController {
         }else{
             return "";
         }
-
+*/
+        if(structureId != null && !structureId.equals("")){
+            attr.put("structure", Integer.valueOf(structureId));
+            model.addAllAttributes(attr);
+            return "3dProtein";
+        }else{
+            return "";
+        }
     }
 }
