@@ -23,17 +23,15 @@ public class ProteinDomain {
     private Integer proteinDomainId;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "l_domain_id",referencedColumnName = "domainId")
+    @JoinColumn(name = "l_domain_id",referencedColumnName = "domain_id")
     private Domain domain;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "l_protein_id",referencedColumnName = "proteinId")
+    @JoinColumn(name = "l_protein_id",referencedColumnName = "protein_id")
     private Protein protein;
 
     private Integer domainStart;
 
     private Integer domainEnd;
 
-    public ProteinDomain() {
-    }
 }

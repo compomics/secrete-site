@@ -1,7 +1,5 @@
 package com.compomics.secretesite.domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -16,20 +14,21 @@ import javax.persistence.*;
 @Entity
 @EqualsAndHashCode(exclude = {"proteinProduct","parentTranscript"})
 @ToString(exclude = {"proteinProduct","parentTranscript"})
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@translation_product_id")
 public class TranscriptProtein {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer translation_product_id;
+    private Integer translationproductid;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(referencedColumnName = "proteinId", name = "l_protein_id")
+    @JoinColumn(referencedColumnName = "protein_id", name = "l_protein_id")
     private Protein proteinProduct;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(referencedColumnName = "transcriptId",name = "l_transcript_id")
+    @JoinColumn(referencedColumnName = "transcript_id",name = "l_transcript_id")
     private Transcript parentTranscript;
 
+    private Integer transcriptStart;
 
+    private Integer transcriptEnd;
 }

@@ -19,6 +19,7 @@ public class Domain {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "domain_id")
     private Integer domainId;
 
     @NaturalId
@@ -26,6 +27,4 @@ public class Domain {
 
     private String domainName;
 
-    public Domain() {
-    }
 }

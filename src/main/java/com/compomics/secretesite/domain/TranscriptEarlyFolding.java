@@ -21,7 +21,7 @@ public class TranscriptEarlyFolding {
     private Integer transcriptEarlyFoldingId;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "transcriptId", nullable = false)
+    @JoinColumn(name = "transcript_id", nullable = false)
     private Transcript transcript;
 
     private int foldingLocation;

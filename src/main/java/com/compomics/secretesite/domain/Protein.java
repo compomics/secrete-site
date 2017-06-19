@@ -25,6 +25,7 @@ public class Protein {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "protein_id")
     private Integer proteinId;
 
     @NaturalId
@@ -36,7 +37,4 @@ public class Protein {
 
     @OneToMany(mappedBy = "proteinProduct",cascade = CascadeType.ALL)
     private Set<TranscriptProtein> parentTranscripts = new HashSet<>();
-
-    public Protein() {
-    }
 }

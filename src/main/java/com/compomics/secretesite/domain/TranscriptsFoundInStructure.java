@@ -20,11 +20,11 @@ public class TranscriptsFoundInStructure {
     @GeneratedValue
     public Integer transcriptsFoundInStructureId;
 
-    @ManyToOne(targetEntity = Transcript.class)
-    @JoinColumn(name = "l_transcript_id",referencedColumnName = "transcriptId")
+    @ManyToOne(targetEntity = Transcript.class,fetch = FetchType.LAZY)
+    @JoinColumn(name = "l_transcript_id",referencedColumnName = "transcript_id")
     public Transcript transcript;
 
-    @ManyToOne(targetEntity = TranscriptStructure.class,cascade = CascadeType.ALL)
+    @ManyToOne(targetEntity = TranscriptStructure.class,cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JoinColumn(name = "l_transcript_structure_id",referencedColumnName = "transcript_structure_id")
     public TranscriptStructure transcriptstructure;
 

@@ -45,7 +45,7 @@ public class Species {
     /**
      * all the {@link Gene}s that belong to this species
      */
-    @ManyToMany(mappedBy = "expressableIn")
+    @ManyToMany(mappedBy = "expressableIn",fetch = FetchType.LAZY)
     private Set<Transcript> expressableTranscripts = new HashSet<>(0);
 
     public Species(Integer speciesTaxonomyNumber, String speciesName) {

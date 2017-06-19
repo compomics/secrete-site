@@ -1,6 +1,5 @@
 package com.compomics.secretesite.domain;
 
-import com.compomics.secretesite.controllers.services.SequenceService;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
@@ -28,6 +27,7 @@ public class Transcript implements Serializable {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "transcript_id")
     private Integer transcriptId;
 
     /**
@@ -55,7 +55,7 @@ public class Transcript implements Serializable {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "transcripts_expressable_in_species",
-            joinColumns = @JoinColumn(name = "transcriptId"),
+            joinColumns = @JoinColumn(name = "transcript_id"),
             inverseJoinColumns = @JoinColumn(name = "species_id")
     )
     private Set<Species> expressableIn = new HashSet<>(0);
@@ -67,7 +67,7 @@ public class Transcript implements Serializable {
 
     private String secretionStatus;
 
-    @OneToMany(mappedBy = "parentTranscript",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "parentTranscript",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private Set<TranscriptProtein> transcriptProteins = new HashSet<>();
 
 
