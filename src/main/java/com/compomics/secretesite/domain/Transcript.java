@@ -17,8 +17,8 @@ import java.util.Set;
  */
 @Data
 @Entity
-@EqualsAndHashCode(exclude = {"parentGene","foundIn","expressableIn","earlyFoldingLocations","transcriptProteins"})
-@ToString(exclude = {"parentGene","foundIn","expressableIn","earlyFoldingLocations","transcriptProteins"})
+@EqualsAndHashCode(exclude = {"parentGene","foundIn","transcriptsExpressableInSpecies","earlyFoldingLocations","transcriptProteins"})
+@ToString(exclude = {"parentGene","foundIn","transcriptsExpressableInSpecies","earlyFoldingLocations","transcriptProteins"})
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@transcriptId")
 public class Transcript implements Serializable {
 
@@ -52,13 +52,8 @@ public class Transcript implements Serializable {
     @JoinColumn(name = "gene_id", nullable = false)
     private Gene parentGene;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "transcripts_expressable_in_species",
-            joinColumns = @JoinColumn(name = "transcript_id"),
-            inverseJoinColumns = @JoinColumn(name = "species_id")
-    )
-    private Set<Species> expressableIn = new HashSet<>(0);
+    @OneToMany(mappedBy = "transcript",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<TranscriptsExpressableInSpecies> transcriptsExpressableInSpecies = new HashSet<>();
 
     @OneToMany(mappedBy = "transcript",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<TranscriptsFoundInStructure> foundIn = new HashSet<>();

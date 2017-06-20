@@ -16,8 +16,8 @@ import java.util.Set;
  */
 @Data
 @Entity
-@EqualsAndHashCode(exclude = "expressableTranscripts")
-@ToString(exclude = {"expressableTranscripts"})
+@EqualsAndHashCode(exclude = "transcriptsExpressableInSpecies")
+@ToString(exclude = {"transcriptsExpressableInSpecies"})
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@speciesId")
 public class Species {
 
@@ -45,8 +45,8 @@ public class Species {
     /**
      * all the {@link Gene}s that belong to this species
      */
-    @ManyToMany(mappedBy = "expressableIn",fetch = FetchType.LAZY)
-    private Set<Transcript> expressableTranscripts = new HashSet<>(0);
+    @OneToMany(mappedBy = "species",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<TranscriptsExpressableInSpecies> transcriptsExpressableInSpecies = new HashSet<>();
 
     public Species(Integer speciesTaxonomyNumber, String speciesName) {
         this.speciesTaxonomyNumber = speciesTaxonomyNumber;
