@@ -12,9 +12,9 @@ import javax.persistence.*;
  */
 
 @Entity
+@Data
 @EqualsAndHashCode(exclude = {"proteinProduct","parentTranscript"})
 @ToString(exclude = {"proteinProduct","parentTranscript"})
-@Data
 public class TranscriptProtein {
 
     @Id

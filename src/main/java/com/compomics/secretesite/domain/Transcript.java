@@ -33,8 +33,14 @@ public class Transcript {
      */
     private String ensembleTranscriptAccession;
 
+    /**
+     * start on the primary protein sequence
+     */
     private Integer sequenceStart;
 
+    /**
+     * end on the primary protein sequence
+     */
     private Integer sequenceEnd;
 
     /**
@@ -50,16 +56,28 @@ public class Transcript {
     @JoinColumn(name = "gene_id", nullable = false)
     private Gene parentGene;
 
+    /**
+     * the species this transcript can be expressed in
+     */
     @JsonManagedReference
     @OneToMany(mappedBy = "transcript",cascade = CascadeType.ALL)
     private Set<TranscriptsExpressableInSpecies> transcriptsExpressableInSpecies = new HashSet<>();
 
+    /**
+     * the pdb structures this transcript is found in
+     */
     @OneToMany(mappedBy = "transcript",cascade = CascadeType.ALL)
     @JsonManagedReference
     private Set<TranscriptsFoundInStructure> foundIn = new HashSet<>();
 
+    /**
+     * the classification of the secretion
+     */
     private String secretionStatus;
 
+    /**
+     * the proteins that contain this transcript
+     */
     @OneToMany(mappedBy = "parentTranscript",cascade = CascadeType.ALL)
     @JsonManagedReference
     private Set<TranscriptProtein> transcriptProteins = new HashSet<>();

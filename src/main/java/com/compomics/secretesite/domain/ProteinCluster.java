@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 /**
+ * class representing the results of the protein clustering algorithm
  * Created by davy on 5/9/2017.
  */
 @Entity

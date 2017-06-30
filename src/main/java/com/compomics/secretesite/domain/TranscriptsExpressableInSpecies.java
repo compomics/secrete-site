@@ -8,12 +8,13 @@ import lombok.ToString;
 import javax.persistence.*;
 
 /**
+* Two way join table between the transcript and the species the transcript was expressed in
  * Created by demet on 6/19/2017.
  */
+@Data
 @Entity
 @EqualsAndHashCode(exclude = {"transcript","species"})
 @ToString(exclude = {"transcript","species"})
-@Data
 public class TranscriptsExpressableInSpecies {
 
     @Id
@@ -30,6 +31,4 @@ public class TranscriptsExpressableInSpecies {
     @JsonBackReference
     private Transcript transcript;
 
-    public TranscriptsExpressableInSpecies() {
-    }
 }

@@ -12,5 +12,6 @@ import java.util.List;
  */
 @RepositoryRestResource(collectionResourceRel = "foundIn",path = "foundIn")
 public interface TranscriptsFoundInStructureRepository extends CrudRepository<TranscriptsFoundInStructure,Integer>{
+
     List<TranscriptsFoundInStructure> findByTranscript(Transcript transcript);
 }

@@ -7,6 +7,7 @@ import org.hibernate.annotations.NaturalId;
 import javax.persistence.*;
 
 /**
+ * The expressable genes found in the experiments
  * Created by davy on 4/10/2017.
  */
 @Entity

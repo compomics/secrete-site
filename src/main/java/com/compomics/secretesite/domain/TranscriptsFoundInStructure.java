@@ -6,6 +6,7 @@ import lombok.*;
 import javax.persistence.*;
 
 /**
+ * Two way join table between the structure mapping and the dataset transcripts
  * Created by davy on 4/21/2017.
  */
 @Entity

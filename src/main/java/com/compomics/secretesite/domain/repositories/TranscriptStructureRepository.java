@@ -12,6 +12,11 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 
 public interface TranscriptStructureRepository extends PagingAndSortingRepository<TranscriptStructure,Integer> {
+    /**
+     * find the transcriptstructure join object denoted by the id
+     * @param id the {@link TranscriptStructure} id to fetch
+     * @return The {@link TranscriptStructure} if it is present in the database
+     */
     @RestResource(path = "filterbyid")
     TranscriptStructure findByTranscriptStructureId(@RequestParam Integer id);
 }

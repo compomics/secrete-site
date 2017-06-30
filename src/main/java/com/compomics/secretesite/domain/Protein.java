@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * class representing proteins in the database
  * Created by davy on 5/10/2017.
  */
 
@@ -26,6 +27,9 @@ public class Protein {
     @Column(name = "protein_id")
     private Integer proteinId;
 
+    /**
+     * The uniprot id of a protein
+     */
     @NaturalId
     private String proteinAccession;
 

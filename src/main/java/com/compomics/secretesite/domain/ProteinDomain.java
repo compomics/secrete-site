@@ -8,6 +8,7 @@ import lombok.ToString;
 import javax.persistence.*;
 
 /**
+ * join table between known domains and domains present in a protein
  * Created by davy on 5/10/2017.
  */
 @Entity
@@ -30,8 +31,14 @@ public class ProteinDomain {
     @JoinColumn(name = "l_protein_id",referencedColumnName = "protein_id")
     private Protein protein;
 
+    /**
+     * the start location of the domain on the primary protein sequence
+     */
     private Integer domainStart;
 
+    /**
+     * the stop location of the domain on the primary protein sequence
+     */
     private Integer domainEnd;
 
 }
