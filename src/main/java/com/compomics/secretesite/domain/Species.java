@@ -1,9 +1,9 @@
 package com.compomics.secretesite.domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.NaturalId;
 
@@ -18,7 +18,7 @@ import java.util.Set;
 @Entity
 @EqualsAndHashCode(exclude = "transcriptsExpressableInSpecies")
 @ToString(exclude = {"transcriptsExpressableInSpecies"})
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@speciesId")
+@NoArgsConstructor
 public class Species {
 
     /**
@@ -46,13 +46,11 @@ public class Species {
      * all the {@link Gene}s that belong to this species
      */
     @OneToMany(mappedBy = "species",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private Set<TranscriptsExpressableInSpecies> transcriptsExpressableInSpecies = new HashSet<>();
 
     public Species(Integer speciesTaxonomyNumber, String speciesName) {
         this.speciesTaxonomyNumber = speciesTaxonomyNumber;
         this.speciesName = speciesName;
-    }
-
-    public Species() {
     }
 }

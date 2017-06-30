@@ -1,24 +1,17 @@
 package com.compomics.secretesite.domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by davy on 4/10/2017.
  */
 @Entity
 @Data
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@geneId")
+@NoArgsConstructor
 public class Gene {
 
     /**
@@ -58,6 +51,4 @@ public class Gene {
         this.geneSequence = geneSequence;
     }
 
-    public Gene() {
-    }
 }

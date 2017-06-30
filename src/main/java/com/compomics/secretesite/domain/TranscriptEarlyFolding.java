@@ -1,5 +1,6 @@
 package com.compomics.secretesite.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -22,6 +23,7 @@ public class TranscriptEarlyFolding {
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "transcript_id", nullable = false)
+    @JsonBackReference
     private Transcript transcript;
 
     private int foldingLocation;

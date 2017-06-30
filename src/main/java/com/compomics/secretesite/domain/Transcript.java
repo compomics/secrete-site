@@ -1,11 +1,9 @@
 package com.compomics.secretesite.domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,12 +13,12 @@ import java.util.Set;
  * This class represents the transcripts that have been experimentally determined to be expressed.
  * Created by davy on 4/10/2017.
  */
-@Data
 @Entity
-@EqualsAndHashCode(exclude = {"parentGene","foundIn","transcriptsExpressableInSpecies","earlyFoldingLocations","transcriptProteins"})
-@ToString(exclude = {"parentGene","foundIn","transcriptsExpressableInSpecies","earlyFoldingLocations","transcriptProteins"})
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@transcriptId")
-public class Transcript implements Serializable {
+@Data
+@EqualsAndHashCode(exclude = {"parentGene","foundIn","transcriptsExpressableInSpecies","transcriptProteins"})
+@ToString(exclude = {"parentGene","foundIn","transcriptsExpressableInSpecies","transcriptProteins"})
+@NoArgsConstructor
+public class Transcript {
 
     /**
      * internal database id
@@ -48,24 +46,23 @@ public class Transcript implements Serializable {
     /**
      * the gene this transcript has been mapped back to
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "gene_id", nullable = false)
     private Gene parentGene;
 
-    @OneToMany(mappedBy = "transcript",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    @OneToMany(mappedBy = "transcript",cascade = CascadeType.ALL)
     private Set<TranscriptsExpressableInSpecies> transcriptsExpressableInSpecies = new HashSet<>();
 
-    @OneToMany(mappedBy = "transcript",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "transcript",cascade = CascadeType.ALL)
+    @JsonManagedReference
     private Set<TranscriptsFoundInStructure> foundIn = new HashSet<>();
-
-
 
     private String secretionStatus;
 
-    @OneToMany(mappedBy = "parentTranscript",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "parentTranscript",cascade = CascadeType.ALL)
+    @JsonManagedReference
     private Set<TranscriptProtein> transcriptProteins = new HashSet<>();
-
-
 
     public Transcript(String ensembleTranscriptAccession, String transcript_sequence, Integer sequence_start,Integer sequence_end, Gene parentGene) {
         this.ensembleTranscriptAccession = ensembleTranscriptAccession;
@@ -75,7 +72,5 @@ public class Transcript implements Serializable {
         this.parentGene = parentGene;
     }
 
-    public Transcript() {
-    }
 }
 

@@ -1,7 +1,6 @@
 package com.compomics.secretesite.domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -15,7 +14,6 @@ import javax.persistence.*;
 @Data
 @EqualsAndHashCode(exclude = {"domain","protein"})
 @ToString(exclude = {"domain","protein"})
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property ="@proteinDomainId" )
 public class ProteinDomain {
 
     @Id
@@ -24,9 +22,11 @@ public class ProteinDomain {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "l_domain_id",referencedColumnName = "domain_id")
+    @JsonBackReference
     private Domain domain;
 
     @ManyToOne(cascade = CascadeType.ALL)
+    @JsonBackReference
     @JoinColumn(name = "l_protein_id",referencedColumnName = "protein_id")
     private Protein protein;
 
