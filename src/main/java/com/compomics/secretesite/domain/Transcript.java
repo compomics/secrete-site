@@ -70,6 +70,9 @@ public class Transcript {
     @JsonManagedReference
     private Set<TranscriptsFoundInStructure> foundIn = new HashSet<>();
 
+    private Integer isMainTranscript;
+
+
     /**
      * the classification of the secretion
      */
