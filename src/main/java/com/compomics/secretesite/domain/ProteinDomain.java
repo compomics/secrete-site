@@ -13,8 +13,6 @@ import javax.persistence.*;
  */
 @Entity
 @Data
-@EqualsAndHashCode(exclude = {"domain","protein"})
-@ToString(exclude = {"domain","protein"})
 public class ProteinDomain {
 
     @Id

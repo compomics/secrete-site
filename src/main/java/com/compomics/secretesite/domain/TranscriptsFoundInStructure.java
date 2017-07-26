@@ -28,4 +28,5 @@ public class TranscriptsFoundInStructure {
     @JoinColumn(name = "l_transcript_structure_id",referencedColumnName = "transcript_structure_id")
     @JsonBackReference
     public TranscriptStructure transcriptstructure;
+
 }

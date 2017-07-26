@@ -289,12 +289,10 @@
         document.getElementById("colorSchemeSelect").value = "residueindex";
         document.getElementById("styleSelect").value = "cartoon";
         document.getElementById("ligandSelect").value = "ball+stick";
-        var pdbLength = [[${structure}]];
-        if(pdbLength == 3){
-            var pdbs = ["4HHB", "5EZR", "5UEW"];
-        }else if(pdbLength == 2){
-            var pdbs = ["4HHB", "5EZR"];
-        }
+        var pdbId = [[${structure.getPdbId()}]];
+        var pdbs = [];
+        pdbs.push(pdbId);
+
 
         for(counter=0; counter<pdbs.length; counter++){
             var width = parseInt($('#viewport3d').css('width'))/pdbs.length;
