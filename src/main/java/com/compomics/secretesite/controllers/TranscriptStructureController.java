@@ -24,23 +24,15 @@ public class TranscriptStructureController {
     @RequestMapping("/3dProtein")
     String protein(@RequestParam(value="structureId",defaultValue = "") String structureId,Model model){
         Map<String,Object> attr = new HashMap<>();
-        /**
         if(structureId != null && !structureId.equals("")){
-          //  attr.put("structure", transcriptStructureRepository.findByTranscriptStructureId(Integer.valueOf(structureId)));
+            attr.put("structure", transcriptStructureRepository.findByTranscriptStructureId(Integer.valueOf(structureId)));
 
-            // var pdbId = [[${structure.getPdbId()}]];  for 3dprotein html
+            //   for 3dprotein html
             model.addAllAttributes(attr);
             return "3dProtein";
         }else{
             return "";
         }
-*/
-        if(structureId != null && !structureId.equals("")){
-            attr.put("structure", Integer.valueOf(structureId));
-            model.addAllAttributes(attr);
-            return "3dProtein";
-        }else{
-            return "";
-        }
+
     }
 }

@@ -5,6 +5,8 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 /**
  * Created by davy on 5/16/2017.
  */
@@ -15,5 +17,7 @@ public interface ProteinRepository extends PagingAndSortingRepository<Protein,In
 
     @RestResource(path = "filterbyaccession")
     Protein findByProteinAccession(@RequestParam String accession);
+
+
 
 }

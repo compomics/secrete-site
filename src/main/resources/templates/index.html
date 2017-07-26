@@ -6,42 +6,106 @@
 
     <link th:href="@{/css/bootstrap.min.css}"
           rel="stylesheet" media="screen" />
+    <link th:href="@{/css/overview.css}"  rel="stylesheet" media="screen" />
+    <link th:href="@{/css/bootstrap-table-expandable.css}"  rel="stylesheet" />
     <script src="//cdn.bio.sh/msa/latest/msa.min.gz.js"></script>
     <script th:src="@{/js/jquery-3.2.1.min.js}"></script>
     <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/bootstrap-table-expandable.js}"></script>
+    <style>
+
+        .panel-header {
+            font-size: 14px;
+            font-weight: bolder;
+        }
+        .panel-heading span
+        {
+            margin-top: -20px;
+            font-size: 15px;
+        }
+
+        .row
+        {
+            margin-top: 40px;
+            padding: 0 10px;
+        }
+
+        .clickable
+        {
+            cursor: pointer;
+        }
+        .wrap {
+            width: 100%;
+        }
+
+        .wrap table {
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .wrap table tr td {
+            padding: 5px;
+            border: 1px solid #ededed;
+            width: 100px;
+            word-wrap: break-word;
+        }
+
+        .wrap table.head tr th {
+            background: #ededed;
+            height: 30px;
+        }
+
+        .inner_table {
+            max-height: 100px;
+            overflow-y: auto;
+        }
+    </style>
 </head>
 <body>
 <div th:insert="~{fragments/header :: header}"></div>
-<!--/*@thymesVar id="protein" type="com.compomics.secretesite.domain.Protein"*/-->
 <div class="container">
 <div id="msa" style="height: 200px">Loading protein view...</div>
+    <!--/*@thymesVar id="proteinDTOS" type="List<com.compomics.secretesite.domain.dataTransferObjects.ProteinDTO>"*/-->
+    <!--/*@thymesVar id="proteins" type="List<com.compomics.secretesite.domain.Protein>"*/-->
 <script th:inline="javascript">
     //<![CDATA[
+
     function proteinView() {
-        var accession =  [[${protein.proteinAccession}]];
-        alert([[${protein.parentTranscripts}]]);
-        var url = 'http://www.uniprot.org/uniprot/'+accession+'.fasta';
+
         var url2 = 'http://www.uniprot.org/uniprot/P04637.fasta';
+        var accession =  [[${proteins[0].proteinAccession}]];
+        var url = 'http://www.uniprot.org/uniprot/' + accession + '.fasta';
+
+        var proteinDTOS = /*[[${proteinDTOS}]]*/;
 
         $.ajax({
             type: 'GET',
             url: url,
             dataType: 'text',
             success: function (data) {
-                var label = data.split("|")[2].split(" ")[0];
 
+                var label = data.split("|")[2].split(" ")[0];
+                var info = data.split("|")[2].replace(label, '');
+                var proteinName =info.substring(0, info.indexOf("OS="));
+                document.getElementById("proteinName").innerHTML = proteinName;
                 var seqs = msa.io.fasta.parse(data);
 
                 var m = msa({
                     el: document.getElementById("msa"),
                     seqs: seqs
                 });
-                m.seqs.addFeatures( msa.io.gff.parseSeqs(label +" . gene	5 	35	.	.  .  Name=ENST00000269305 ;Color=red"));
-                m.seqs.addFeatures( msa.io.gff.parseSeqs(label +" . gene	40 	80	.	.  .  Name=ENST00000269306 ;Color=red"));
-                m.seqs.addFeatures( msa.io.gff.parseSeqs(label +" . gene	50 	85	.	.  .  Name=domain1 ;Color=yellow"));
-                m.seqs.addFeatures( msa.io.gff.parseSeqs(label +" . gene	90 	100	.	.  .  Name=domain2 ;Color=yellow"));
-                m.seqs.addFeatures( msa.io.gff.parseSeqs(label +" . gene	1 	25	.	.  .  Name=domain3 ;Color=yellow"));
+
+
+                for(i=0; i<proteinDTOS.length; i++){
+                    var feature = " . domain " + proteinDTOS[i].domainStart+"  "+proteinDTOS[i].domainEnd+
+                        "	.	.  .  Name=" + proteinDTOS[i].domainAccession + " ;Color=" + getRandomColor();
+                    m.seqs.addFeatures(msa.io.gff.parseSeqs(label + feature));
+
+                }
+
+
                 m.g.vis.set("labelId", false);
+                m.g.vis.set("labelName", false);
                 m.g.vis.set("scaleslider", true);
 
 
@@ -58,6 +122,15 @@
         setTimeout(function(){proteinView();}, 2000);
 
     });
+
+    function getRandomColor() {
+        var letters = '0123456789ABCDEF';
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
     //]]>
 </script>
 
@@ -66,64 +139,106 @@
         <table class="table table-hover table-sticky-header table-expandable" style="table-layout: fixed">
             <thead>
             <th style="width: 3%"></th>
-            <th style="width: 15%">transcript accession</th>
-            <th style="width: 82%">secretion status</th>
+            <th style="width: 15%">Uniprot Accession</th>
+            <th style="width: 62%">Protein Name</th>
+            <th style="width: 10%"># Domains</th>
+            <th style="width: 10%"># Fragments</th>
 
             </thead>
             <tbody>
+                <th:block th:each="protein:${proteins}">
+                    <tr th:attr="data-target='#'+${protein.proteinAccession}" class="clickable">
+                        <td><span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></td>
+                        <td th:text="${protein.proteinAccession}"></td>
+                        <td th:id="proteinName"></td>
+                        <td th:text="${protein.domainsContainedInProtein.size()}"></td>
+                        <td th:text="${protein.parentTranscripts.size()}"></td>
+                    </tr>
+                    <tr th:id="${protein.proteinAccession}">
+                        <td colspan="5">
+                            <div  class="panel panel-default">
+                                <div class="panel-heading">
+                  	                <span class="clickable panel-collapsed">
+                    	                <h3 class="panel-title">
+                    		                Domains  <span class="glyphicon glyphicon-chevron-down"/>
+                    	                </h3>
+                                    </span>
+                                </div>
+                                <div class="panel-body panel-collapse collapse ">
+                                    <div class="wrap">
+                                        <table class="head">
+                                            <tr>
+                                                <th style="width: 20%;">Domain Accession</th>
+                                                <th style="width: 50%;">Domain Name</th>
+                                                <th style="width: 15%;">Domain Start</th>
+                                                <th style="width: 15%;">Domain End</th>
+                                            </tr>
+                                        </table>
+                                        <div class="inner_table">
+                                            <table>
+                                                <th:block th:each="proteinDomain:${protein.domainsContainedInProtein}">
+                                                    <tr>
+                                                        <td style="width: 20%;" th:text="${proteinDomain.domain.domainAccession}"></td>
+                                                        <td th:id="'name' + ${proteinDomain.domain.domainAccession}" style="width: 50%;" th:text="${proteinDomain.domain.domainName}"></td>
+                                                        <td style="width: 15%;" th:text="${proteinDomain.domainStart}"></td>
+                                                        <td style="width: 15%;" th:text="${proteinDomain.domainEnd}"></td>
 
-                <tr data-toggle="collapse" th:attr="data-target='#accordion1'" class="clickable" >
-                    <td><span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></td>
-                    <td>ENST00000269305</td>
-                    <td>depleted</td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <div th:id="'accordion1'" class="collapse" >
-                            <h4>PDBIDs</h4>
-                            <ul>
-                                <li>
-                                    <a>4HHB</a>
-                                    <a>5EZR</a>
-                                    <a>5UEW</a>
-                                </li>
-                            </ul>
-                            <button type="button" class="btn btn-primary " id="btn1">Go to 3D view</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr data-toggle="collapse" th:attr="data-target='#accordion2'" class="clickable" >
-                    <td><span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></td>
-                    <td>ENST00000269306</td>
-                    <td>depleted</td>
-                </tr>
+                                                    </tr>
+                                                </th:block>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                <tr>
-                    <td colspan="2">
-                        <div th:id="'accordion2'" class="collapse" >
-                            <h4>PDBIDs</h4>
-                            <ul>
-                                <li>
-                                    <a>4HHB</a>
-                                    <a>5EZR</a>
-                                </li>
-                            </ul>
-                            <button type="button" class="btn btn-primary" id="btn2">Go to 3D view</button>
-                        </div>
-                    </td>
-                </tr>
+                            <div  class="panel panel-default">
+                                <div class="panel-heading">
+                  	                <span class="clickable panel-collapsed">
+                    	                <h3 class="panel-title">
+                    		                Fragments  <span class="glyphicon glyphicon-chevron-down"/>
+                    	                </h3>
+                                    </span>
+                                </div>
+                                <div class="panel-body panel-collapse collapse ">
+                                    <div class="wrap">
+                                        <table class="head">
+                                            <tr>
+                                                <th style="width: 40%;">Fragment Accession</th>
+                                                <th style="width: 15%;">Fragment Start</th>
+                                                <th style="width: 15%;">Fragment End</th>
+                                                <th style="width: 30%;">PDB Ids</th>
+
+                                            </tr>
+                                        </table>
+                                        <div class="inner_table">
+                                            <table>
+                                                <th:block th:each="mainTranscripts:${protein.parentTranscripts}">
+                                                    <tr>
+                                                        <td style="width: 40%;" th:text="${mainTranscripts.parentTranscript.ensembleTranscriptAccession}"></td>
+                                                        <td style="width: 15%;" th:text="${mainTranscripts.transcriptStart}"></td>
+                                                        <td style="width: 15%;" th:text="${mainTranscripts.transcriptEnd}"></td>
+                                                        <td style="width: 30%;" >
+                                                            <a th:each="ts: ${mainTranscripts.parentTranscript.foundIn}" th:text="${ts.transcriptstructure.pdbId}"th:href="@{'/3dProtein?structureId=' + ${ts.transcriptstructure.transcriptStructureId}}"/>
+                                                        </td>
+
+                                                    </tr>
+                                                </th:block>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </th:block>
+
 
             </tbody>
         </table>
     <script th:inline="javascript">
 
         //<![CDATA[
-        $('#btn1').on('click', function () {
 
-            window.location = '/3dProtein?structureId=3';
-
-            return false;
-        });
         $('#btn2').on('click', function () {
 
             window.location = '/3dProtein?structureId=2';
@@ -131,10 +246,29 @@
             return false;
         });
 
+
+            jQuery(function($) {
+                $('.panel-heading span.clickable').on("click", function(e) {
+                    if ($(this).hasClass('panel-collapsed')) {
+                        // expand the panel
+                        $(this).parents('.panel').find('.panel-body').slideDown();
+                        $(this).removeClass('panel-collapsed');
+                        $(this).find('span').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
+                    } else {
+                        // collapse the panel
+                        $(this).parents('.panel').find('.panel-body').slideUp();
+                        $(this).addClass('panel-collapsed');
+                        $(this).find('span').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
+                    }
+                });
+            });
+
+
         //]]>
     </script>
 
 </div>
+<h1></h1>
 <div th:insert="~{fragments/footer :: footer}"></div>
 
 </body>

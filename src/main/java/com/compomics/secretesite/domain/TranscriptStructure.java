@@ -4,6 +4,7 @@ package com.compomics.secretesite.domain;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -19,6 +20,7 @@ import java.util.Set;
 @Entity
 @EqualsAndHashCode(exclude = "transcriptscontained")
 @ToString(exclude = "transcriptscontained")
+@NoArgsConstructor
 public class TranscriptStructure {
 
     @Id
@@ -60,6 +62,4 @@ public class TranscriptStructure {
      */
     private Double identityScore;
 
-    public TranscriptStructure() {
-    }
 }
