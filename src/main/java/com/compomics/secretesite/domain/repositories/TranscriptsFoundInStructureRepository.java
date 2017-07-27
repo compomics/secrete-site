@@ -4,6 +4,7 @@ import com.compomics.secretesite.domain.Transcript;
 import com.compomics.secretesite.domain.TranscriptsFoundInStructure;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -13,5 +14,5 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "foundIn",path = "foundIn")
 public interface TranscriptsFoundInStructureRepository extends CrudRepository<TranscriptsFoundInStructure,Integer>{
 
-    List<TranscriptsFoundInStructure> findByTranscript(Transcript transcript);
+    List<TranscriptsFoundInStructure> findByTranscript(@RequestParam Integer transcriptId);
 }
