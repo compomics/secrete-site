@@ -164,13 +164,13 @@
         return prefix ? prefix + " " + msg : msg;
     };
 
-    function createCustomScheme(schemeValue){
+    function createCustomScheme(schemeValue, start, end, chain){
         if(schemeValue != 'custom'){
             return schemeValue
         }else{
             var schemeId = NGL.ColormakerRegistry.addSelectionScheme( [
 
-                [ "red", "10-20 and :A" ]
+                [ "red", start +"-" + end +" and :" + chain ]
             ]);
 
             return schemeId;
@@ -200,15 +200,15 @@
         });
     }
 
-    function createMulti3d(schemeId, molecularRepresentation, ligand, pdbs) {
+    function createMulti3d(schemeId, molecularRepresentation, ligand, pdbs, start, end, chain) {
 
         for(i=0; i<pdbs.length; i++) {
             var stage = new NGL.Stage("port" +i);
-            create3d(schemeId, molecularRepresentation, ligand, pdbs[i], stage);
+            create3d(schemeId, molecularRepresentation, ligand, pdbs[i], stage, start[i], end[i], chain[i]);
         }
     }
 
-    function create3d(schemeId, molecularRepresentation, ligand, pdbId, stage){
+    function create3d(schemeId, molecularRepresentation, ligand, pdbId, stage, start, end, chain){
 
         loadFile(stage, schemeId, molecularRepresentation, ligand, pdbId);
         var selectedStyle = $("#styleSelect").val();
@@ -221,8 +221,8 @@
                 }
             }
             stage.compList[0].addRepresentation(selectedStyle, {
-                colorScheme: createCustomScheme(value),
-                color : createCustomScheme(value)
+                colorScheme: createCustomScheme(value, start, end, chain),
+                color : createCustomScheme(value, start, end, chain)
             });
 
         } );
@@ -238,7 +238,7 @@
             selectedStyle = value;
 
             stage.compList[0].addRepresentation(value, {
-                colorScheme: createCustomScheme($("#colorSchemeSelect").val())
+                colorScheme: createCustomScheme($("#colorSchemeSelect").val(), start, end, chain)
             });
         } );
         var selectedLigand = $("#ligandSelect").val();
@@ -289,11 +289,17 @@
         document.getElementById("colorSchemeSelect").value = "residueindex";
         document.getElementById("styleSelect").value = "cartoon";
         document.getElementById("ligandSelect").value = "ball+stick";
-        var pdbId = [[${structure.getPdbId()}]];
+        var transcriptStructures = [[${structure}]];
         var pdbs = [];
-        pdbs.push(pdbId);
-
-
+        var start =[];
+        var end = [];
+        var chain = [];
+        for(i=0; i<transcriptStructures.length; i++){
+            pdbs.push(transcriptStructures[i].pdbId);
+            start.push(transcriptStructures[i].fragmentStart);
+            end.push(transcriptStructures[i].fragmentEnd);
+            chain.push(transcriptStructures[i].chain.split(" ")[1]);
+        }
         for(counter=0; counter<pdbs.length; counter++){
             var width = parseInt($('#viewport3d').css('width'))/pdbs.length;
             jQuery('<div/>', {
@@ -312,7 +318,7 @@
             }).css("width", width-pdbs.length).appendTo('#viewport3d');
 
         }
-        createMulti3d($("#colorSchemeSelect").val(), $("#styleSelect").val(), $("#ligandSelect").val(), pdbs);
+        createMulti3d($("#colorSchemeSelect").val(), $("#styleSelect").val(), $("#ligandSelect").val(), pdbs, start, end, chain);
     } );
     /*]]>*/
 </script>
