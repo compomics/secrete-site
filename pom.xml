@@ -6,7 +6,7 @@
     <groupId>com.compomics</groupId>
     <artifactId>secrete-site</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>${packaging.type}</packaging>
 
     <name>secrete-site</name>
     <description>secrete web site</description>
@@ -22,6 +22,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
+        <start-class>com.compomics.secretesite.SecreteSiteApplication</start-class>
+        <packaging-type>jar</packaging-type>
     </properties>
 
     <profiles>
@@ -55,6 +57,19 @@
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>
+        </profile>
+        <profile>
+            <id>create-artifact</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+            </dependencies>
+            <properties>
+                <packaging.type>war</packaging.type>
+            </properties>
         </profile>
     </profiles>
 
@@ -123,6 +138,7 @@
                 <directory>src/main/resources</directory>
                 <includes>
                     <include>application.properties</include>
+                    <include>data.zip</include>
                 </includes>
             </resource>
             <resource>
@@ -130,6 +146,7 @@
                 <directory>src/main/resources</directory>
                 <excludes>
                     <exclude>application.properties</exclude>
+                    <exclude>data.zip</exclude>
                 </excludes>
             </resource>
         </resources>
