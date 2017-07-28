@@ -66,57 +66,59 @@
 <div class="container">
 <div id="msa" style="height: 200px">Loading protein view...</div>
     <!--/*@thymesVar id="proteinDTOS" type="List<com.compomics.secretesite.domain.dataTransferObjects.ProteinDTO>"*/-->
-    <!--/*@thymesVar id="proteins" type="List<com.compomics.secretesite.domain.Protein>"*/-->
 <script th:inline="javascript">
     //<![CDATA[
 
     function proteinView() {
 
-        var url2 = 'http://www.uniprot.org/uniprot/P04637.fasta';
-        var accession =  [[${proteins[0].proteinAccession}]];
-        var url = 'http://www.uniprot.org/uniprot/' + accession + '.fasta';
+        var proteinDTOS = /*[[${proteinDTOSJson}]]*/;
 
-        var proteinDTOS = /*[[${proteinDTOS}]]*/;
+        var proteinObj = JSON.parse(proteinDTOS);
+        for(i=0; i<proteinObj.length; i++){
 
-        $.ajax({
-            type: 'GET',
-            url: url,
-            dataType: 'text',
-            success: function (data) {
+            var url = 'http://www.uniprot.org/uniprot/' + proteinObj[i].proteinAccession + '.fasta';
+            var domainDTOs = proteinObj[i].domainDTOs;
+            $.ajax({
+                type: 'GET',
+                url: url,
+                dataType: 'text',
+                success: function (data) {
 
-                var label = data.split("|")[2].split(" ")[0];
-                var info = data.split("|")[2].replace(label, '');
-                var proteinName =info.substring(0, info.indexOf("OS="));
-                document.getElementById("proteinName").innerHTML = proteinName;
-                var seqs = msa.io.fasta.parse(data);
+                    var label = data.split("|")[2].split(" ")[0];
 
-                var m = msa({
-                    el: document.getElementById("msa"),
-                    seqs: seqs
-                });
+                    var seqs = msa.io.fasta.parse(data);
+
+                    var m = msa({
+                        el: document.getElementById("msa"),
+                        seqs: seqs
+                    });
+
+                    for(j=0; j<domainDTOs.length; j++){
+
+                        var feature = " . domain " + domainDTOs[j].domainStart+"  "+domainDTOs[j].domainEnd+
+                            "	.	.  .  Name=" + domainDTOs[j].domainAccession + " ;Color=" + getRandomColor();
+
+                        m.seqs.addFeatures(msa.io.gff.parseSeqs(label + feature));
+                    }
 
 
-                for(i=0; i<proteinDTOS.length; i++){
-                    var feature = " . domain " + proteinDTOS[i].domainStart+"  "+proteinDTOS[i].domainEnd+
-                        "	.	.  .  Name=" + proteinDTOS[i].domainAccession + " ;Color=" + getRandomColor();
-                    m.seqs.addFeatures(msa.io.gff.parseSeqs(label + feature));
 
+                    m.g.vis.set("labelId", false);
+                    m.g.vis.set("labelName", false);
+                    m.g.vis.set("scaleslider", true);
+
+
+                    m.render();
+
+                },
+
+                error: function (e) {
+                    console.log(e.message);
                 }
+            });
+        }
 
 
-                m.g.vis.set("labelId", false);
-                m.g.vis.set("labelName", false);
-                m.g.vis.set("scaleslider", true);
-
-
-                m.render();
-
-            },
-
-            error: function (e) {
-                console.log(e.message);
-            }
-        });
     }
     document.addEventListener( "DOMContentLoaded", function(){
         setTimeout(function(){proteinView();}, 2000);
@@ -146,13 +148,13 @@
 
             </thead>
             <tbody>
-                <th:block th:each="protein:${proteins}">
+                <th:block th:each="protein:${proteinDTOS}">
                     <tr th:attr="data-target='#'+${protein.proteinAccession}" class="clickable">
                         <td><span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></td>
                         <td th:text="${protein.proteinAccession}"></td>
-                        <td th:id="proteinName"></td>
-                        <td th:text="${protein.domainsContainedInProtein.size()}"></td>
-                        <td th:text="${protein.parentTranscripts.size()}"></td>
+                        <td th:text="${protein.proteinName}"></td>
+                        <td th:text="${protein.domainDTOs.size()}"></td>
+                        <td th:text="${protein.mainFragmentDTOs.size()}"></td>
                     </tr>
                     <tr th:id="${protein.proteinAccession}">
                         <td colspan="5">
@@ -176,10 +178,10 @@
                                         </table>
                                         <div class="inner_table">
                                             <table>
-                                                <th:block th:each="proteinDomain:${protein.domainsContainedInProtein}">
+                                                <th:block th:each="proteinDomain:${protein.domainDTOs}">
                                                     <tr>
-                                                        <td style="width: 20%;" th:text="${proteinDomain.domain.domainAccession}"></td>
-                                                        <td th:id="'name' + ${proteinDomain.domain.domainAccession}" style="width: 50%;" th:text="${proteinDomain.domain.domainName}"></td>
+                                                        <td style="width: 20%;" th:text="${proteinDomain.domainAccession}"></td>
+                                                        <td style="width: 50%;" th:text="${proteinDomain.domainName}"></td>
                                                         <td style="width: 15%;" th:text="${proteinDomain.domainStart}"></td>
                                                         <td style="width: 15%;" th:text="${proteinDomain.domainEnd}"></td>
 
@@ -203,7 +205,8 @@
                                     <div class="wrap">
                                         <table class="head">
                                             <tr>
-                                                <th style="width: 40%;">Fragment Accession</th>
+                                                <th style="width: 30%;">Fragment Accession</th>
+                                                <th style="width: 10%;">Secretion Status</th>
                                                 <th style="width: 15%;">Fragment Start</th>
                                                 <th style="width: 15%;">Fragment End</th>
                                                 <th style="width: 30%;">PDB Ids</th>
@@ -212,13 +215,14 @@
                                         </table>
                                         <div class="inner_table">
                                             <table>
-                                                <th:block th:each="mainTranscripts:${protein.parentTranscripts}">
+                                                <th:block th:each="mainTranscripts:${protein.mainFragmentDTOs}">
                                                     <tr>
-                                                        <td style="width: 40%;" th:text="${mainTranscripts.parentTranscript.ensembleTranscriptAccession}"></td>
-                                                        <td style="width: 15%;" th:text="${mainTranscripts.transcriptStart}"></td>
-                                                        <td style="width: 15%;" th:text="${mainTranscripts.transcriptEnd}"></td>
+                                                        <td style="width: 30%;" th:text="${mainTranscripts.fragmentAccession}"></td>
+                                                        <td style="width: 10%;" th:text="${mainTranscripts.secretionStatus}"></td>
+                                                        <td style="width: 15%;" th:text="${mainTranscripts.fragmentStart}"></td>
+                                                        <td style="width: 15%;" th:text="${mainTranscripts.fragmentEnd}"></td>
                                                         <td style="width: 30%;" >
-                                                            <a th:each="ts: ${mainTranscripts.parentTranscript.foundIn}" th:text="${ts.transcriptstructure.pdbId}"th:href="@{'/3dProtein?structureId=' + ${ts.transcriptstructure.transcriptStructureId}}"/>
+                                                            <a  th:text="${mainTranscripts.pdbIds}"th:href="@{'/3dProtein?structureId=' + ${mainTranscripts.structureIds}}"/>
                                                         </td>
 
                                                     </tr>

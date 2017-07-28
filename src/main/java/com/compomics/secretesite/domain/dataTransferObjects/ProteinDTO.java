@@ -1,5 +1,9 @@
 package com.compomics.secretesite.domain.dataTransferObjects;
 
+import com.compomics.secretesite.domain.Domain;
+
+import java.util.List;
+
 /**
  * Created by demet on 7/5/2017.
  */
@@ -7,17 +11,14 @@ public class ProteinDTO {
 
     private String proteinAccession;
 
-    private Integer domainStart;
+    private String proteinName;
 
-    private Integer domainEnd;
+    private List<DomainDTO> domainDTOs;
 
-    private String domainAccession;
+    private List<FragmentDTO> mainFragmentDTOs;
 
-    public ProteinDTO(String proteinAccession, Integer domainStart, Integer domainEnd, String domainAccession) {
-        this.proteinAccession = proteinAccession;
-        this.domainStart = domainStart;
-        this.domainEnd = domainEnd;
-        this.domainAccession = domainAccession;
+
+    public ProteinDTO() {
     }
 
     public String getProteinAccession() {
@@ -28,28 +29,27 @@ public class ProteinDTO {
         this.proteinAccession = proteinAccession;
     }
 
-    public Integer getDomainStart() {
-        return domainStart;
+    public String getProteinName() {
+        return proteinName;
     }
 
-    public void setDomainStart(Integer domainStart) {
-        this.domainStart = domainStart;
+    public void setProteinName(String proteinName) {
+        this.proteinName = proteinName;
     }
 
-    public Integer getDomainEnd() {
-        return domainEnd;
+    public List<DomainDTO> getDomainDTOs() {
+        return domainDTOs;
     }
 
-    public void setDomainEnd(Integer domainEnd) {
-        this.domainEnd = domainEnd;
+    public void setDomainDTOs(List<DomainDTO> domainDTOs) {
+        this.domainDTOs = domainDTOs;
     }
 
-    public String getDomainAccession() {
-        return domainAccession;
+    public List<FragmentDTO> getMainFragmentDTOs() {
+        return mainFragmentDTOs;
     }
 
-    public void setDomainAccession(String domainAccession) {
-        this.domainAccession = domainAccession;
+    public void setMainFragmentDTOs(List<FragmentDTO> mainFragmentDTOs) {
+        this.mainFragmentDTOs = mainFragmentDTOs;
     }
-
 }
