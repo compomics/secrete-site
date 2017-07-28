@@ -23,10 +23,13 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <start-class>com.compomics.secretesite.SecreteSiteApplication</start-class>
-        <packaging-type>jar</packaging-type>
+        <packaging.type>jar</packaging.type>
     </properties>
 
     <profiles>
+        <profile>
+            <id>deployment</id>
+        </profile>
         <profile>
             <id>development</id>
             <activation>
@@ -131,21 +134,36 @@
                     </compilerArgs>
                 </configuration>
             </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/resources</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources/</directory>
+                                    <filtering>true</filtering>
+                                    <excludes>
+                                        <exclude>data.zip</exclude>
+                                    </excludes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
         <resources>
             <resource>
                 <filtering>true</filtering>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>application.properties</include>
-                    <include>data.zip</include>
-                </includes>
-            </resource>
-            <resource>
-                <filtering>false</filtering>
-                <directory>src/main/resources</directory>
+                <directory>src/main/resources/</directory>
                 <excludes>
-                    <exclude>application.properties</exclude>
                     <exclude>data.zip</exclude>
                 </excludes>
             </resource>

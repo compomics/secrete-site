@@ -42,5 +42,5 @@ public class ProteinDomain {
     /**
      * certainty of the domain being associated with the sequence part
      */
-    private Long eValue;
+    //private Long eValue;
 }
