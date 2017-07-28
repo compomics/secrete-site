@@ -36,12 +36,12 @@ public class Transcript {
     /**
      * start on the primary protein sequence
      */
-    private Integer sequenceStart;
+    private Integer fragmentStart;
 
     /**
      * end on the primary protein sequence
      */
-    private Integer sequenceEnd;
+    private Integer fragmentEnd;
 
     /**
      * cDNA sequence of the experimental transcript
@@ -70,6 +70,9 @@ public class Transcript {
     @JsonManagedReference
     private Set<TranscriptsFoundInStructure> foundIn = new HashSet<>();
 
+    //private Integer isMainTranscript;
+
+
     /**
      * the classification of the secretion
      */
@@ -84,8 +87,8 @@ public class Transcript {
 
     public Transcript(String ensembleTranscriptAccession, String transcript_sequence, Integer sequence_start,Integer sequence_end, Gene parentGene) {
         this.ensembleTranscriptAccession = ensembleTranscriptAccession;
-        this.sequenceStart = sequence_start;
-        this.sequenceEnd = sequence_end;
+        this.fragmentStart = sequence_start;
+        this.fragmentEnd = sequence_end;
         this.transcriptSequence = transcript_sequence;
         this.parentGene = parentGene;
     }
