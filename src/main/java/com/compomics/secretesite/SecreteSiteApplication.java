@@ -6,14 +6,14 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.scheduling.annotation.EnableAsync;
 
-@SpringBootApplication
-@EnableAsync
+//@SpringBootApplication
+//@EnableAsync
 public class SecreteSiteApplication extends SpringBootServletInitializer {
 
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(SecreteSiteApplication.class);
-    }
+    //@Override
+    //protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+    //    return application.sources(SecreteSiteApplication.class);
+    //}
 
     public static void main(String[] args) {
         SpringApplication.run(SecreteSiteApplication.class, args);
