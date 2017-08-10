@@ -13,6 +13,8 @@ public class ProteinDTO {
 
     private String proteinName;
 
+    private String proteinLabel;
+
     private List<DomainDTO> domainDTOs;
 
     private List<FragmentDTO> mainFragmentDTOs;
@@ -35,6 +37,14 @@ public class ProteinDTO {
 
     public void setProteinName(String proteinName) {
         this.proteinName = proteinName;
+    }
+
+    public String getProteinLabel() {
+        return proteinLabel;
+    }
+
+    public void setProteinLabel(String proteinLabel) {
+        this.proteinLabel = proteinLabel;
     }
 
     public List<DomainDTO> getDomainDTOs() {

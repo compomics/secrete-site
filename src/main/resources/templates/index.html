@@ -6,6 +6,7 @@
 
     <link th:href="@{/css/bootstrap.min.css}"
           rel="stylesheet" media="screen" />
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
     <link th:href="@{/css/overview.css}"  rel="stylesheet" media="screen" />
     <link th:href="@{/css/bootstrap-table-expandable.css}"  rel="stylesheet" />
     <script src="//cdn.bio.sh/msa/latest/msa.min.gz.js"></script>
@@ -64,7 +65,7 @@
 <body>
 <div th:insert="~{fragments/header :: header}"></div>
 <div class="container">
-<div id="msa" style="height: 200px">Loading protein view...</div>
+<div id="msa" style="height: 300px">Loading protein view...</div>
     <!--/*@thymesVar id="proteinDTOS" type="List<com.compomics.secretesite.domain.dataTransferObjects.ProteinDTO>"*/-->
 <script th:inline="javascript">
     //<![CDATA[
@@ -74,42 +75,17 @@
         var proteinDTOS = /*[[${proteinDTOSJson}]]*/;
 
         var proteinObj = JSON.parse(proteinDTOS);
+        var fastaFiles = '';
         for(i=0; i<proteinObj.length; i++){
 
             var url = 'http://www.uniprot.org/uniprot/' + proteinObj[i].proteinAccession + '.fasta';
-            var domainDTOs = proteinObj[i].domainDTOs;
-            $.ajax({
+
+            var readFasta = $.ajax({
                 type: 'GET',
                 url: url,
                 dataType: 'text',
                 success: function (data) {
-
-                    var label = data.split("|")[2].split(" ")[0];
-
-                    var seqs = msa.io.fasta.parse(data);
-
-                    var m = msa({
-                        el: document.getElementById("msa"),
-                        seqs: seqs
-                    });
-
-                    for(j=0; j<domainDTOs.length; j++){
-
-                        var feature = " . domain " + domainDTOs[j].domainStart+"  "+domainDTOs[j].domainEnd+
-                            "	.	.  .  Name=" + domainDTOs[j].domainAccession + " ;Color=" + getRandomColor();
-
-                        m.seqs.addFeatures(msa.io.gff.parseSeqs(label + feature));
-                    }
-
-
-
-                    m.g.vis.set("labelId", false);
-                    m.g.vis.set("labelName", false);
-                    m.g.vis.set("scaleslider", true);
-
-
-                    m.render();
-
+                    fastaFiles += data;
                 },
 
                 error: function (e) {
@@ -117,6 +93,33 @@
                 }
             });
         }
+
+        readFasta.done( function() {
+            var seqs = msa.io.fasta.parse(fastaFiles);
+
+            var m = msa({
+                el: document.getElementById("msa"),
+                seqs: seqs
+            });
+            for(i=0; i<proteinObj.length; i++){
+                var domainDTOs = proteinObj[i].domainDTOs;
+                for(j=0; j<domainDTOs.length; j++){
+
+                    var feature = " . domain " + domainDTOs[j].domainStart+"  "+domainDTOs[j].domainEnd+
+                        "	.	.  .  Name=" + domainDTOs[j].domainAccession + " ;Color=" + getRandomColor();
+
+                    m.seqs.addFeatures(msa.io.gff.parseSeqs(proteinObj[i].proteinLabel + feature));
+                }
+            }
+            m.g.colorscheme.addStaticScheme("own","gray");
+            m.g.colorscheme.set("scheme", "own");
+            m.g.vis.set("labelId", false);
+            m.g.vis.set("labelName", true);
+            m.g.vis.set("scaleslider", true);
+
+            m.render();
+        });
+
 
 
     }
@@ -142,7 +145,8 @@
             <thead>
             <th style="width: 3%"></th>
             <th style="width: 15%">Uniprot Accession</th>
-            <th style="width: 62%">Protein Name</th>
+            <th style="width: 10%">Protein Label</th>
+            <th style="width: 52%">Protein Name</th>
             <th style="width: 10%"># Domains</th>
             <th style="width: 10%"># Fragments</th>
 
@@ -152,12 +156,13 @@
                     <tr th:attr="data-target='#'+${protein.proteinAccession}" class="clickable">
                         <td><span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></td>
                         <td th:text="${protein.proteinAccession}"></td>
+                        <td th:text="${protein.proteinLabel}"></td>
                         <td th:text="${protein.proteinName}"></td>
                         <td th:text="${protein.domainDTOs.size()}"></td>
                         <td th:text="${protein.mainFragmentDTOs.size()}"></td>
                     </tr>
                     <tr th:id="${protein.proteinAccession}">
-                        <td colspan="5">
+                        <td colspan="6">
                             <div  class="panel panel-default">
                                 <div class="panel-heading">
                   	                <span class="clickable panel-collapsed">
@@ -242,14 +247,6 @@
     <script th:inline="javascript">
 
         //<![CDATA[
-
-        $('#btn2').on('click', function () {
-
-            window.location = '/3dProtein?structureId=2';
-
-            return false;
-        });
-
 
             jQuery(function($) {
                 $('.panel-heading span.clickable').on("click", function(e) {
