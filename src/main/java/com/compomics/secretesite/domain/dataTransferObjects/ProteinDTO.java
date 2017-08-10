@@ -1,5 +1,9 @@
 package com.compomics.secretesite.domain.dataTransferObjects;
 
+import com.compomics.secretesite.domain.Domain;
+
+import java.util.List;
+
 /**
  * Created by demet on 7/5/2017.
  */
@@ -7,17 +11,16 @@ public class ProteinDTO {
 
     private String proteinAccession;
 
-    private Integer domainStart;
+    private String proteinName;
 
-    private Integer domainEnd;
+    private String proteinLabel;
 
-    private String domainAccession;
+    private List<DomainDTO> domainDTOs;
 
-    public ProteinDTO(String proteinAccession, Integer domainStart, Integer domainEnd, String domainAccession) {
-        this.proteinAccession = proteinAccession;
-        this.domainStart = domainStart;
-        this.domainEnd = domainEnd;
-        this.domainAccession = domainAccession;
+    private List<FragmentDTO> mainFragmentDTOs;
+
+
+    public ProteinDTO() {
     }
 
     public String getProteinAccession() {
@@ -28,28 +31,35 @@ public class ProteinDTO {
         this.proteinAccession = proteinAccession;
     }
 
-    public Integer getDomainStart() {
-        return domainStart;
+    public String getProteinName() {
+        return proteinName;
     }
 
-    public void setDomainStart(Integer domainStart) {
-        this.domainStart = domainStart;
+    public void setProteinName(String proteinName) {
+        this.proteinName = proteinName;
     }
 
-    public Integer getDomainEnd() {
-        return domainEnd;
+    public String getProteinLabel() {
+        return proteinLabel;
     }
 
-    public void setDomainEnd(Integer domainEnd) {
-        this.domainEnd = domainEnd;
+    public void setProteinLabel(String proteinLabel) {
+        this.proteinLabel = proteinLabel;
     }
 
-    public String getDomainAccession() {
-        return domainAccession;
+    public List<DomainDTO> getDomainDTOs() {
+        return domainDTOs;
     }
 
-    public void setDomainAccession(String domainAccession) {
-        this.domainAccession = domainAccession;
+    public void setDomainDTOs(List<DomainDTO> domainDTOs) {
+        this.domainDTOs = domainDTOs;
     }
 
+    public List<FragmentDTO> getMainFragmentDTOs() {
+        return mainFragmentDTOs;
+    }
+
+    public void setMainFragmentDTOs(List<FragmentDTO> mainFragmentDTOs) {
+        this.mainFragmentDTOs = mainFragmentDTOs;
+    }
 }

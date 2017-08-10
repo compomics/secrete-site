@@ -36,12 +36,12 @@ public class Transcript {
     /**
      * start on the primary protein sequence
      */
-    private Integer fragmentStart;
+    private Integer sequenceStart;
 
     /**
      * end on the primary protein sequence
      */
-    private Integer fragmentEnd;
+    private Integer sequenceEnd;
 
     /**
      * cDNA sequence of the experimental transcript
@@ -87,8 +87,8 @@ public class Transcript {
 
     public Transcript(String ensembleTranscriptAccession, String transcript_sequence, Integer sequence_start,Integer sequence_end, Gene parentGene) {
         this.ensembleTranscriptAccession = ensembleTranscriptAccession;
-        this.fragmentStart = sequence_start;
-        this.fragmentEnd = sequence_end;
+        this.sequenceEnd = sequence_start;
+        this.sequenceEnd = sequence_end;
         this.transcriptSequence = transcript_sequence;
         this.parentGene = parentGene;
     }

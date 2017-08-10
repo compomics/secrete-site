@@ -10,9 +10,27 @@
           th:href="@{/css/bootstrap.min.css}">
 </head>
 <body>
-<nav class="navbar navbar-inverse navbar-fixed-bottom" role="navigation" th:fragment="footer">
+<nav class="navbar navbar-default navbar-fixed-bottom" role="navigation" th:fragment="footer" style="background-color: #e0e0e0">
     <div class="container" id="footer">
-        FOOTER
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+
+                <li><a target="_blank" href="http://www.vib.be" style="padding-left: 15px;">
+                    <img border="0" th:src="@{/images/VIBLogo.png}" width="84px" height="50px"/>
+                </a></li>
+                <li><a target="_blank" href="http://www.ugent.be/en">
+                    <img border="0" th:src="@{/images/ugent-logo.png}" width="86px" height="67px" />
+                </a></li>
+
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a th:href="@{'/information'}" >Information</a></li>
+                <li><a th:href="@{'/help'}" >Help</a></li>
+            </ul>
+
+        </div><!-- /.navbar-collapse -->
+
     </div>
     <!-- /.container -->
 </nav>

@@ -13,38 +13,82 @@
 </head>
 <body>
 <div th:insert="~{fragments/header :: header}"></div>
+<div class="vertical-center">
+
 <div class="container">
-    <div class="col-sm-6 col-sm-offset-3">
-        <p style="font-size: medium;">Search by uniprot accession or name.</p>
-    </div>
-    <div class="col-sm-6 col-sm-offset-3">
-        <div class="panel panel-default" style="display: block;">
-            <div class="panel-heading panel-heading-custom text-center"><h3 class="panel-title">SEARCH</h3></div>
-            <div class="panel-body">
-                <div class="row">
-                    <div class="col-sm-10 col-sm-offset-1">
+
+    <div class="row">
+        <div class="col-sm-3 col-sm-offset-1">
+            <ul class="nav nav-pills  nav-stacked">
+                <li class="active"><a href="#proteinSearch" data-toggle="tab">Protein
+                    Search</a></li>
+                <li><a href="#domainSearch" data-toggle="tab">Domain
+                    Search</a></li>
+            </ul>
+        </div>
+        <div class="col-sm-6">
+            <div class="tab-content" id="tabs">
+                <div class="tab-pane active" id="proteinSearch">
+                    <p style="font-size: medium;">Search by uniprot accession</p>
+                    <div class="panel panel-default" style="display: block;">
+                        <div class="panel-heading panel-heading-custom text-center"><h3 class="panel-title">SEARCH</h3></div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-10 col-sm-offset-1">
                         <span style="float: right; font-size: 11px;">
                             <a href="#" style="text-decoration: underline; color: #62605E;"
                                onclick="setExample2()">#ex2</a>
                         </span>
-                        <span style="float: right; font-size: 11px;">
+                                    <span style="float: right; font-size: 11px;">
                             <a href="#" style="text-decoration: underline; color: #62605E;"
                                onclick="setExample1()">#ex1</a>&#160;&#160;
                         </span>
+                                </div>
+                                <br/>
+                                <div class="input-group input-group-lg col-sm-10 col-sm-offset-1">
+                                    <input type="text" class="form-control" placeholder="Uniprot Accession" id="uniprotAccession">
+                                </div>
+                                <br/>
+                                <div align="center">
+                                    <button type="button" class="btn btn-primary " id="btnSearchProtein" style="width: 104px;">Search
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <br/>
-                    <div class="input-group input-group-lg col-sm-10 col-sm-offset-1">
-                        <input type="text" class="form-control" placeholder="Uniprot Accession" id="uniprotAccession">
-                    </div>
-                    <br/>
-                    <div align="center">
-                        <button type="button" class="btn btn-primary " id="btnSearchProtein" style="width: 104px;">Search
-                        </button>
+                </div>
+
+                <div class="tab-pane" id="domainSearch">
+                    <p style="font-size: medium;">Search by domain id (Pfam)</p>
+                    <div class="panel panel-default" style="display: block;">
+                        <div class="panel-heading panel-heading-custom text-center"><h3 class="panel-title">SEARCH</h3></div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-10 col-sm-offset-1">
+                        <span style="float: right; font-size: 11px;">
+                            <a href="#" style="text-decoration: underline; color: #62605E;"
+                               onclick="setExampleDomain2()">#ex2</a>
+                        </span>
+                                    <span style="float: right; font-size: 11px;">
+                            <a href="#" style="text-decoration: underline; color: #62605E;"
+                               onclick="setExampleDomain1()">#ex1</a>&#160;&#160;
+                        </span>
+                                </div>
+                                <br/>
+                                <div class="input-group input-group-lg col-sm-10 col-sm-offset-1">
+                                    <input type="text" class="form-control" placeholder="PFAM id" id="domainAccession">
+                                </div>
+                                <br/>
+                                <div align="center">
+                                    <button type="button" class="btn btn-primary " id="btnSearchDomain" style="width: 104px;">Search
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 
     <script th:inline="javascript">
@@ -52,7 +96,7 @@
         //<![CDATA[
             $('#btnSearchProtein').on('click', function () {
                 if($('#uniprotAccession').val() != ""){
-                    window.location = '/index?id='+ $('#uniprotAccession').val();
+                    window.location = '/index?protein='+ $('#uniprotAccession').val();
                 }else{
                     var dialogInstance = new BootstrapDialog();
                     dialogInstance.setTitle('INPUT ERROR');
@@ -64,7 +108,25 @@
             });
             $("#uniprotAccession").keyup(function(event){
                 if(event.keyCode == 13){
-                    $("#btnSearchGene").click();
+                    $("#btnSearchProtein").click();
+                }
+            });
+
+            $('#btnSearchDomain').on('click', function () {
+                if($('#domainAccession').val() != ""){
+                    window.location = '/index?domain='+ $('#domainAccession').val();
+                }else{
+                    var dialogInstance = new BootstrapDialog();
+                    dialogInstance.setTitle('INPUT ERROR');
+                    dialogInstance.setMessage('Accession cannot be empty!');
+                    dialogInstance.setType(BootstrapDialog.TYPE_DANGER);
+                    dialogInstance.open();
+                }
+                return false;
+            });
+            $("#domainAccession").keyup(function(event){
+                if(event.keyCode == 13){
+                    $("#btnSearchDomain").click();
                 }
             });
 
@@ -77,8 +139,18 @@
                 document.getElementById('uniprotAccession').value = 'P04637';
                 return false;
             }
+            function setExampleDomain1() {
+                document.getElementById('domainAccession').value = 'PF07710';
+                return false;
+            }
+
+            function setExampleDomain2() {
+                document.getElementById('domainAccession').value = 'PF07710';
+                return false;
+            }
         //]]>
     </script>
+</div>
 </div>
 <div th:insert="~{fragments/footer :: footer}"></div>
 </body>
