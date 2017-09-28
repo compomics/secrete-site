@@ -72,7 +72,7 @@ public class IndexController {
         String domainName = "";
 
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder = null;
+        DocumentBuilder dBuilder;
         try {
             dBuilder = dbFactory.newDocumentBuilder();
             URL u = new URL(url);
@@ -93,12 +93,12 @@ public class IndexController {
         return domainName;
     }
 
-    private List<String> findProteinNameAndLabel(String proteinAccession){
+    public List<String> findProteinNameAndLabel(String proteinAccession){
         String url = "http://www.uniprot.org/uniprot/" + proteinAccession + ".xml";
         List<String> proteinNameLabel= new ArrayList<>();
 
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder = null;
+        DocumentBuilder dBuilder;
         try {
             dBuilder = dbFactory.newDocumentBuilder();
             URL u = new URL(url);
