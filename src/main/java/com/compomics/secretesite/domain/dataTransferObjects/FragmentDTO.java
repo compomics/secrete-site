@@ -7,6 +7,8 @@ import java.util.List;
  */
 public class FragmentDTO {
 
+    private Integer fragmentId;
+
     private String fragmentAccession;
 
     private String secretionStatus;
@@ -19,15 +21,20 @@ public class FragmentDTO {
 
     private String structureIds;
 
+    private String species;
+
     private List<FragmentDTO> childFragmentDTOs;
 
-    public FragmentDTO(String fragmentAccession, int fragmentStart, int fragmentEnd, String pdbIds, String structureIds, String secretionStatus) {
+    public FragmentDTO(Integer fragmentId, String fragmentAccession, int fragmentStart, int fragmentEnd, String pdbIds,
+                       String structureIds, String secretionStatus, String species) {
+        this.fragmentId = fragmentId;
         this.fragmentAccession = fragmentAccession;
         this.fragmentStart = fragmentStart;
         this.fragmentEnd = fragmentEnd;
         this.pdbIds = pdbIds;
         this.structureIds = structureIds;
         this.secretionStatus = secretionStatus;
+        this.species = species;
     }
 
     public String getFragmentAccession() {
@@ -76,6 +83,22 @@ public class FragmentDTO {
 
     public void setStructureIds(String structureIds) {
         this.structureIds = structureIds;
+    }
+
+    public Integer getFragmentId() {
+        return fragmentId;
+    }
+
+    public void setFragmentId(Integer fragmentId) {
+        this.fragmentId = fragmentId;
+    }
+
+    public String getSpecies() {
+        return species;
+    }
+
+    public void setSpecies(String species) {
+        this.species = species;
     }
 
     public List<FragmentDTO> getChildFragmentDTOs() {

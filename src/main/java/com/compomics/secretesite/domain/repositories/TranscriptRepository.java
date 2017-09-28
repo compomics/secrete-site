@@ -15,5 +15,7 @@ public interface TranscriptRepository extends PagingAndSortingRepository<Transcr
 
     List<Transcript> findByEnsembleTranscriptAccession(String ensemblTranscriptAccession);
 
+    Transcript findByTranscriptId(Integer transcriptId);
+
 
 }

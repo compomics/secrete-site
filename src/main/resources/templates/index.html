@@ -9,10 +9,16 @@
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
     <link th:href="@{/css/overview.css}"  rel="stylesheet" media="screen" />
     <link th:href="@{/css/bootstrap-table-expandable.css}"  rel="stylesheet" />
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/css/bootstrap-dialog.min.css"
+            rel="stylesheet" />
     <script src="//cdn.bio.sh/msa/latest/msa.min.gz.js"></script>
     <script th:src="@{/js/jquery-3.2.1.min.js}"></script>
     <script th:src="@{/js/bootstrap.min.js}"></script>
     <script th:src="@{/js/bootstrap-table-expandable.js}"></script>
+    <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/js/bootstrap-dialog.min.js"
+            type="text/javascript"></script>
     <style>
 
         .panel-header {
@@ -74,6 +80,10 @@
 
         var proteinDTOS = /*[[${proteinDTOSJson}]]*/;
 
+        if(proteinDTOS == null || proteinDTOS == "[]"){
+            alert("xx");
+        }
+
         var proteinObj = JSON.parse(proteinDTOS);
         var fastaFiles = '';
         for(i=0; i<proteinObj.length; i++){
@@ -106,7 +116,7 @@
                 for(j=0; j<domainDTOs.length; j++){
 
                     var feature = " . domain " + domainDTOs[j].domainStart+"  "+domainDTOs[j].domainEnd+
-                        "	.	.  .  Name=" + domainDTOs[j].domainAccession + " ;Color=" + getRandomColor();
+                        "	.	.  .  Name=" + domainDTOs[j].domainAccession + " ;Color=yellow" ;
 
                     m.seqs.addFeatures(msa.io.gff.parseSeqs(proteinObj[i].proteinLabel + feature));
                 }
@@ -128,14 +138,6 @@
 
     });
 
-    function getRandomColor() {
-        var letters = '0123456789ABCDEF';
-        var color = '#';
-        for (var i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 16)];
-        }
-        return color;
-    }
     //]]>
 </script>
 
@@ -210,11 +212,12 @@
                                     <div class="wrap">
                                         <table class="head">
                                             <tr>
-                                                <th style="width: 30%;">Fragment Accession</th>
+                                                <th style="width: 15%;">Transcript Accession</th>
                                                 <th style="width: 10%;">Secretion Status</th>
                                                 <th style="width: 15%;">Fragment Start</th>
                                                 <th style="width: 15%;">Fragment End</th>
-                                                <th style="width: 30%;">PDB Ids</th>
+                                                <th style="width: 25%;">Species</th>
+                                                <th style="width: 20%;">PDB Ids</th>
 
                                             </tr>
                                         </table>
@@ -222,12 +225,13 @@
                                             <table>
                                                 <th:block th:each="mainTranscripts:${protein.mainFragmentDTOs}">
                                                     <tr>
-                                                        <td style="width: 30%;" th:text="${mainTranscripts.fragmentAccession}"></td>
+                                                        <td style="width: 15%;" th:text="${mainTranscripts.fragmentAccession}"></td>
                                                         <td style="width: 10%;" th:text="${mainTranscripts.secretionStatus}"></td>
                                                         <td style="width: 15%;" th:text="${mainTranscripts.fragmentStart}"></td>
                                                         <td style="width: 15%;" th:text="${mainTranscripts.fragmentEnd}"></td>
-                                                        <td style="width: 30%;" >
-                                                            <a  th:text="${mainTranscripts.pdbIds}"th:href="@{'/3dProtein?structureId=' + ${mainTranscripts.structureIds}}"/>
+                                                        <td style="width: 25%;" th:text="${mainTranscripts.species}"></td>
+                                                        <td style="width: 20%;" >
+                                                            <a  th:text="${mainTranscripts.pdbIds}"th:href="@{'/3dProtein?transcriptId=' + ${mainTranscripts.fragmentId}}"/>
                                                         </td>
 
                                                     </tr>

@@ -75,7 +75,7 @@
                                 <option value="element">By Element</option>
                                 <option value="bfactor">By B-factor</option>
                                 <option value="sstruc">By Secondary Structure</option>
-                                <option value="custom">By Transcript Structure</option>
+                                <option value="custom">By Fragment Structure</option>
                             </select>
                         </div>
                     </div>
@@ -164,13 +164,13 @@
         return prefix ? prefix + " " + msg : msg;
     };
 
-    function createCustomScheme(schemeValue, start, end, chain){
+    function createCustomScheme(schemeValue, start, end, chain, color){
         if(schemeValue != 'custom'){
             return schemeValue
         }else{
             var schemeId = NGL.ColormakerRegistry.addSelectionScheme( [
 
-                [ "red", start +"-" + end +" and :" + chain ]
+                [ color, start +"-" + end +" and :" + chain ]
             ]);
 
             return schemeId;
@@ -200,15 +200,15 @@
         });
     }
 
-    function createMulti3d(schemeId, molecularRepresentation, ligand, pdbs, start, end, chain) {
+    function createMulti3d(schemeId, molecularRepresentation, ligand, pdbs, start, end, chain, color) {
 
         for(i=0; i<pdbs.length; i++) {
             var stage = new NGL.Stage("port" +i);
-            create3d(schemeId, molecularRepresentation, ligand, pdbs[i], stage, start[i], end[i], chain[i]);
+            create3d(schemeId, molecularRepresentation, ligand, pdbs[i], stage, start[i], end[i], chain[i], color[i]);
         }
     }
 
-    function create3d(schemeId, molecularRepresentation, ligand, pdbId, stage, start, end, chain){
+    function create3d(schemeId, molecularRepresentation, ligand, pdbId, stage, start, end, chain, color){
 
         loadFile(stage, schemeId, molecularRepresentation, ligand, pdbId);
         var selectedStyle = $("#styleSelect").val();
@@ -221,8 +221,8 @@
                 }
             }
             stage.compList[0].addRepresentation(selectedStyle, {
-                colorScheme: createCustomScheme(value, start, end, chain),
-                color : createCustomScheme(value, start, end, chain)
+                colorScheme: createCustomScheme(value, start, end, chain, color),
+                color : createCustomScheme(value, start, end, chain, color)
             });
 
         } );
@@ -238,7 +238,7 @@
             selectedStyle = value;
 
             stage.compList[0].addRepresentation(value, {
-                colorScheme: createCustomScheme($("#colorSchemeSelect").val(), start, end, chain)
+                colorScheme: createCustomScheme($("#colorSchemeSelect").val(), start, end, chain, color)
             });
         } );
         var selectedLigand = $("#ligandSelect").val();
@@ -294,12 +294,19 @@
         var start =[];
         var end = [];
         var chain = [];
+        var color = [];
         for(i=0; i<transcriptStructures.length; i++){
             pdbs.push(transcriptStructures[i].pdbId);
             start.push(transcriptStructures[i].fragmentStart);
             end.push(transcriptStructures[i].fragmentEnd);
             chain.push(transcriptStructures[i].chain.split(" ")[1]);
+            if(transcriptStructures[i].transcriptStatus == "enriched"){
+                color.push("red");
+            }else if(transcriptStructures[i].transcriptStatus == "depleted"){
+                color.push("blue");
+            }
         }
+
         for(counter=0; counter<pdbs.length; counter++){
             var width = parseInt($('#viewport3d').css('width'))/pdbs.length;
             jQuery('<div/>', {
@@ -318,7 +325,7 @@
             }).css("width", width-pdbs.length).appendTo('#viewport3d');
 
         }
-        createMulti3d($("#colorSchemeSelect").val(), $("#styleSelect").val(), $("#ligandSelect").val(), pdbs, start, end, chain);
+        createMulti3d($("#colorSchemeSelect").val(), $("#styleSelect").val(), $("#ligandSelect").val(), pdbs, start, end, chain, color);
     } );
     /*]]>*/
 </script>
