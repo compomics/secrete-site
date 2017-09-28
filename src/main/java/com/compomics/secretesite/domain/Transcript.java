@@ -15,8 +15,8 @@ import java.util.Set;
  */
 @Entity
 @Data
-@EqualsAndHashCode(exclude = {"parentGene","foundIn","transcriptsExpressableInSpecies","transcriptProteins"})
-@ToString(exclude = {"parentGene","foundIn","transcriptsExpressableInSpecies","transcriptProteins"})
+@EqualsAndHashCode(exclude = {"parentGene","foundIn","transcriptsExpressableInSpecies","transcriptProteins","transcriptCluster"})
+@ToString(exclude = {"parentGene","foundIn","transcriptsExpressableInSpecies","transcriptProteins","transcriptCluster"})
 @NoArgsConstructor
 public class Transcript {
 
@@ -70,9 +70,6 @@ public class Transcript {
     @JsonManagedReference
     private Set<TranscriptsFoundInStructure> foundIn = new HashSet<>();
 
-    //private Integer isMainTranscript;
-
-
     /**
      * the classification of the secretion
      */
@@ -85,9 +82,14 @@ public class Transcript {
     @JsonManagedReference
     private Set<TranscriptProtein> transcriptProteins = new HashSet<>();
 
+    @OneToMany(mappedBy = "transcriptClusterMember",cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private Set<TranscriptCluster> transcriptCluster = new HashSet<>();
+
+
     public Transcript(String ensembleTranscriptAccession, String transcript_sequence, Integer sequence_start,Integer sequence_end, Gene parentGene) {
         this.ensembleTranscriptAccession = ensembleTranscriptAccession;
-        this.sequenceEnd = sequence_start;
+        this.sequenceStart = sequence_start;
         this.sequenceEnd = sequence_end;
         this.transcriptSequence = transcript_sequence;
         this.parentGene = parentGene;

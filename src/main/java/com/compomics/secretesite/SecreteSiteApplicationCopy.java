@@ -1,6 +1,7 @@
 package com.compomics.secretesite;
 
 
+import com.compomics.secretesite.controllers.IndexController;
 import com.compomics.secretesite.domain.*;
 import com.compomics.secretesite.domain.repositories.*;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
@@ -12,11 +13,12 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.LineNumberReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 //@SpringBootApplication
@@ -25,16 +27,16 @@ public class SecreteSiteApplicationCopy {
 
     private SpeciesRepository speciesRepository;
     private GeneRepository geneRepository;
-    private TranscriptRepository transcriptRepository;
     private ProteinRepository proteinRepository;
     private TranscriptEarlyFoldingRepository transcriptEarlyFoldingRepository;
+    private IndexController indexController;
 
-    public SecreteSiteApplicationCopy(SpeciesRepository speciesRepository, GeneRepository geneRepository,TranscriptRepository transcriptRepository,ProteinRepository proteinRepository,TranscriptEarlyFoldingRepository transcriptEarlyFoldingRepository) {
+    public SecreteSiteApplicationCopy(SpeciesRepository speciesRepository, GeneRepository geneRepository, ProteinRepository proteinRepository, TranscriptEarlyFoldingRepository transcriptEarlyFoldingRepository, IndexController indexController) {
         this.speciesRepository = speciesRepository;
         this.geneRepository = geneRepository;
-        this.transcriptRepository = transcriptRepository;
         this.proteinRepository = proteinRepository;
         this.transcriptEarlyFoldingRepository = transcriptEarlyFoldingRepository;
+        this.indexController = indexController;
     }
 
     public static void main(String[] args) {
@@ -46,12 +48,11 @@ public class SecreteSiteApplicationCopy {
     public CommandLineRunner commandLineRunner() {
         return args -> {
 
-
             Map<String, Gene> referenceGenes = new HashMap<>();
 
             Map<String, Domain> mappedDomains = new HashMap<>();
 
-            Map<Integer,String> seqNumberToAccession = new HashMap<>();
+            Map<Integer, String> seqNumberToAccession = new HashMap<>();
 
             Species pichiaPastoris = new Species(4922, "Pichia pastoris");
 
@@ -59,7 +60,7 @@ public class SecreteSiteApplicationCopy {
 
             ArrayListValuedHashMap<Integer, TranscriptStructure> transcriptStructureMap = new ArrayListValuedHashMap<>();
             HashMap<Integer, Transcript> transcripts = new HashMap<>();
-            ArrayListValuedHashMap<Transcript,ProteinDomain>transcriptsdomains = new ArrayListValuedHashMap<>();
+            ArrayListValuedHashMap<Transcript, ProteinDomain> transcriptsdomains = new ArrayListValuedHashMap<>();
 
             try (LineNumberReader reader = new LineNumberReader(new FileReader(new File(args[0], "PpE_PDB_hit.txt")))) {
                 reader.readLine();
@@ -123,7 +124,6 @@ public class SecreteSiteApplicationCopy {
             }
 
 
-
             try (LineNumberReader reader = new LineNumberReader(new FileReader(new File(args[0], "Pp_resultstable_enriched.txt")))) {
                 reader.readLine();
                 String line = reader.readLine();
@@ -137,11 +137,11 @@ public class SecreteSiteApplicationCopy {
                         gene = referenceGenes.get(splitline[1]);
                     }
 
-                    Transcript transcript = new Transcript(splitline[2], splitline[9], Integer.valueOf(splitline[3]), Integer.valueOf(splitline[4]), gene);
+                    Transcript transcript = new Transcript(splitline[2], splitline[9], Integer.valueOf(splitline[7]), Integer.valueOf(splitline[8]), gene);
 
                     transcripts.put(Integer.parseInt(splitline[0]), transcript);
 
-                    seqNumberToAccession.put(Integer.parseInt(splitline[0]),splitline[2]);
+                    seqNumberToAccession.put(Integer.parseInt(splitline[0]), splitline[2]);
 
                     transcript.setSecretionStatus("enriched");
 
@@ -170,37 +170,39 @@ public class SecreteSiteApplicationCopy {
                 }
             }
 
-                try (LineNumberReader reader = new LineNumberReader(new FileReader(new File(args[0], "PPE_scan.txt")))) {
+            try (LineNumberReader reader = new LineNumberReader(new FileReader(new File(args[0], "PPE_scan.txt")))) {
 
-                    String line = reader.readLine();
+                String line = reader.readLine();
 
-                    while (line != null) {
+                while (line != null) {
 
-                        String[] splitline = line.split("\t");
+                    String[] splitline = line.split("\t");
 
-                        Transcript transcript = transcripts.get(Integer.parseInt(splitline[0].split("_")[1]));
+                    Transcript transcript = transcripts.get(Integer.parseInt(splitline[0].split("_")[1]));
 
-                        Domain domain;
+                    Domain domain;
 
-                        if (mappedDomains.containsKey(splitline[4])) {
-                            domain = mappedDomains.get(splitline[4]);
-                        } else {
-                            domain = new Domain();
-                            domain.setDomainAccession(splitline[4]);
-                            mappedDomains.put(splitline[4], domain);
-                        }
-
-                        ProteinDomain proteinDomain = new ProteinDomain();
-
-                        proteinDomain.setDomain(domain);
-                        proteinDomain.setDomainStart(Integer.parseInt(splitline[6]));
-                        proteinDomain.setDomainEnd(Integer.parseInt(splitline[7]));
-
-                        transcriptsdomains.put(transcript,proteinDomain);
-                        line = reader.readLine();
+                    if (mappedDomains.containsKey(splitline[4])) {
+                        domain = mappedDomains.get(splitline[4]);
+                    } else {
+                        domain = new Domain();
+                        domain.setDomainAccession(splitline[4]);
+                        mappedDomains.put(splitline[4], domain);
                     }
 
+                    ProteinDomain proteinDomain = new ProteinDomain();
+
+                    proteinDomain.setDomain(domain);
+                    proteinDomain.setDomainStart(Integer.parseInt(splitline[6]));
+                    proteinDomain.setDomainEnd(Integer.parseInt(splitline[7]));
+
+                    transcriptsdomains.put(transcript, proteinDomain);
+                    line = reader.readLine();
                 }
+
+            }
+
+
 
             transcriptStructureMap = new ArrayListValuedHashMap<>();
 
@@ -290,7 +292,7 @@ public class SecreteSiteApplicationCopy {
                     proteinDomain.setDomainStart(Integer.parseInt(splitline[6]));
                     proteinDomain.setDomainEnd(Integer.parseInt(splitline[7]));
 
-                    transcriptsdomains.put(transcript,proteinDomain);
+                    transcriptsdomains.put(transcript, proteinDomain);
                     line = reader.readLine();
                 }
 
@@ -313,7 +315,7 @@ public class SecreteSiteApplicationCopy {
 
                     transcripts.put(Integer.parseInt(splitline[0]), transcript);
 
-                    seqNumberToAccession.put(Integer.parseInt(splitline[0]),splitline[2]);
+                    seqNumberToAccession.put(Integer.parseInt(splitline[0]), splitline[2]);
 
                     transcript.setSecretionStatus("depleted");
 
@@ -367,7 +369,6 @@ public class SecreteSiteApplicationCopy {
                     structure.setFragmentEnd(Integer.parseInt(splitdata[6]));
                     structure.setIdentityScore(Double.parseDouble(splitdata[8]));
                     structure.setNumberOfMatchedResidues(Integer.parseInt(splitdata[9]));
-
 
                     transcriptStructureMap.put(Integer.parseInt(splitdata[0].split("Seq_")[1]), structure);
                 }
@@ -435,7 +436,7 @@ public class SecreteSiteApplicationCopy {
                     proteinDomain.setDomainStart(Integer.parseInt(splitline[6]));
                     proteinDomain.setDomainEnd(Integer.parseInt(splitline[7]));
 
-                    transcriptsdomains.put(transcript,proteinDomain);
+                    transcriptsdomains.put(transcript, proteinDomain);
                     line = reader.readLine();
                 }
 
@@ -455,13 +456,13 @@ public class SecreteSiteApplicationCopy {
                         gene = referenceGenes.get(splitline[1]);
                     }
 
-                    Transcript transcript = new Transcript(splitline[2], splitline[9], Integer.valueOf(splitline[3]), Integer.valueOf(splitline[4]), gene);
+                    Transcript transcript = new Transcript(splitline[2], splitline[9], Integer.valueOf(splitline[7]), Integer.valueOf(splitline[8]), gene);
 
                     transcript.setSecretionStatus("enriched");
 
                     transcripts.put(Integer.parseInt(splitline[0]), transcript);
 
-                    seqNumberToAccession.put(Integer.parseInt(splitline[0]),splitline[2]);
+                    seqNumberToAccession.put(Integer.parseInt(splitline[0]), splitline[2]);
 
                     TranscriptsExpressableInSpecies transcriptsExpressableInSpecies = new TranscriptsExpressableInSpecies();
 
@@ -513,7 +514,6 @@ public class SecreteSiteApplicationCopy {
                     transcriptStructureMap.put(Integer.parseInt(splitdata[0].split("Seq_")[1]), structure);
                 }
             }
-
 
 
             try (LineNumberReader reader = new LineNumberReader(new FileReader(new File(args[0], "ScD_EF_positions.txt")))) {
@@ -576,7 +576,7 @@ public class SecreteSiteApplicationCopy {
                     proteinDomain.setDomainStart(Integer.parseInt(splitline[6]));
                     proteinDomain.setDomainEnd(Integer.parseInt(splitline[7]));
 
-                    transcriptsdomains.put(transcript,proteinDomain);
+                    transcriptsdomains.put(transcript, proteinDomain);
                     line = reader.readLine();
                 }
 
@@ -597,12 +597,12 @@ public class SecreteSiteApplicationCopy {
                         gene = referenceGenes.get(splitline[1]);
                     }
 
-                    Transcript transcript = new Transcript(splitline[2], splitline[9], Integer.valueOf(splitline[3]), Integer.valueOf(splitline[4]), gene);
+                    Transcript transcript = new Transcript(splitline[2], splitline[9], Integer.valueOf(splitline[7]), Integer.valueOf(splitline[8]), gene);
 
                     transcript.setSecretionStatus("depleted");
 
                     transcripts.put(Integer.parseInt(splitline[0]), transcript);
-                    seqNumberToAccession.put(Integer.parseInt(splitline[0]),splitline[2]);
+                    seqNumberToAccession.put(Integer.parseInt(splitline[0]), splitline[2]);
 
                     TranscriptsExpressableInSpecies transcriptsExpressableInSpecies = new TranscriptsExpressableInSpecies();
 
@@ -627,58 +627,112 @@ public class SecreteSiteApplicationCopy {
 
                     line = reader.readLine();
                 }
+            }
+                Set<TranscriptCluster> clusters = new HashSet<>();
+
+                new ArrayList<String>(){{this.add("PpD_Cluster_info.txt");
+                    this.add("PpE_cluster_info.txt");
+                    this.add("ScD_Cluster_info.txt");
+                    this.add("ScE_Cluster_info.txt");
+                }}.forEach(filename -> {
+
+                    try (LineNumberReader reader = new LineNumberReader(new FileReader(new File(args[0], filename)))) {
+
+                        String line = reader.readLine();
+
+                        line = reader.readLine();
+
+                        while (line != null) {
+
+                            String[] lines = line.split("\t");
+
+                            if(lines.length>1) {
+
+                                Transcript transcript = transcripts.get(Integer.parseInt(lines[0].split("Seq_")[1]));
+
+                                TranscriptCluster cluster = new TranscriptCluster();
+
+                                cluster.setTranscriptClusterMember(transcript);
+
+                                cluster.setIsTranscriptRepresentative(1);
+
+                                transcript.getTranscriptCluster().add(cluster);
+
+                                Arrays.stream(lines[1].split(",")).forEach(e -> {
+                                    TranscriptCluster internalcluster = new TranscriptCluster();
+
+                                    internalcluster.setTranscriptClusterMember(transcripts.get(Integer.parseInt(e.split("Seq_")[1])));
+                                    internalcluster.setIsTranscriptRepresentative(0);
+                                    transcripts.get(Integer.parseInt(e.split("Seq_")[1])).getTranscriptCluster().add(internalcluster);
+                                    transcript.getTranscriptCluster().add(internalcluster);
+
+                                });
+                            }
+                            line = reader.readLine();
+
+                        }
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
 
                 Map<String, Protein> mappedProteins = new HashMap<>();
 
+                try (Stream<String> mylines = Files.lines(Paths.get(args[0], "mart_export.txt"))) {
+                    mylines.map(martline -> martline.split("\t")).filter(splitlines -> splitlines.length > 4).forEach(filteredlines -> {
 
-                    try (Stream<String> mylines = Files.lines(Paths.get(args[0], "mart_export.txt"))) {
-                        mylines.map(martline -> martline.split("\t")).filter(splitlines -> splitlines.length > 4).forEach(filteredlines -> {
-
-                            Protein aProtein;
-                            if (mappedProteins.containsKey(filteredlines[3])) {
-                                aProtein = mappedProteins.get(filteredlines[3]);
+                        Protein aProtein;
+                        if (mappedProteins.containsKey(filteredlines[3])) {
+                            aProtein = mappedProteins.get(filteredlines[3]);
+                        } else {
+                            aProtein = new Protein();
+                            System.out.println(filteredlines[3]);
+                            if (filteredlines[3].isEmpty()) {
+                                aProtein.setProteinAccession("");
+                                mappedProteins.put(filteredlines[3], aProtein);
                             } else {
-                                aProtein = new Protein();
                                 aProtein.setProteinAccession(filteredlines[3]);
+                                aProtein.setProteinName(indexController.findProteinNameAndLabel(filteredlines[3]).stream().findFirst().orElse("error retrieving protein name "+ Instant.now()));
                                 mappedProteins.put(filteredlines[3], aProtein);
                             }
-                            Domain aDomain;
-                            if (mappedDomains.containsKey(filteredlines[2])) {
-                                aDomain = mappedDomains.get(filteredlines[2]);
-                            } else {
-                                aDomain = new Domain();
-                                aDomain.setDomainAccession(filteredlines[2]);
-                                mappedDomains.put(filteredlines[2], aDomain);
-                            }
+                        }
+                        Domain aDomain;
+                        if (mappedDomains.containsKey(filteredlines[2])) {
+                            aDomain = mappedDomains.get(filteredlines[2]);
+                        } else {
+                            aDomain = new Domain();
+                            aDomain.setDomainAccession(filteredlines[2]);
+                            mappedDomains.put(filteredlines[2], aDomain);
+                        }
 
-                            ProteinDomain aProteinDomain = new ProteinDomain();
+                        ProteinDomain aProteinDomain = new ProteinDomain();
 
-                            aProteinDomain.setDomain(aDomain);
-                            aProteinDomain.setProtein(aProtein);
-                            aProteinDomain.setDomainEnd(Integer.parseInt(filteredlines[5]));
-                            aProteinDomain.setDomainStart(Integer.parseInt(filteredlines[4]));
+                        aProteinDomain.setDomain(aDomain);
+                        aProteinDomain.setProtein(aProtein);
+                        aProteinDomain.setDomainEnd(Integer.parseInt(filteredlines[5]));
+                        aProteinDomain.setDomainStart(Integer.parseInt(filteredlines[4]));
 
-                            aProtein.getDomainsContainedInProtein().add(aProteinDomain);
+                        aProtein.getDomainsContainedInProtein().add(aProteinDomain);
 
-                            seqNumberToAccession.entrySet().stream().filter(transcript -> transcript.getValue().equals(filteredlines[0])).forEach(filteredTranscript ->{
-                                    TranscriptProtein product = new TranscriptProtein();
+                        seqNumberToAccession.entrySet().stream().filter(transcript -> transcript.getValue().equals(filteredlines[1])).forEach(filteredTranscript -> {
+                            TranscriptProtein product = new TranscriptProtein();
                             product.setProteinProduct(aProtein);
                             product.setTranscriptStart(Integer.parseInt(filteredlines[4]));
                             product.setTranscriptEnd(Integer.parseInt(filteredlines[5]));
-                            product.setParentTranscript(transcripts.get(filteredTranscript.getKey()));
-
+                            Transcript parentTranscript = transcripts.get(filteredTranscript.getKey());
+                            product.setParentTranscript(parentTranscript);
+                            parentTranscript.getTranscriptProteins().add(product);
                             aProtein.getParentTranscripts().add(product);
-                            });
-
                         });
-                    }
-                geneRepository.saveAll(referenceGenes.values());
-                transcriptRepository.saveAll(transcripts.values());
-                proteinRepository.saveAll(mappedProteins.values());
-                //transcriptEarlyFoldingRepository.saveAll(foldingMap.values());
+
+                    });
                 }
+                geneRepository.saveAll(referenceGenes.values());
+                proteinRepository.saveAll(mappedProteins.values());
+                //transcriptRepository.saveAll(transcripts.values());
+                //transcriptEarlyFoldingRepository.saveAll(foldingMap.values());
         };
     }
-;
 
 }

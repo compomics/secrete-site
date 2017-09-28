@@ -30,8 +30,8 @@ public class Protein {
     /**
      * The uniprot id of a protein
      */
-    @NaturalId
     private String proteinAccession;
+    private String proteinName;
 
     @OneToMany(mappedBy = "protein",cascade = CascadeType.ALL)
     @JsonManagedReference

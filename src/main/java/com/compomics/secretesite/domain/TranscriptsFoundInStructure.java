@@ -11,7 +11,7 @@ import javax.persistence.*;
  */
 @Entity
 @Data
-@EqualsAndHashCode(exclude = {"transcript","transcriptstructure"})
+@EqualsAndHashCode(exclude = {"transcriptstructure"})
 @ToString(exclude = {"transcript","transcriptstructure"})
 public class TranscriptsFoundInStructure {
 
