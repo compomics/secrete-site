@@ -48,7 +48,9 @@ public class IndexController {
 
         if(!uniprotAccession.equals("") && domainAccession.equals("")){
             Protein protein = proteinService.getProteinByAccession(uniprotAccession.toUpperCase());
-            proteinDTOS.add(createProteinDTO(protein));
+            if(protein != null){
+                proteinDTOS.add(createProteinDTO(protein));
+            }
         }else if(uniprotAccession.equals("") && !domainAccession.equals("")){
             List<String> proteinAccessions = new ArrayList<>();
             Domain domain =domainService.getDomainByAccession(domainAccession);
@@ -139,10 +141,12 @@ public class IndexController {
 
         protein.getParentTranscripts().forEach(t -> {
 
-            fragmentDTOS.add(new FragmentDTO(t.getParentTranscript().getEnsembleTranscriptAccession(), t.getTranscriptStart(), t.getTranscriptEnd(),
+
+            String species = t.getParentTranscript().getTranscriptsExpressableInSpecies().stream().map(s -> s.getSpecies().getSpeciesName()).collect(Collectors.joining(","));
+            fragmentDTOS.add(new FragmentDTO(t.getParentTranscript().getTranscriptId(),t.getParentTranscript().getEnsembleTranscriptAccession(), t.getTranscriptStart(), t.getTranscriptEnd(),
                     t.getParentTranscript().getFoundIn().stream().map(f->f.getTranscriptstructure().getPdbId()).collect(Collectors.joining (",")),
                     t.getParentTranscript().getFoundIn().stream().map(f->f.getTranscriptstructure().getTranscriptStructureId().toString()).collect(Collectors.joining (","))
-                    , t.getParentTranscript().getSecretionStatus()));
+                    , t.getParentTranscript().getSecretionStatus(), species));
         });
         proteinDTO.setMainFragmentDTOs(fragmentDTOS);
 

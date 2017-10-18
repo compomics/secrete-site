@@ -22,8 +22,8 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Stream;
 
-@SpringBootApplication
-@EnableAsync
+//@SpringBootApplication
+//@EnableAsync
 public class SecreteSiteApplicationCopy {
 
     private SpeciesRepository speciesRepository;

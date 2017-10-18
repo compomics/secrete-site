@@ -1,6 +1,9 @@
 package com.compomics.secretesite.controllers;
 
+import com.compomics.secretesite.domain.Transcript;
 import com.compomics.secretesite.domain.TranscriptStructure;
+import com.compomics.secretesite.domain.dataTransferObjects.StructureDTO;
+import com.compomics.secretesite.domain.repositories.TranscriptRepository;
 import com.compomics.secretesite.domain.repositories.TranscriptStructureRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,25 +24,25 @@ import java.util.stream.Collectors;
 public class TranscriptStructureController {
 
     private final TranscriptStructureRepository transcriptStructureRepository;
+    private final TranscriptRepository transcriptRepository;
 
-    public TranscriptStructureController(TranscriptStructureRepository transcriptStructureRepository) {
+    public TranscriptStructureController(TranscriptStructureRepository transcriptStructureRepository, TranscriptRepository transcriptRepository) {
         this.transcriptStructureRepository = transcriptStructureRepository;
+        this.transcriptRepository = transcriptRepository;
     }
 
     @RequestMapping("/3dProtein")
-    String protein(@RequestParam(value="structureId",defaultValue = "") String structureId,Model model){
+    String protein(@RequestParam(value="transcriptId",defaultValue = "") Integer transcriptId, Model model){
         Map<String,Object> attr = new HashMap<>();
-        List<TranscriptStructure> transcriptStructures = new ArrayList<>();
-        if(structureId != null && !structureId.equals("")){
-            if(structureId.contains(",")){
-                Pattern.compile(",")
-                        .splitAsStream(structureId)
-                        .collect(Collectors.toList()).forEach(id -> {
-                    transcriptStructures.add(transcriptStructureRepository.findByTranscriptStructureId(Integer.valueOf(id)));
-                });
-            }else{
-                transcriptStructures.add(transcriptStructureRepository.findByTranscriptStructureId(Integer.valueOf(structureId)));
-            }
+        List<StructureDTO> transcriptStructures = new ArrayList<>();
+
+        if(transcriptId != null && !transcriptId.equals("")){
+            Transcript transcript = transcriptRepository.findByTranscriptId(transcriptId);
+            transcript.getFoundIn().forEach(f -> {
+                StructureDTO structureDTO = new StructureDTO(f.getTranscriptstructure().getPdbId(), f.getTranscriptstructure().getChain(), f.getTranscriptstructure().getFragmentStart(),
+                        f.getTranscriptstructure().getFragmentEnd(), transcript.getSecretionStatus());
+                transcriptStructures.add(structureDTO);
+            });
             attr.put("structure", transcriptStructures);
 
             model.addAllAttributes(attr);
