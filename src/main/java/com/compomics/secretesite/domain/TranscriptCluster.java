@@ -25,4 +25,6 @@ public class TranscriptCluster {
     @ManyToOne(cascade = CascadeType.ALL)
     private Transcript transcriptClusterMember;
 
+    private Integer transcriptClusterGroupId;
+
 }

@@ -4,6 +4,7 @@ package com.compomics.secretesite;
 import com.compomics.secretesite.controllers.IndexController;
 import com.compomics.secretesite.domain.*;
 import com.compomics.secretesite.domain.repositories.*;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -52,7 +53,7 @@ public class SecreteSiteApplicationCopy {
 
             Map<String, Domain> mappedDomains = new HashMap<>();
 
-            Map<Integer, String> seqNumberToAccession = new HashMap<>();
+            DualHashBidiMap<Integer, String> seqNumberToAccession = new DualHashBidiMap<>();
 
             Species pichiaPastoris = new Species(4922, "Pichia pastoris");
 
@@ -187,6 +188,7 @@ public class SecreteSiteApplicationCopy {
                     } else {
                         domain = new Domain();
                         domain.setDomainAccession(splitline[4]);
+                        domain.setDomainName(indexController.findDomainName(domain.getDomainAccession()));
                         mappedDomains.put(splitline[4], domain);
                     }
 
@@ -201,7 +203,6 @@ public class SecreteSiteApplicationCopy {
                 }
 
             }
-
 
 
             transcriptStructureMap = new ArrayListValuedHashMap<>();
@@ -628,110 +629,124 @@ public class SecreteSiteApplicationCopy {
                     line = reader.readLine();
                 }
             }
-                Set<TranscriptCluster> clusters = new HashSet<>();
 
-                new ArrayList<String>(){{this.add("PpD_Cluster_info.txt");
-                    this.add("PpE_cluster_info.txt");
-                    this.add("ScD_Cluster_info.txt");
-                    this.add("ScE_Cluster_info.txt");
-                }}.forEach(filename -> {
+            new ArrayList<String>() {{
+                this.add("PpD_Cluster_info.txt");
+                this.add("PpE_cluster_info.txt");
+                this.add("ScD_Cluster_info.txt");
+                this.add("ScE_Cluster_info.txt");
+            }}.forEach(filename -> {
 
-                    try (LineNumberReader reader = new LineNumberReader(new FileReader(new File(args[0], filename)))) {
+                try (LineNumberReader reader = new LineNumberReader(new FileReader(new File(args[0], filename)))) {
 
-                        String line = reader.readLine();
+                    String line = reader.readLine();
 
+                    line = reader.readLine();
+
+                    int groupcounter = 0;
+
+                    while (line != null) {
+
+                        String[] lines = line.split("\t");
+
+                        if (lines.length > 1) {
+
+                            Integer tempcounter = groupcounter;
+                            Transcript transcript = transcripts.get(Integer.parseInt(lines[0].split("Seq_")[1]));
+
+                            TranscriptCluster cluster = new TranscriptCluster();
+
+                            cluster.setTranscriptClusterMember(transcript);
+
+                            cluster.setIsTranscriptRepresentative(1);
+
+                            transcript.getTranscriptCluster().add(cluster);
+
+                            cluster.setTranscriptClusterGroupId(tempcounter);
+
+                            for(String sequences : lines[1].split(",")){
+                                TranscriptCluster internalcluster = new TranscriptCluster();
+
+                                internalcluster.setTranscriptClusterMember(transcripts.get(Integer.parseInt(sequences.split("Seq_")[1])));
+                                internalcluster.setIsTranscriptRepresentative(0);
+                                internalcluster.setTranscriptClusterGroupId(tempcounter);
+                                transcripts.get(Integer.parseInt(sequences.split("Seq_")[1])).getTranscriptCluster().add(internalcluster);
+                                transcript.getTranscriptCluster().add(internalcluster);
+
+                            }
+                            groupcounter++;
+                        }
                         line = reader.readLine();
 
-                        while (line != null) {
-
-                            String[] lines = line.split("\t");
-
-                            if(lines.length>1) {
-
-                                Transcript transcript = transcripts.get(Integer.parseInt(lines[0].split("Seq_")[1]));
-
-                                TranscriptCluster cluster = new TranscriptCluster();
-
-                                cluster.setTranscriptClusterMember(transcript);
-
-                                cluster.setIsTranscriptRepresentative(1);
-
-                                transcript.getTranscriptCluster().add(cluster);
-
-                                Arrays.stream(lines[1].split(",")).forEach(e -> {
-                                    TranscriptCluster internalcluster = new TranscriptCluster();
-
-                                    internalcluster.setTranscriptClusterMember(transcripts.get(Integer.parseInt(e.split("Seq_")[1])));
-                                    internalcluster.setIsTranscriptRepresentative(0);
-                                    transcripts.get(Integer.parseInt(e.split("Seq_")[1])).getTranscriptCluster().add(internalcluster);
-                                    transcript.getTranscriptCluster().add(internalcluster);
-
-                                });
-                            }
-                            line = reader.readLine();
-
-                        }
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
                     }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+
+            Map<String, Protein> mappedProteins = new HashMap<>();
+
+            try (Stream<String> mylines = Files.lines(Paths.get(args[0], "mart_export_transcript_protein.txt"))) {
+                mylines.map(martline -> martline.split("\t"))
+                        .filter(splitlines -> seqNumberToAccession.inverseBidiMap().containsKey(splitlines[0])).forEach(filteredlines -> {
+                    Protein aProtein;
+                    if (!mappedProteins.containsKey(filteredlines[1])) {
+                        aProtein = new Protein();
+                        if (filteredlines.length < 3) {
+                            aProtein.setProteinAccession("");
+                        } else {
+                            aProtein.setProteinAccession(filteredlines[2]);
+                            aProtein.setProteinLabel(indexController.findProteinNameAndLabel(filteredlines[2]).stream().findFirst().orElse("error retrieving protein label " + Instant.now()));
+                            aProtein.setProteinLabel(indexController.findProteinNameAndLabel(filteredlines[2]).stream().skip(1).findFirst().orElse("error retrieving protein name " + Instant.now()));
+                        }
+                        aProtein.setProteinEnsemblAccession(filteredlines[1]);
+                        mappedProteins.put(filteredlines[1], aProtein);
+                    } else {
+                        aProtein = mappedProteins.get(filteredlines[1]);
+                    }
+                    TranscriptProtein product = new TranscriptProtein();
+                    product.setProteinProduct(aProtein);
+                    //product.setTranscriptStart(Integer.parseInt(filteredlines[4]));
+                    //  product.setTranscriptEnd(Integer.parseInt(filteredlines[5]));
+                    Transcript parentTranscript = transcripts.get(seqNumberToAccession.inverseBidiMap().get(filteredlines[0]));
+                    product.setParentTranscript(parentTranscript);
+                    parentTranscript.getTranscriptProteins().add(product);
+                    aProtein.getParentTranscripts().add(product);
                 });
 
-                Map<String, Protein> mappedProteins = new HashMap<>();
+            }
 
-                try (Stream<String> mylines = Files.lines(Paths.get(args[0], "mart_export.txt"))) {
-                    mylines.map(martline -> martline.split("\t")).filter(splitlines -> splitlines.length > 4).forEach(filteredlines -> {
-
-                        Protein aProtein;
-                        if (mappedProteins.containsKey(filteredlines[3])) {
-                            aProtein = mappedProteins.get(filteredlines[3]);
-                        } else {
-                            aProtein = new Protein();
-                            System.out.println(filteredlines[3]);
-                            if (filteredlines[3].isEmpty()) {
-                                aProtein.setProteinAccession("");
-                                mappedProteins.put(filteredlines[3], aProtein);
-                            } else {
-                                aProtein.setProteinAccession(filteredlines[3]);
-                                aProtein.setProteinName(indexController.findProteinNameAndLabel(filteredlines[3]).stream().findFirst().orElse("error retrieving protein name "+ Instant.now()));
-                                mappedProteins.put(filteredlines[3], aProtein);
-                            }
-                        }
-                        Domain aDomain;
-                        if (mappedDomains.containsKey(filteredlines[2])) {
-                            aDomain = mappedDomains.get(filteredlines[2]);
+            try (Stream<String> mylines = Files.lines(Paths.get(args[0], "mart_export_domains.txt"))) {
+                mylines.map(martline -> martline.split("\t")).forEach(filteredlines -> {
+                    Domain aDomain;
+                    if (filteredlines.length > 2) {
+                        if (mappedDomains.containsKey(filteredlines[1])) {
+                            aDomain = mappedDomains.get(filteredlines[1]);
                         } else {
                             aDomain = new Domain();
-                            aDomain.setDomainAccession(filteredlines[2]);
-                            mappedDomains.put(filteredlines[2], aDomain);
+                            aDomain.setDomainAccession(filteredlines[1]);
+                            mappedDomains.put(filteredlines[1], aDomain);
                         }
-
                         ProteinDomain aProteinDomain = new ProteinDomain();
+                        Protein aProtein = mappedProteins.get(filteredlines[0]);
 
-                        aProteinDomain.setDomain(aDomain);
-                        aProteinDomain.setProtein(aProtein);
-                        aProteinDomain.setDomainEnd(Integer.parseInt(filteredlines[5]));
-                        aProteinDomain.setDomainStart(Integer.parseInt(filteredlines[4]));
+                        if (aProtein != null) {
 
-                        aProtein.getDomainsContainedInProtein().add(aProteinDomain);
+                            aProteinDomain.setDomain(aDomain);
+                            aProteinDomain.setProtein(aProtein);
+                            aProteinDomain.setDomainEnd(Integer.parseInt(filteredlines[2]));
+                            aProteinDomain.setDomainStart(Integer.parseInt(filteredlines[3]));
 
-                        seqNumberToAccession.entrySet().stream().filter(transcript -> transcript.getValue().equals(filteredlines[1])).forEach(filteredTranscript -> {
-                            TranscriptProtein product = new TranscriptProtein();
-                            product.setProteinProduct(aProtein);
-                            product.setTranscriptStart(Integer.parseInt(filteredlines[4]));
-                            product.setTranscriptEnd(Integer.parseInt(filteredlines[5]));
-                            Transcript parentTranscript = transcripts.get(filteredTranscript.getKey());
-                            product.setParentTranscript(parentTranscript);
-                            parentTranscript.getTranscriptProteins().add(product);
-                            aProtein.getParentTranscripts().add(product);
-                        });
-
-                    });
-                }
-                geneRepository.saveAll(referenceGenes.values());
-                proteinRepository.saveAll(mappedProteins.values());
-                //transcriptRepository.saveAll(transcripts.values());
-                //transcriptEarlyFoldingRepository.saveAll(foldingMap.values());
+                            aProtein.getDomainsContainedInProtein().add(aProteinDomain);
+                        }
+                    }
+                });
+            }
+            geneRepository.saveAll(referenceGenes.values());
+            proteinRepository.saveAll(mappedProteins.values());
+            //transcriptRepository.saveAll(transcripts.values());
+            //transcriptEarlyFoldingRepository.saveAll(foldingMap.values());
         };
     }
 

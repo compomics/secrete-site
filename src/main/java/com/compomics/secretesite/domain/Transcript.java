@@ -34,12 +34,12 @@ public class Transcript {
     private String ensembleTranscriptAccession;
 
     /**
-     * start on the primary protein sequence
+     * start on the known transcript
      */
     private Integer sequenceStart;
 
     /**
-     * end on the primary protein sequence
+     * end on the known transcript
      */
     private Integer sequenceEnd;
 
