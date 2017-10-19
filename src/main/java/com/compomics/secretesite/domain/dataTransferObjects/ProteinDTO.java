@@ -2,6 +2,7 @@ package com.compomics.secretesite.domain.dataTransferObjects;
 
 import com.compomics.secretesite.domain.Domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,9 +16,9 @@ public class ProteinDTO {
 
     private String proteinLabel;
 
-    private List<DomainDTO> domainDTOs;
+    private List<DomainDTO> domainDTOs = new ArrayList<>();
 
-    private List<FragmentDTO> mainFragmentDTOs;
+    private List<FragmentDTO> mainFragmentDTOs = new ArrayList<>();
 
 
     public ProteinDTO() {

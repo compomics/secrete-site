@@ -1,5 +1,6 @@
 package com.compomics.secretesite.domain.dataTransferObjects;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,7 +24,10 @@ public class FragmentDTO {
 
     private String species;
 
-    private List<FragmentDTO> childFragmentDTOs;
+    private List<FragmentDTO> childFragmentDTOs = new ArrayList<>();
+
+    public FragmentDTO() {
+    }
 
     public FragmentDTO(Integer fragmentId, String fragmentAccession, int fragmentStart, int fragmentEnd, String pdbIds,
                        String structureIds, String secretionStatus, String species) {

@@ -2,8 +2,8 @@ package com.compomics.secretesite.controllers;
 
 import com.compomics.secretesite.controllers.services.DomainService;
 import com.compomics.secretesite.controllers.services.ProteinService;
-import com.compomics.secretesite.domain.Domain;
-import com.compomics.secretesite.domain.Protein;
+import com.compomics.secretesite.controllers.services.TranscriptService;
+import com.compomics.secretesite.domain.*;
 import com.compomics.secretesite.domain.dataTransferObjects.DomainDTO;
 import com.compomics.secretesite.domain.dataTransferObjects.FragmentDTO;
 import com.compomics.secretesite.domain.dataTransferObjects.ProteinDTO;
@@ -34,10 +34,12 @@ public class IndexController {
 
     private final ProteinService proteinService;
     private final DomainService domainService;
+    private final TranscriptService transcriptService;
 
-    public IndexController(ProteinService proteinService, DomainService domainService) {
+    public IndexController(ProteinService proteinService, DomainService domainService, TranscriptService transcriptService) {
         this.proteinService = proteinService;
         this.domainService = domainService;
+        this.transcriptService = transcriptService;
     }
 
     @RequestMapping("/index")
@@ -137,19 +139,35 @@ public class IndexController {
         protein.getDomainsContainedInProtein().forEach(d->{
             domainDTOS.add(new DomainDTO(d.getDomain().getDomainAccession(),findDomainName(d.getDomain().getDomainAccession()), d.getDomainStart(), d.getDomainEnd()));
         });
+        Collections.sort(domainDTOS, (o1, o2) -> new Integer(o2.getDomainStart()).compareTo(o1.getDomainStart()));
         proteinDTO.setDomainDTOs(domainDTOS);
 
-        protein.getParentTranscripts().forEach(t -> {
-
-
+        FragmentDTO mainFragment = new FragmentDTO();
+        for(TranscriptProtein t : protein.getParentTranscripts()) {
+            TranscriptCluster transcriptCluster = transcriptService.findTranscriptClusterByTranscript(t.getParentTranscript().getTranscriptId());
             String species = t.getParentTranscript().getTranscriptsExpressableInSpecies().stream().map(s -> s.getSpecies().getSpeciesName()).collect(Collectors.joining(","));
-            fragmentDTOS.add(new FragmentDTO(t.getParentTranscript().getTranscriptId(),t.getParentTranscript().getEnsembleTranscriptAccession(), t.getTranscriptStart(), t.getTranscriptEnd(),
+            FragmentDTO fragment = new FragmentDTO(t.getParentTranscript().getTranscriptId(),t.getParentTranscript().getEnsembleTranscriptAccession(), t.getTranscriptStart(), t.getTranscriptEnd(),
                     t.getParentTranscript().getFoundIn().stream().map(f->f.getTranscriptstructure().getPdbId()).collect(Collectors.joining (",")),
                     t.getParentTranscript().getFoundIn().stream().map(f->f.getTranscriptstructure().getTranscriptStructureId().toString()).collect(Collectors.joining (","))
-                    , t.getParentTranscript().getSecretionStatus(), species));
-        });
+                    , t.getParentTranscript().getSecretionStatus(), species);
+            if(transcriptCluster != null){
+                if(transcriptCluster.getIsTranscriptRepresentative() == 1){
+                    mainFragment = fragment;
+                }else{
+                    mainFragment.getChildFragmentDTOs().add(fragment);
+                }
+            }else{
+                fragmentDTOS.add(fragment);
+            }
+
+        }
+        Collections.sort(mainFragment.getChildFragmentDTOs(), (o1, o2) -> new Integer(o2.getFragmentStart()).compareTo(o1.getFragmentStart()));
+        fragmentDTOS.add(mainFragment);
+        Collections.sort(fragmentDTOS, (o1, o2) -> new Integer(o2.getFragmentStart()).compareTo(o1.getFragmentStart()));
+
         proteinDTO.setMainFragmentDTOs(fragmentDTOS);
 
         return proteinDTO;
     }
+
 }

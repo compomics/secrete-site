@@ -9,8 +9,7 @@
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
     <link th:href="@{/css/overview.css}"  rel="stylesheet" media="screen" />
     <link th:href="@{/css/bootstrap-table-expandable.css}"  rel="stylesheet" />
-    <link
-            href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/css/bootstrap-dialog.min.css"
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/css/bootstrap-dialog.min.css"
             rel="stylesheet" />
     <script src="//cdn.bio.sh/msa/latest/msa.min.gz.js"></script>
     <script th:src="@{/js/jquery-3.2.1.min.js}"></script>
@@ -63,7 +62,7 @@
         }
 
         .inner_table {
-            max-height: 100px;
+            max-height: 800px;
             overflow-y: auto;
         }
     </style>
@@ -79,10 +78,6 @@
     function proteinView() {
 
         var proteinDTOS = /*[[${proteinDTOSJson}]]*/;
-
-        if(proteinDTOS == null || proteinDTOS == "[]"){
-            alert("xx");
-        }
 
         var proteinObj = JSON.parse(proteinDTOS);
         var fastaFiles = '';
@@ -120,6 +115,19 @@
 
                     m.seqs.addFeatures(msa.io.gff.parseSeqs(proteinObj[i].proteinLabel + feature));
                 }
+                var fragmentDTOs = proteinObj[i].mainFragmentDTOs;
+                for(k=0; k<fragmentDTOs.length; k++){
+                    var color = "";
+                    if(fragmentDTOs[k].secretionStatus == "depleted"){
+                        color = "blue";
+                    }else{
+                        color = "red";
+                    }
+                    var feature = " . fragment " + fragmentDTOs[k].fragmentStart+"  "+fragmentDTOs[k].fragmentEnd+
+                        "	.	.  .  Name=" + fragmentDTOs[k].fragmentAccession + " ;Color=" + color ;
+
+                    m.seqs.addFeatures(msa.io.gff.parseSeqs(proteinObj[i].proteinLabel + feature));
+                }
             }
             m.g.colorscheme.addStaticScheme("own","gray");
             m.g.colorscheme.set("scheme", "own");
@@ -142,7 +150,7 @@
 </script>
 
 
-
+        <p style="color:grey; font-style: italic; float: right;">Please click on the protein of interest</p>
         <table class="table table-hover table-sticky-header table-expandable" style="table-layout: fixed">
             <thead>
             <th style="width: 3%"></th>
@@ -163,8 +171,8 @@
                         <td th:text="${protein.domainDTOs.size()}"></td>
                         <td th:text="${protein.mainFragmentDTOs.size()}"></td>
                     </tr>
-                    <tr th:id="${protein.proteinAccession}">
-                        <td colspan="6">
+                    <tr th:id="${protein.proteinAccession}" >
+                        <td colspan="8">
                             <div  class="panel panel-default">
                                 <div class="panel-heading">
                   	                <span class="clickable panel-collapsed">
@@ -206,34 +214,78 @@
                     	                <h3 class="panel-title">
                     		                Fragments  <span class="glyphicon glyphicon-chevron-down"/>
                     	                </h3>
+
                                     </span>
                                 </div>
                                 <div class="panel-body panel-collapse collapse ">
                                     <div class="wrap">
+                                        <p style="color:grey; font-style: italic; float: right;">Please click on the fragment to see child fragments</p>
                                         <table class="head">
                                             <tr>
+                                                <th style="width: 3%;"></th>
                                                 <th style="width: 15%;">Transcript Accession</th>
                                                 <th style="width: 10%;">Secretion Status</th>
-                                                <th style="width: 15%;">Fragment Start</th>
-                                                <th style="width: 15%;">Fragment End</th>
-                                                <th style="width: 25%;">Species</th>
-                                                <th style="width: 20%;">PDB Ids</th>
-
+                                                <th style="width: 10%;">Fragment Start</th>
+                                                <th style="width: 10%;">Fragment End</th>
+                                                <th style="width: 20%;">Species</th>
+                                                <th style="width: 13%;">PDB Ids</th>
+                                                <th style="width: 9%;"># of Child Fragments</th>
+                                                <th style="width : 10%"></th>
                                             </tr>
                                         </table>
                                         <div class="inner_table">
-                                            <table>
+                                            <table class="table table-expandable">
                                                 <th:block th:each="mainTranscripts:${protein.mainFragmentDTOs}">
-                                                    <tr>
-                                                        <td style="width: 15%;" th:text="${mainTranscripts.fragmentAccession}"></td>
-                                                        <td style="width: 10%;" th:text="${mainTranscripts.secretionStatus}"></td>
-                                                        <td style="width: 15%;" th:text="${mainTranscripts.fragmentStart}"></td>
-                                                        <td style="width: 15%;" th:text="${mainTranscripts.fragmentEnd}"></td>
-                                                        <td style="width: 25%;" th:text="${mainTranscripts.species}"></td>
-                                                        <td style="width: 20%;" >
+                                                    <tr th:attr="data-target='#'+${mainTranscripts.fragmentId}" class="clickable">
+                                                        <td th:style="'width: 3%;'"><span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></td>
+                                                        <td th:style="'width: 15%;'" th:text="${mainTranscripts.fragmentAccession}"></td>
+                                                        <td th:style="'width: 10%;'" th:text="${mainTranscripts.secretionStatus}"></td>
+                                                        <td th:style="'width: 10%;'" th:text="${mainTranscripts.fragmentStart}"></td>
+                                                        <td th:style="'width: 10%;'" th:text="${mainTranscripts.fragmentEnd}"></td>
+                                                        <td th:style="'width: 20%;'" th:text="${mainTranscripts.species}"></td>
+
+                                                        <td th:style="'width: 13%;'" >
                                                             <a  th:text="${mainTranscripts.pdbIds}"th:href="@{'/3dProtein?transcriptId=' + ${mainTranscripts.fragmentId}}"/>
                                                         </td>
+                                                        <td th:style="'width: 9%;'" th:text="${mainTranscripts.childFragmentDTOs.size()}"></td>
 
+                                                    </tr>
+                                                    <tr th:id="${mainTranscripts.fragmentId}"  >
+                                                        <td colspan="8">
+                                                            <div  class="panel panel-default" th:unless="${#lists.isEmpty(mainTranscripts.childFragmentDTOs)}">
+                                                                <div class="panel-heading">
+                                                                    <h3 class="panel-title">
+                                                                        Child Fragments
+                                                                    </h3>
+                                                                </div>
+                                                                <div class="panel-body panel-collapse collapse ">
+                                                                    <div class="wrap">
+                                                                        <table class="head">
+                                                                            <tr>
+                                                                                <th style="width: 20%;">Transcript Accession</th>
+                                                                                <th style="width: 20%;">Secretion Status</th>
+                                                                                <th style="width: 15%;">Fragment Start</th>
+                                                                                <th style="width: 15%;">Fragment End</th>
+                                                                                <th style="width: 30%;">Species</th>
+                                                                            </tr>
+                                                                        </table>
+                                                                        <div class="inner_table">
+                                                                            <table>
+                                                                                <th:block th:each="childTranscripts:${mainTranscripts.childFragmentDTOs}">
+                                                                                    <tr>
+                                                                                        <td style="width: 20%;" th:text="${childTranscripts.fragmentAccession}"></td>
+                                                                                        <td style="width: 20%;" th:text="${childTranscripts.secretionStatus}"></td>
+                                                                                        <td style="width: 15%;" th:text="${childTranscripts.fragmentStart}"></td>
+                                                                                        <td style="width: 15%;" th:text="${childTranscripts.fragmentEnd}"></td>
+                                                                                        <td style="width: 30%;" th:text="${childTranscripts.species}"></td>
+                                                                                    </tr>
+                                                                                </th:block>
+                                                                            </table>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
                                                     </tr>
                                                 </th:block>
                                             </table>
