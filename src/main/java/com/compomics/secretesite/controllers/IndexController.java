@@ -71,7 +71,7 @@ public class IndexController {
         return "index";
     }
 
-    private String findDomainName(String domainAccession){
+    public String findDomainName(String domainAccession){
         String url = "http://pfam.xfam.org/family/" + domainAccession + "?output=xml";
         String domainName = "";
 
