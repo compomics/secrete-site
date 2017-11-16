@@ -51,4 +51,27 @@ public class DomainDTO {
     public void setDomainEnd(int domainEnd) {
         this.domainEnd = domainEnd;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DomainDTO domainDTO = (DomainDTO) o;
+
+        if (domainStart != domainDTO.domainStart) return false;
+        if (domainEnd != domainDTO.domainEnd) return false;
+        if (domainAccession != null ? !domainAccession.equals(domainDTO.domainAccession) : domainDTO.domainAccession != null)
+            return false;
+        return domainName != null ? domainName.equals(domainDTO.domainName) : domainDTO.domainName == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = domainAccession != null ? domainAccession.hashCode() : 0;
+        result = 31 * result + (domainName != null ? domainName.hashCode() : 0);
+        result = 31 * result + domainStart;
+        result = 31 * result + domainEnd;
+        return result;
+    }
 }

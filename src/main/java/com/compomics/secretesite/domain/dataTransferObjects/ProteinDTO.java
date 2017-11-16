@@ -24,6 +24,11 @@ public class ProteinDTO {
     public ProteinDTO() {
     }
 
+    public ProteinDTO(String proteinAccession, String proteinName) {
+        this.proteinAccession = proteinAccession;
+        this.proteinName = proteinName;
+    }
+
     public String getProteinAccession() {
         return proteinAccession;
     }

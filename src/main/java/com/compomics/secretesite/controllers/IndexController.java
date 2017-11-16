@@ -12,17 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -47,23 +37,22 @@ public class IndexController {
                  @RequestParam(value="domain",defaultValue = "") String domainAccession, Model model){
         Map<String,Object> attr = new HashMap<>();
         List<ProteinDTO> proteinDTOS = new ArrayList<>();
-
+        Set<Protein> proteins = new HashSet<>();
         if(!uniprotAccession.equals("") && domainAccession.equals("")){
-            Protein protein = proteinService.getProteinByAccession(uniprotAccession.toUpperCase());
-            if(protein != null){
-                proteinDTOS.add(createProteinDTO(protein));
-            }
+            proteins = proteinService.getProteinByAccession(uniprotAccession.toUpperCase());
+
         }else if(uniprotAccession.equals("") && !domainAccession.equals("")){
-            List<String> proteinAccessions = new ArrayList<>();
             Domain domain =domainService.getDomainByAccession(domainAccession);
-            domain.getProteinDomains().forEach(pd -> {
-                if(!proteinAccessions.contains(pd.getProtein().getProteinAccession())){
-                    Protein protein = pd.getProtein();
-                    proteinDTOS.add(createProteinDTO(protein));
-                    proteinAccessions.add(pd.getProtein().getProteinAccession());
-                }
-            });
+
+            for(ProteinDomain pd : domain.getProteinDomains())  {
+                proteins.addAll(proteinService.getProteinByEnsemblAccession(pd.getProteinStableId()));
+            }
         }
+
+        if(!proteins.isEmpty()){
+            proteinDTOS.addAll(createProteinDTO(proteins));
+        }
+
         attr.put("proteinDTOS",proteinDTOS);
         attr.put("proteinDTOSJson", new Gson().toJson(proteinDTOS));
 
@@ -71,103 +60,101 @@ public class IndexController {
         return "index";
     }
 
-    public String findDomainName(String domainAccession){
-        String url = "http://pfam.xfam.org/family/" + domainAccession + "?output=xml";
-        String domainName = "";
 
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder;
-        try {
-            dBuilder = dbFactory.newDocumentBuilder();
-            URL u = new URL(url);
-            Document doc = dBuilder.parse(u.openStream());
-            doc.getDocumentElement().normalize();
-            NodeList nList = doc.getElementsByTagName("entry");
-            Node nNode = nList.item(0);
-            Element eElement = (Element) nNode;
-            domainName =  eElement.getElementsByTagName("description").item(0).getTextContent();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        return domainName;
-    }
 
-    public List<String> findProteinNameAndLabel(String proteinAccession){
-        String url = "http://www.uniprot.org/uniprot/" + proteinAccession + ".xml";
-        List<String> proteinNameLabel= new ArrayList<>();
 
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder;
-        try {
-            dBuilder = dbFactory.newDocumentBuilder();
-            URL u = new URL(url);
-            Document doc = dBuilder.parse(u.openStream());
-            doc.getDocumentElement().normalize();
-            NodeList nList1 = doc.getElementsByTagName("entry");
-            Node nNode1 = nList1.item(0);
-            Element eElement1 = (Element) nNode1;
-            proteinNameLabel.add(eElement1.getElementsByTagName("name").item(0).getTextContent());
+    private List<ProteinDTO> createProteinDTO(Set<Protein> proteins){
+        List<ProteinDTO> proteinDTOs = new ArrayList<>();
 
-            NodeList nList2 = doc.getElementsByTagName("recommendedName");
-            Node nNode2 = nList2.item(0);
-            Element eElement2 = (Element) nNode2;
-            proteinNameLabel.add(eElement2.getElementsByTagName("fullName").item(0).getTextContent());
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return  proteinNameLabel;
-    }
+        Map<String , List<Protein>> proteinMap = new HashMap<>();
 
-    private ProteinDTO createProteinDTO(Protein protein){
-        ProteinDTO proteinDTO = new ProteinDTO();
-
-        List<DomainDTO> domainDTOS = new ArrayList<>();
-        List<FragmentDTO> fragmentDTOS = new ArrayList<>();
-
-        proteinDTO.setProteinAccession(protein.getProteinAccession());
-        proteinDTO.setProteinName(findProteinNameAndLabel(protein.getProteinAccession()).get(1));
-        proteinDTO.setProteinLabel(findProteinNameAndLabel(protein.getProteinAccession()).get(0));
-        protein.getDomainsContainedInProtein().forEach(d->{
-            domainDTOS.add(new DomainDTO(d.getDomain().getDomainAccession(),findDomainName(d.getDomain().getDomainAccession()), d.getDomainStart(), d.getDomainEnd()));
-        });
-        Collections.sort(domainDTOS, (o1, o2) -> new Integer(o2.getDomainStart()).compareTo(o1.getDomainStart()));
-        proteinDTO.setDomainDTOs(domainDTOS);
-
-        FragmentDTO mainFragment = new FragmentDTO();
-        for(TranscriptProtein t : protein.getParentTranscripts()) {
-            TranscriptCluster transcriptCluster = transcriptService.findTranscriptClusterByTranscript(t.getParentTranscript().getTranscriptId());
-            String species = t.getParentTranscript().getTranscriptsExpressableInSpecies().stream().map(s -> s.getSpecies().getSpeciesName()).collect(Collectors.joining(","));
-            FragmentDTO fragment = new FragmentDTO(t.getParentTranscript().getTranscriptId(),t.getParentTranscript().getEnsembleTranscriptAccession(), t.getTranscriptStart(), t.getTranscriptEnd(),
-                    t.getParentTranscript().getFoundIn().stream().map(f->f.getTranscriptstructure().getPdbId()).collect(Collectors.joining (",")),
-                    t.getParentTranscript().getFoundIn().stream().map(f->f.getTranscriptstructure().getTranscriptStructureId().toString()).collect(Collectors.joining (","))
-                    , t.getParentTranscript().getSecretionStatus(), species);
-            if(transcriptCluster != null){
-                if(transcriptCluster.getIsTranscriptRepresentative() == 1){
-                    mainFragment = fragment;
+        for(Protein p : proteins){
+            if(p.getSwissProtAccession() != null && !p.getSwissProtAccession().equals("")){
+                if(!proteinMap.containsKey(p.getSwissProtAccession())){
+                    proteinMap.put(p.getSwissProtAccession(), new ArrayList<>(Arrays.asList(p)));
                 }else{
-                    mainFragment.getChildFragmentDTOs().add(fragment);
+                    proteinMap.get(p.getSwissProtAccession()).add(p);
                 }
-            }else{
-                fragmentDTOS.add(fragment);
+            }else if(p.getTrEmblAccession() != null && !p.getTrEmblAccession().equals("")){
+                if(!proteinMap.containsKey(p.getTrEmblAccession())){
+                    proteinMap.put(p.getTrEmblAccession(), new ArrayList<>(Arrays.asList(p)));
+                }else{
+                    proteinMap.get(p.getTrEmblAccession()).add(p);
+                }
+            }
+        }
+
+        proteinMap.forEach((k,v) -> {
+
+            ProteinDTO proteinDTO = new ProteinDTO();
+            proteinDTO.setProteinAccession(k);
+            proteinDTO.setProteinName((v.get(0).getSwissProtName() != null) ? v.get(0).getSwissProtName() : v.get(0).getTrEmblName() );
+            proteinDTO.setProteinLabel((v.get(0).getSwissProtLabel() != null) ? v.get(0).getSwissProtLabel() : v.get(0).getTrEmblLabel());
+            Set<TranscriptProtein> transcriptProteins = new HashSet<>();
+            Map<Integer, List<FragmentDTO>> transcriptClusterMap = new HashMap<>();
+            Set<DomainDTO> domainDTOS = new HashSet<>();
+            v.forEach(protein -> {
+                domainService.getProteinDomainsbyProteinStableId(protein.getProteinEnsemblAccession()).forEach(pd ->{
+                    DomainDTO newDomainDTO = new DomainDTO(pd.getDomain().getDomainAccession(), pd.getDomain().getDomainName(), pd.getDomainStart(), pd.getDomainEnd());
+                    boolean isDomainNew = true;
+                    for(DomainDTO domainDTO : domainDTOS){
+                        if(domainDTO.equals(newDomainDTO)){ isDomainNew = false;}
+                    }
+                    if(isDomainNew){domainDTOS.add(newDomainDTO);}
+
+                });
+
+
+                transcriptService.findTranscriptProteinsbyProteinStableId(protein.getProteinEnsemblAccession()).forEach(tp ->{
+                    transcriptProteins.add(tp);
+                });
+            });
+            proteinDTO.getDomainDTOs().addAll(domainDTOS);
+            Collections.sort(proteinDTO.getDomainDTOs(), (o1, o2) -> new Integer(o1.getDomainStart()).compareTo(o2.getDomainStart()));
+            proteinDTO.setDomainDTOs(proteinDTO.getDomainDTOs());
+
+
+            for (TranscriptProtein tp : transcriptProteins) {
+                String species = tp.getParentTranscript().getTranscriptsExpressableInSpecies().stream().map(s -> s.getSpecies().getSpeciesName()).collect(Collectors.joining(","));
+
+
+                List<TranscriptCluster> transcriptClusters = transcriptService.findTranscriptClusterByTranscript(tp.getParentTranscript().getTranscriptId());
+                transcriptClusters.forEach(tc ->{
+                    FragmentDTO fragmentDTO = new FragmentDTO(tp.getParentTranscript().getTranscriptId(),tp.getParentTranscript().getEnsembleTranscriptAccession(), Math.round(tp.getTranscriptStart()/3), Math.round(tp.getTranscriptEnd()/3),
+                            tp.getParentTranscript().getFoundIn().stream().map(f->f.getTranscriptstructure().getPdbId()).collect(Collectors.joining (",")),
+                            tp.getParentTranscript().getFoundIn().stream().map(f->f.getTranscriptstructure().getTranscriptStructureId().toString()).collect(Collectors.joining (","))
+                            , tp.getParentTranscript().getSecretionStatus(), species, tc.getIsTranscriptRepresentative());
+                    if(transcriptClusterMap.containsKey(tc.getTranscriptClusterGroupId())){
+                        transcriptClusterMap.get(tc.getTranscriptClusterGroupId()).add(fragmentDTO);
+                    }else{
+                        transcriptClusterMap.put(tc.getTranscriptClusterGroupId(), new ArrayList<>(Arrays.asList(fragmentDTO)));
+                    }
+
+                });
+
+                if(transcriptClusters.isEmpty()){
+                    proteinDTO.getMainFragmentDTOs().add(new FragmentDTO(tp.getParentTranscript().getTranscriptId(),tp.getParentTranscript().getEnsembleTranscriptAccession(), Math.round(tp.getTranscriptStart()/3), Math.round(tp.getTranscriptEnd()/3),
+                            tp.getParentTranscript().getFoundIn().stream().map(f->f.getTranscriptstructure().getPdbId()).collect(Collectors.joining (",")),
+                            tp.getParentTranscript().getFoundIn().stream().map(f->f.getTranscriptstructure().getTranscriptStructureId().toString()).collect(Collectors.joining (","))
+                            , tp.getParentTranscript().getSecretionStatus(), species, -1));
+                }
             }
 
-        }
-        Collections.sort(mainFragment.getChildFragmentDTOs(), (o1, o2) -> new Integer(o2.getFragmentStart()).compareTo(o1.getFragmentStart()));
-        fragmentDTOS.add(mainFragment);
-        Collections.sort(fragmentDTOS, (o1, o2) -> new Integer(o2.getFragmentStart()).compareTo(o1.getFragmentStart()));
+            transcriptClusterMap.forEach((group, clusterList) -> {
+                FragmentDTO mainFragment = clusterList.stream().filter(fragment -> fragment.getRepresentative() ==1).findFirst().get();
+                mainFragment.getChildFragmentDTOs().addAll(clusterList.stream().filter(fragment -> fragment.getRepresentative() ==0).collect(Collectors.toList()));
+                proteinDTO.getMainFragmentDTOs().add(mainFragment);
+            });
+            Collections.sort(proteinDTO.getMainFragmentDTOs(), (o1, o2) -> new Integer(o1.getFragmentStart()).compareTo(o2.getFragmentStart()));
+            proteinDTO.getMainFragmentDTOs().forEach(fragDTO ->{
+                Collections.sort(fragDTO.getChildFragmentDTOs(), (o1, o2) -> new Integer(o1.getFragmentStart()).compareTo(o2.getFragmentStart()));
+            });
 
-        proteinDTO.setMainFragmentDTOs(fragmentDTOS);
+            proteinDTOs.add(proteinDTO);
+        });
 
-        return proteinDTO;
+        return proteinDTOs;
     }
 
 }

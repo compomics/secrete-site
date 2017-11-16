@@ -34,16 +34,6 @@ public class Transcript {
     private String ensembleTranscriptAccession;
 
     /**
-     * start on the known transcript
-     */
-    private Integer sequenceStart;
-
-    /**
-     * end on the known transcript
-     */
-    private Integer sequenceEnd;
-
-    /**
      * cDNA sequence of the experimental transcript
      */
     @Column(length = 12200)
@@ -87,10 +77,8 @@ public class Transcript {
     private Set<TranscriptCluster> transcriptCluster = new HashSet<>();
 
 
-    public Transcript(String ensembleTranscriptAccession, String transcript_sequence, Integer sequence_start,Integer sequence_end, Gene parentGene) {
+    public Transcript(String ensembleTranscriptAccession, String transcript_sequence, Gene parentGene) {
         this.ensembleTranscriptAccession = ensembleTranscriptAccession;
-        this.sequenceStart = sequence_start;
-        this.sequenceEnd = sequence_end;
         this.transcriptSequence = transcript_sequence;
         this.parentGene = parentGene;
     }

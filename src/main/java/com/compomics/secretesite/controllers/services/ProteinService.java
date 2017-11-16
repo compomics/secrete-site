@@ -5,7 +5,9 @@ import com.compomics.secretesite.domain.repositories.ProteinRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by demet on 7/4/2017.
@@ -30,8 +32,27 @@ public class ProteinService {
         return protein;
     }
 
-    public Protein getProteinByAccession(String accession){
-        Protein protein = proteinRepository.findByProteinAccession(accession);
-        return protein;
+    public Set<Protein> getProteinByAccession(String accession){
+        Set<Protein> proteins = new HashSet<>();
+        proteins.addAll(proteinRepository.findBySwissProtAccession(accession));
+        if(proteins.isEmpty()){
+            proteins.addAll(proteinRepository.findByTrEmblAccession(accession));
+        }
+        return proteins;
+    }
+
+    public Set<Protein> getProteinByEnsemblAccession(String accession){
+        Set<Protein> proteins = new HashSet<>();
+        proteins.addAll(proteinRepository.findByProteinEnsemblAccession(accession));
+        return proteins;
+    }
+
+    public Set<Protein> getProteinByName(String name){
+        Set<Protein> proteins = new HashSet<>();
+        proteins.addAll(proteinRepository.findBySwissProtNameContaining(name));
+        if(proteins.isEmpty()){
+            proteins.addAll(proteinRepository.findByTrEmblNameContaining(name));
+        }
+        return proteins;
     }
 }

@@ -24,13 +24,15 @@ public class FragmentDTO {
 
     private String species;
 
+    private int representative;
+
     private List<FragmentDTO> childFragmentDTOs = new ArrayList<>();
 
     public FragmentDTO() {
     }
 
     public FragmentDTO(Integer fragmentId, String fragmentAccession, int fragmentStart, int fragmentEnd, String pdbIds,
-                       String structureIds, String secretionStatus, String species) {
+                       String structureIds, String secretionStatus, String species, int representative) {
         this.fragmentId = fragmentId;
         this.fragmentAccession = fragmentAccession;
         this.fragmentStart = fragmentStart;
@@ -39,6 +41,7 @@ public class FragmentDTO {
         this.structureIds = structureIds;
         this.secretionStatus = secretionStatus;
         this.species = species;
+        this.representative = representative;
     }
 
     public String getFragmentAccession() {
@@ -103,6 +106,14 @@ public class FragmentDTO {
 
     public void setSpecies(String species) {
         this.species = species;
+    }
+
+    public int getRepresentative() {
+        return representative;
+    }
+
+    public void setRepresentative(int representative) {
+        this.representative = representative;
     }
 
     public List<FragmentDTO> getChildFragmentDTOs() {

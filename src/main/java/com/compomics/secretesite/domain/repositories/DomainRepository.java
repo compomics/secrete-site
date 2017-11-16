@@ -5,6 +5,8 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 /**
  * Created by demet on 7/4/2017.
  */
@@ -16,6 +18,6 @@ public interface DomainRepository extends PagingAndSortingRepository<Domain,Inte
     @RestResource(path = "filterbyaccession")
     Domain findByDomainAccession(@RequestParam String accession);
 
-    @RestResource(path = "filterbyname")
-    Domain findByDomainName(@RequestParam String name);
+    List<Domain> findByDomainNameContaining(@RequestParam String name);
+
 }

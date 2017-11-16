@@ -17,8 +17,6 @@ import java.util.Set;
 
 @Data
 @Entity
-@EqualsAndHashCode(exclude = {"domainsContainedInProtein","parentTranscripts"})
-@ToString(exclude = {"domainsContainedInProtein","parentTranscripts"})
 public class Protein {
 
 
@@ -30,17 +28,13 @@ public class Protein {
     /**
      * The uniprot id of a protein
      */
-    private String proteinAccession;
+    private String swissProtAccession;
+    private String trEmblAccession;
     private String proteinEnsemblAccession;
-    private String proteinName;
-    private String proteinLabel;
-
-    @OneToMany(mappedBy = "protein",cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private Set<ProteinDomain> domainsContainedInProtein = new HashSet<>();
+    private String swissProtName;
+    private String swissProtLabel;
+    private String trEmblName;
+    private String trEmblLabel;
 
 
-    @OneToMany(mappedBy = "proteinProduct",cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private Set<TranscriptProtein> parentTranscripts = new HashSet<>();
 }

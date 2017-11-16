@@ -24,10 +24,7 @@ public class ProteinDomain {
     @JsonBackReference
     private Domain domain;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JsonBackReference
-    @JoinColumn(name = "l_protein_id",referencedColumnName = "protein_id")
-    private Protein protein;
+    private String proteinStableId;
 
     /**
      * the start location of the domain on the primary protein sequence
@@ -39,8 +36,4 @@ public class ProteinDomain {
      */
     private Integer domainEnd;
 
-    /**
-     * certainty of the domain being associated with the sequence part
-     */
-    //private Long eValue;
 }
