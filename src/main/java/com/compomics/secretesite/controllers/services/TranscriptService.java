@@ -31,4 +31,8 @@ public class TranscriptService {
     public List<TranscriptProtein> findTranscriptProteinsbyProteinStableId(String proteinStableId){
         return transcriptProteinRepository.findByProteinStableId(proteinStableId);
     }
+
+    public List<TranscriptCluster> findTranscriptClusterByTranscriptClusterGroupIdAndIsTranscriptRepresentative(Integer groupId, Integer isRepresentative){
+        return transcriptClusterRepository.findByTranscriptClusterGroupIdAndIsTranscriptRepresentative(groupId, isRepresentative);
+    }
 }

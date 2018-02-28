@@ -16,5 +16,23 @@
     align-items: center;
 }
 
+.squareRed{
+    width: 12px;
+    height: 12px;
+    Background-color: red;
+    margin: 0;
+}
+.squareBlue{
+    width: 12px;
+    height: 12px;
+    Background-color: #0066ff;
+    margin: 0;
+}
+.squareYellow{
+    width: 12px;
+    height: 12px;
+    Background-color: yellow;
+    margin: 0;
+}
 
 

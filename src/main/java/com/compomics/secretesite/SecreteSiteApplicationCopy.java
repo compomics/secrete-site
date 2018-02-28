@@ -110,7 +110,7 @@ public class SecreteSiteApplicationCopy {
             try (Stream<String> mylines = Files.lines(Paths.get(args[0], "pfam.tsv"))) {
                 mylines.map(martline -> martline.split("\t")).forEach(filteredlines -> {
 
-                    pfam.put(filteredlines[0], filteredlines[4]);
+                    pfam.put(filteredlines[0], filteredlines[2]);
 
                 });
             }
@@ -460,6 +460,30 @@ public class SecreteSiteApplicationCopy {
             transcriptStructureMap = new ArrayListValuedHashMap<>();
 
 
+            try (LineNumberReader reader = new LineNumberReader(new FileReader(new File(args[0], "ScE_PDB_hit.txt")))) {
+                reader.readLine();
+
+                String data = reader.readLine();
+
+                while (data != null) {
+
+                    String[] splitdata = data.split("\t");
+
+                    data = reader.readLine();
+
+                    TranscriptStructure structure = new TranscriptStructure();
+
+                    structure.setPdbId(splitdata[1].split("\\|")[3]);
+                    structure.setChain(splitdata[2].split(",")[0]);
+                    structure.setFragmentStart(Integer.parseInt(splitdata[5]));
+                    structure.setFragmentEnd(Integer.parseInt(splitdata[6]));
+                    structure.setIdentityScore(Double.parseDouble(splitdata[8]));
+                    structure.setNumberOfMatchedResidues(Integer.parseInt(splitdata[9]));
+
+                    transcriptStructureMap.put(Integer.parseInt(splitdata[0].split("Seq_")[1]), structure);
+                }
+            }
+
             try (LineNumberReader reader = new LineNumberReader(new FileReader(new File(args[0], "Sc_resultstable_enriched.txt")))) {
                 reader.readLine();
                 String line = reader.readLine();
@@ -511,29 +535,7 @@ public class SecreteSiteApplicationCopy {
                 }
             }
 
-            try (LineNumberReader reader = new LineNumberReader(new FileReader(new File(args[0], "ScE_PDB_hit.txt")))) {
-                reader.readLine();
 
-                String data = reader.readLine();
-
-                while (data != null) {
-
-                    String[] splitdata = data.split("\t");
-
-                    data = reader.readLine();
-
-                    TranscriptStructure structure = new TranscriptStructure();
-
-                    structure.setPdbId(splitdata[1].split("\\|")[3]);
-                    structure.setChain(splitdata[2].split(",")[0]);
-                    structure.setFragmentStart(Integer.parseInt(splitdata[5]));
-                    structure.setFragmentEnd(Integer.parseInt(splitdata[6]));
-                    structure.setIdentityScore(Double.parseDouble(splitdata[8]));
-                    structure.setNumberOfMatchedResidues(Integer.parseInt(splitdata[9]));
-
-                    transcriptStructureMap.put(Integer.parseInt(splitdata[0].split("Seq_")[1]), structure);
-                }
-            }
 
 
             try (LineNumberReader reader = new LineNumberReader(new FileReader(new File(args[0], "ScE_EF_positions.txt")))) {

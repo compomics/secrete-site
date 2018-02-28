@@ -14,4 +14,6 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "transcriptCluster",path = "transcriptCluster")
 public interface TranscriptClusterRepository   extends PagingAndSortingRepository<TranscriptCluster,Integer> {
     List<TranscriptCluster> findByTranscriptClusterMember(@RequestParam Transcript transcript);
+
+    List<TranscriptCluster> findByTranscriptClusterGroupIdAndIsTranscriptRepresentative(@RequestParam Integer transcriptClusterGroupId, @RequestParam Integer isTranscriptRepresentative);
 }

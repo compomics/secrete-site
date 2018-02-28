@@ -2,6 +2,12 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self';
+      script-src 'self' https://maxcdn.bootstrapcdn.com https://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js;
+      style-src 'self' http://cdn.jsdelivr.net/webjars;
+      font-src 'self' https://cdnjs.cloudflare.com;
+      img-src 'self';
+      object-src 'self'"/>
     <title>header</title>
 
 </head>
@@ -11,7 +17,7 @@
           th:href="@{/css/bootstrap.min.css}"
           rel="stylesheet" media="screen" />
 
-    <script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js"></script>
 
     <div class="container">
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -31,7 +37,6 @@
 
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="#" th:href="@{/search}">search<span class="sr-only">(current)</span></a></li>
-                <li><a href="#" th:href="@{/index}">protein-overview<span class="sr-only">(current)</span></a></li>
                 <li><a th:href="@{/help}">Help</a></li>
 
             </ul>

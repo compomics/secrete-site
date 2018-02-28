@@ -2,21 +2,27 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self';
+      script-src 'self' 'unsafe-inline' https://code.jquery.com/jquery-2.1.4.min.js https://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js;
+      style-src 'self' 'unsafe-inline';
+      font-src 'self' https://cdnjs.cloudflare.com;
+      img-src 'self';
+      object-src 'self'"/>
     <title>SECRiFY</title>
 
     <link th:href="@{/css/bootstrap.css}"
           rel="stylesheet" media="screen" />
     <link th:href="@{/css/overview.css}"
           rel="stylesheet" media="screen" />
-    <script src="http://code.jquery.com/jquery-2.1.4.min.js"
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"
             type="text/javascript"></script>
-    <script src="/js/bootstrap.min.js"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
 
 
 
 </head>
 <body>
-<script src = "/js/search.js"></script>
+
 <div th:insert="~{fragments/header :: header}"></div>
 <div class="container">
     <p>SECRiFY (Secretability Screening of Recombinant Fragments in Yeast) is a method that was developed to
@@ -61,6 +67,21 @@
                                     <input type="text" class="form-control" placeholder="Uniprot Accession or protein name" id="uniprotAccession">
                                 </div>
                                 <br/>
+
+                                <div align="center">
+                                    <label >
+                                        <input type="radio" id="enrichedP" name="proteinRB" value="enriched" /> Enriched
+                                    </label>
+                                    <label >
+                                        <input type="radio" id="depletedP" name="proteinRB" value="depleted" /> Depleted
+                                    </label>
+                                    <label >
+                                        <input type="radio" id="bothP" name="proteinRB" checked="checked" value="both" /> Both
+                                    </label>
+
+                                </div>
+
+                                <br/>
                                 <div align="center">
                                     <button type="button" class="btn btn-primary " id="btnSearchProtein" style="width: 104px;">Search
                                     </button>
@@ -90,6 +111,20 @@
                                 <div class="input-group input-group-lg col-sm-10 col-sm-offset-1">
                                     <input type="text" class="form-control" placeholder="PFAM id or domain description" id="domainAccession">
                                 </div>
+                                <br/>
+                                <div align="center">
+                                    <label >
+                                        <input type="radio" id="enrichedD" name="domainRB" value="enriched" /> Enriched
+                                    </label>
+                                    <label >
+                                        <input type="radio" id="depletedD" name="domainRB" value="depleted" /> Depleted
+                                    </label>
+                                    <label >
+                                        <input type="radio" id="bothD" name="domainRB" checked="checked" value="both" /> Both
+                                    </label>
+
+                                </div>
+
                                 <br/>
                                 <div align="center">
                                     <button type="button" class="btn btn-primary " id="btnSearchDomain" style="width: 104px;">Search
@@ -178,7 +213,111 @@
 </div>
 </div>
 <div th:insert="~{fragments/footer :: footer}"></div>
+<script th:inline="javascript">
+    //<![CDATA[
 
+        jQuery.noConflict();
+        $('#btnSearchProtein').on('click', function () {
+
+            if($('#uniprotAccession').val() != ""){
+                if(isValidUniprotAcc($('#uniprotAccession').val().trim())){
+                    window.location = [[@{/index.html}]] + '?protein='+ $('#uniprotAccession').val().trim() + '&type=' + $("input[name='proteinRB']:checked").val();
+                }else{
+
+                    window.location = [[@{/detailedSearch.html}]] + '?protein='+ $('#uniprotAccession').val() + '&type=' + $("input[name='proteinRB']:checked").val();
+                }
+
+            }else{
+                var dialogInstance = new BootstrapDialog();
+                dialogInstance.setTitle('INPUT ERROR');
+                dialogInstance.setMessage('Accession cannot be empty!');
+                dialogInstance.setType(BootstrapDialog.TYPE_DANGER);
+                dialogInstance.open();
+            }
+            return false;
+        });
+        $("#uniprotAccession").keyup(function(event){
+            if(event.keyCode == 13){
+                $("#btnSearchProtein").click();
+            }
+        });
+
+        $('#btnSearchDomain').on('click', function () {
+            if($('#domainAccession').val() != ""){
+                if(isValidDomainAcc($('#domainAccession').val().trim())){
+                    window.location = [[@{/index.html}]] + '?domain='+ $('#domainAccession').val().trim() + '&type=' + $("input[name='domainRB']:checked").val();
+                }else{
+                    window.location = [[@{/detailedSearch.html}]] + '?domain='+ $('#domainAccession').val() + '&type=' + $("input[name='domainRB']:checked").val();
+                }
+
+            }else{
+                var dialogInstance = new BootstrapDialog();
+                dialogInstance.setTitle('INPUT ERROR');
+                dialogInstance.setMessage('Accession cannot be empty!');
+                dialogInstance.setType(BootstrapDialog.TYPE_DANGER);
+                dialogInstance.open();
+            }
+            return false;
+        });
+        $("#domainAccession").keyup(function(event){
+            if(event.keyCode == 13){
+                $("#btnSearchDomain").click();
+            }
+        });
+
+
+    function isValidUniprotAcc(accession){
+        if (accession.trim() == "") {
+            return false;
+        }
+        if (accession.length != 6 && accession.length != 10) {
+            return false;
+        }
+        var r = new RegExp("[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}", "i");
+        if(accession.match(r)){
+            return true;
+        }
+        return false;
+    }
+
+    function isValidDomainAcc(accession){
+
+        if (accession.trim() == "") {
+            return false;
+        }
+        if (accession.trim().length != 7 ) {
+            return false;
+        }
+        if(!accession.trim().startsWith("PF")){
+            return false;
+        }
+        var r = new RegExp("[0-9]", "i");
+        if(accession.trim().substring(2).match(r)){
+            return true;
+        }
+        return false;
+    }
+
+    function setExample1() {
+        document.getElementById('uniprotAccession').value = 'Q15651';
+        return false;
+    }
+
+    function setExample2() {
+        document.getElementById('uniprotAccession').value = 'Q02218';
+        return false;
+    }
+    function setExampleDomain1() {
+        document.getElementById('domainAccession').value = 'PF07710';
+        return false;
+    }
+
+    function setExampleDomain2() {
+        document.getElementById('domainAccession').value = 'PF07710';
+        return false;
+    }
+    //]]>
+</script>
 
 </body>
 </html>

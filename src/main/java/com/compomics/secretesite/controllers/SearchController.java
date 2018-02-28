@@ -33,6 +33,13 @@ public class SearchController {
 
     }
 
+    @RequestMapping("/")
+    String welcome(){
+
+        return "search";
+
+    }
+
     @RequestMapping("/detailedSearch")
     String detailedSearch(@RequestParam(value="protein",defaultValue = "") String uniprotName,
                        @RequestParam(value="domain",defaultValue = "") String domainName, Model model){

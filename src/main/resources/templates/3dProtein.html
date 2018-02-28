@@ -5,7 +5,14 @@
     <title>SECRiFY</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://files.rcsb.org;
+      script-src 'self' 'unsafe-inline' https://code.jquery.com/jquery-2.1.4.min.js https://cdn.jsdelivr.net/webjars/jquery/2.1.4/jq
+      https://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js;
+      style-src 'self' 'unsafe-inline' https://netdna.bootstrapcdn.com;
+      font-src 'self' https://cdnjs.cloudflare.com https://netdna.bootstrapcdn.com/bootstrap/3.0.0/fonts/;
+      img-src 'self' https://netdna.bootstrapcdn.com/bootstrap/3.0.0/fonts/;
+      object-src 'self' https://netdna.bootstrapcdn.com/bootstrap/3.0.0/fonts/"/>
+    <link href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
     <link rel="stylesheet" href="css/main.css" />
     <link rel="subresource" href="css/light.css" />
     <link th:href="@{/css/bootstrap.min.css}"
@@ -76,6 +83,7 @@
             if(schemeValue != 'custom'){
                 return schemeValue
             }else{
+
                 var schemeId = NGL.ColormakerRegistry.addSelectionScheme( [
 
                     [ color, start +"-" + end +" and :" + chain ]
@@ -84,8 +92,8 @@
                 return schemeId;
             }
         }
-        function loadFile(stage, schemeValue, molecularRepresentation, ligand, pdbId){
-            stage.loadFile("http://files.rcsb.org/view/" +pdbId+ ".pdb" ).then( function( o ){
+        function loadFile(stage, schemeValue, molecularRepresentation, ligand, pdbId, chain){
+            stage.loadFile("https://files.rcsb.org/view/" +pdbId+ ".pdb" ).then( function( o ){
 
                 if(molecularRepresentation != ""){
                     o.addRepresentation( molecularRepresentation, {
@@ -96,7 +104,26 @@
                 o.addRepresentation( "label", {
                     sele: "( 135 or 223 or 347 or 296 ) and .CB",
                     color: "black", scale: 1.7
-                } );
+                });
+
+                var residueIndex = 0;
+                var BreakException = {};
+                try {
+                    o.structure.eachChain(function (cp) {
+                        if (cp.chainname == chain) {
+                            residueIndex = cp.residueOffset;
+                            throw BreakException;
+                        }
+                    });
+                }catch (e) {
+                    if (e !== BreakException) throw e;
+                }
+
+                var firstResidueNo = o.structure.residueStore.resno[residueIndex];
+
+                o.structure.eachResidue(function(residue){
+                    residue.resno = residue.resno - (firstResidueNo-1)
+                });
 
                 if(ligand != ""){
                     o.addRepresentation( ligand, {
@@ -118,7 +145,7 @@
 
         function create3d(schemeId, molecularRepresentation, ligand, pdbId, stage, start, end, chain, color){
 
-            loadFile(stage, schemeId, molecularRepresentation, ligand, pdbId);
+            loadFile(stage, schemeId, molecularRepresentation, ligand, pdbId, chain);
             var selectedStyle = $("#styleSelect").val();
             document.getElementById("colorSchemeSelect").addEventListener( "change", function( event ){
                 var targetElm = event.target;
