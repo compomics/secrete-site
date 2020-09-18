@@ -74,9 +74,42 @@
         }
     </style>
 </head>
-<body>
-<div th:insert="~{fragments/header :: header}"></div>
-<div class="container">
+<body style="margin-bottom: 87px">
+<header class="header">
+    <link href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.4/css/bootstrap.min.css"
+          th:href="@{/css/bootstrap.min.css}"
+          rel="stylesheet" media="screen"/>
+
+    <script src="https://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js"></script>
+
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a th:href="@{'/search'}" class="navbar-left"><img th:src="@{/images/protein.png}"
+                                                               style="width:60px; height: 66px;"/></a>
+            <a class="navbar-brand" th:href="@{'/search'}">SECRiFY – Secretability Screening of Recombinant
+                Fragments in Yeast</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#" th:href="@{/search}">Search<span class="sr-only">(current)</span></a></li>
+                <li><a th:href="@{/help}">Help</a></li>
+
+            </ul>
+        </div>
+    </div>
+</header>
+<main role="main" class="container">
     <div class="row">
         <div class="col-sm-1" style="width: 10px">
             <div class="squareRed"></div>
@@ -371,9 +404,24 @@
         //]]>
     </script>
 
-</div>
-<h1></h1>
-<div th:insert="~{fragments/footer :: footer}"></div>
-
+</main>
+<footer class="footer">
+    <div class="container">
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
+            <ul class="nav navbar-nav">
+                <li><a target="_blank" href="http://www.vib.be" style="padding-left: 15px;">
+                    <img border="0" th:src="@{/images/VIBLogo.png}" width="84px" height="50px"/>
+                </a></li>
+                <li><a target="_blank" href="http://www.ugent.be/en">
+                    <img border="0" th:src="@{/images/ugent-logo.png}" width="86px" height="67px"/>
+                </a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a th:href="@{'/information'}">Information</a></li>
+                <li><a th:href="@{'/help'}">Help</a></li>
+            </ul>
+        </div>
+    </div>
+</footer>
 </body>
 </html>

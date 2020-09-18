@@ -11,92 +11,134 @@
     <title>SECRiFY</title>
 
     <link th:href="@{/css/bootstrap.css}"
-          rel="stylesheet" media="screen" />
+          rel="stylesheet" media="screen"/>
     <link th:href="@{/css/overview.css}"
-          rel="stylesheet" media="screen" />
+          rel="stylesheet" media="screen"/>
 
     <link href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"
             type="text/javascript"></script>
     <script th:src="@{/js/bootstrap.min.js}"></script>
 </head>
-<body>
+<body style="margin-bottom: 87px">
+<script>
+    $(function () {
+        if (window.location.search.startsWith("?domain")) {
+            document.getElementById("proteinPanel").style.display = 'none';
+            document.getElementById("domainPanel").style.display = 'block';
+        } else if (window.location.search.startsWith("?protein")) {
+            document.getElementById("proteinPanel").style.display = 'block';
+            document.getElementById("domainPanel").style.display = 'none';
+        }
+    });
+</script>
 
-    <script>
-        $(function() {
-            if (window.location.search.startsWith("?domain")) {
-                document.getElementById("proteinPanel").style.display = 'none';
-                document.getElementById("domainPanel").style.display = 'block';
-            } else if(window.location.search.startsWith("?protein")) {
-                document.getElementById("proteinPanel").style.display = 'block';
-                document.getElementById("domainPanel").style.display = 'none';
-            }
-        });
-    </script>
+<header class="header">
+    <link href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.4/css/bootstrap.min.css"
+          th:href="@{/css/bootstrap.min.css}"
+          rel="stylesheet" media="screen"/>
 
-    <div th:insert="~{fragments/header :: header}"></div>
-    <!--/*@thymesVar id="proteins" type="List<com.compomics.secretesite.domain.dataTransferObjects.ProteinDTO>"*/-->
-    <!--/*@thymesVar id="domains" type="List<com.compomics.secretesite.domain.Domain>"*/-->
-    <div class="vertical-center">
-        <div class="container">
-            <div id="proteinPanel" style="display: none;">
-                <p style="color:grey; font-style: italic;">Please search the protein of interest.</p>
-                <table class="table table-hover" id="proteinTable">
-                    <thead>
-                    <tr>
-                        <th></th>
-                        <th>Uniprot Accession</th>
-                        <th>Protein Name</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <th:block th:each="protein:${proteins}">
-                        <tr>
-                            <td style="text-align: center; width: 3%">
-                                <a th:href="@{/index(protein=${protein.proteinAccession})}">
-                                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                                </a>
-                            </td>
-                            <td th:text="${protein.proteinAccession}" ></td>
-                            <td th:text="${protein.proteinName}" ></td>
-                        </tr>
-                    </th:block>
-                    </tbody>
-                </table>
-            </div>
+    <script src="https://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js"></script>
 
-            <div id="domainPanel" style="display: none;">
-                <p style="color:grey; font-style: italic;">Please search the domain of interest.</p>
-                <table class="table table-hover" id="domainTable">
-                    <thead>
-                    <tr>
-                        <th></th>
-                        <th>Domain Accession</th>
-                        <th>Domain Name</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <th:block th:each="domain:${domains}">
-                        <tr>
-                            <td style="text-align: center; width: 3%">
-                                <a th:href="@{/index(domain=${domain.domainAccession})}">
-                                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                                </a>
-                            </td>
-                            <td th:text="${domain.domainAccession}" ></td>
-                            <td th:text="${domain.domainName}" ></td>
-                        </tr>
-                    </th:block>
-                    </tbody>
-                </table>
-            </div>
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a th:href="@{'/search'}" class="navbar-left"><img th:src="@{/images/protein.png}"
+                                                               style="width:60px; height: 66px;"/></a>
+            <a class="navbar-brand" th:href="@{'/search'}">SECRiFY – Secretability Screening of Recombinant
+                Fragments in Yeast</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#" th:href="@{/search}">Search<span class="sr-only">(current)</span></a></li>
+                <li><a th:href="@{/help}">Help</a></li>
+
+            </ul>
         </div>
     </div>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <div th:insert="~{fragments/footer :: footer}"></div>
+</header>
+<main role="main" class="container">
+    <div class="container">
+        <div id="proteinPanel" style="display: none;">
+            <p style="color:grey; font-style: italic;">Please search the protein of interest.</p>
+            <table class="table table-hover" id="proteinTable">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Uniprot Accession</th>
+                    <th>Protein Name</th>
+                </tr>
+                </thead>
+                <tbody>
+                <th:block th:each="protein:${proteins}">
+                    <tr>
+                        <td style="text-align: center; width: 3%">
+                            <a th:href="@{/index(protein=${protein.proteinAccession})}">
+                                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            </a>
+                        </td>
+                        <td th:text="${protein.proteinAccession}"></td>
+                        <td th:text="${protein.proteinName}"></td>
+                    </tr>
+                </th:block>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="domainPanel" style="display: none;">
+            <p style="color:grey; font-style: italic;">Please search the domain of interest.</p>
+            <table class="table table-hover" id="domainTable">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Domain Accession</th>
+                    <th>Domain Name</th>
+                </tr>
+                </thead>
+                <tbody>
+                <th:block th:each="domain:${domains}">
+                    <tr>
+                        <td style="text-align: center; width: 3%">
+                            <a th:href="@{/index(domain=${domain.domainAccession})}">
+                                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            </a>
+                        </td>
+                        <td th:text="${domain.domainAccession}"></td>
+                        <td th:text="${domain.domainName}"></td>
+                    </tr>
+                </th:block>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+<footer class="footer">
+    <div class="container">
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
+            <ul class="nav navbar-nav">
+                <li><a target="_blank" href="http://www.vib.be" style="padding-left: 15px;">
+                    <img border="0" th:src="@{/images/VIBLogo.png}" width="84px" height="50px"/>
+                </a></li>
+                <li><a target="_blank" href="http://www.ugent.be/en">
+                    <img border="0" th:src="@{/images/ugent-logo.png}" width="86px" height="67px"/>
+                </a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a th:href="@{'/information'}">Information</a></li>
+                <li><a th:href="@{'/help'}">Help</a></li>
+            </ul>
+        </div>
+    </div>
+</footer>
 </body>
 </html>

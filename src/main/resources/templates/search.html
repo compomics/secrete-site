@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self';
@@ -10,139 +10,179 @@
       object-src 'self'"/>
     <title>SECRiFY</title>
 
-    <link th:href="@{/css/bootstrap.css}"
-          rel="stylesheet" media="screen" />
     <link th:href="@{/css/overview.css}"
-          rel="stylesheet" media="screen" />
+          rel="stylesheet" media="screen"/>
+    <link th:href="@{/css/bootstrap.css}"
+          rel="stylesheet" media="screen"/>
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"
             type="text/javascript"></script>
     <script th:src="@{/js/bootstrap.min.js}"></script>
-
-
-
 </head>
-<body>
+<body style="margin-bottom: 87px">
+<header class="header">
+    <link href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.4/css/bootstrap.min.css"
+          th:href="@{/css/bootstrap.min.css}"
+          rel="stylesheet" media="screen"/>
 
-<div th:insert="~{fragments/header :: header}"></div>
-<div class="container">
-    <p>SECRiFY (Secretability Screening of Recombinant Fragments in Yeast) is a method that was developed to
-        systematically assess the secretion of domain-sized protein fragments, ideally covering entire proteomes,
-        by the yeast secretory system. <a th:href="@{'/information'}">More info ***</a></p>
-</div>
+    <script src="https://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js"></script>
 
-<div class="vertical-center">
-    <!--/*@thymesVar id="proteins" type="List<com.compomics.secretesite.domain.dataTransferObjects.ProteinDTO>"*/-->
-    <!--/*@thymesVar id="domains" type="List<com.compomics.secretesite.domain.Domain>"*/-->
-<div class="container">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a th:href="@{'/search'}" class="navbar-left"><img th:src="@{/images/protein.png}"
+                                                               style="width:60px; height: 66px;"/></a>
+            <a class="navbar-brand" th:href="@{'/search'}">SECRiFY – Secretability Screening of Recombinant
+                Fragments in Yeast</a>
+        </div>
 
-    <div class="row">
-        <div class="col-sm-3 col-sm-offset-1">
-            <ul class="nav nav-pills  nav-stacked">
-                <li class="active"><a href="#proteinSearch" data-toggle="tab">Protein
-                    Search</a></li>
-                <li><a href="#domainSearch" data-toggle="tab">Domain
-                    Search</a></li>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#" th:href="@{/search}">Search<span class="sr-only">(current)</span></a></li>
+                <li><a th:href="@{/help}">Help</a></li>
+
             </ul>
         </div>
-        <div class="col-sm-6">
-            <div class="tab-content" id="tabs">
-                <div class="tab-pane active" id="proteinSearch">
-                    <p style="font-size: medium;">Search by protein</p>
-                    <div class="panel panel-default" style="display: block;">
-                        <div class="panel-heading panel-heading-custom text-center"><h3 class="panel-title">SEARCH</h3></div>
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="col-sm-10 col-sm-offset-1">
+    </div>
+</header>
+<main role="main" class="container">
+    <div class="container" style="padding-top: 20px; padding-bottom: 20px">
+        <p>SECRiFY (Secretability Screening of Recombinant Fragments in Yeast) is a method that was developed to
+            systematically assess the secretion of domain-sized protein fragments, ideally covering entire proteomes,
+            by the yeast secretory system. <a th:href="@{'/information'}">More info ***</a></p>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-3 col-sm-offset-1">
+                <ul class="nav nav-pills  nav-stacked">
+                    <li class="active"><a href="#proteinSearch" data-toggle="tab">Protein
+                        Search</a></li>
+                    <li><a href="#domainSearch" data-toggle="tab">Domain
+                        Search</a></li>
+                </ul>
+            </div>
+            <div class="col-sm-6">
+                <div class="tab-content" id="tabs">
+                    <div class="tab-pane active" id="proteinSearch">
+                        <p style="font-size: medium;">Search by protein</p>
+                        <div class="panel panel-default" style="display: block;">
+                            <div class="panel-heading panel-heading-custom text-center"><h3 class="panel-title">
+                                SEARCH</h3></div>
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-sm-10 col-sm-offset-1">
                         <span style="float: right; font-size: 11px;">
                             <a href="#" style="text-decoration: underline; color: #62605E;"
                                onclick="setExample2()">#ex2</a>
                         </span>
-                                    <span style="float: right; font-size: 11px;">
+                                        <span style="float: right; font-size: 11px;">
                             <a href="#" style="text-decoration: underline; color: #62605E;"
                                onclick="setExample1()">#ex1</a>&#160;&#160;
                         </span>
-                                </div>
-                                <br/>
-                                <div class="input-group input-group-lg col-sm-10 col-sm-offset-1">
-                                    <input type="text" class="form-control" placeholder="Uniprot Accession or protein name" id="uniprotAccession">
-                                </div>
-                                <br/>
+                                    </div>
+                                    <br/>
+                                    <div class="input-group input-group-lg col-sm-10 col-sm-offset-1">
+                                        <input type="text" class="form-control"
+                                               placeholder="Uniprot Accession or protein name"
+                                               id="uniprotAccession">
+                                    </div>
+                                    <br/>
 
-                                <div align="center">
-                                    <label >
-                                        <input type="radio" id="enrichedP" name="proteinRB" value="enriched" /> Enriched
-                                    </label>
-                                    <label >
-                                        <input type="radio" id="depletedP" name="proteinRB" value="depleted" /> Depleted
-                                    </label>
-                                    <label >
-                                        <input type="radio" id="bothP" name="proteinRB" checked="checked" value="both" /> Both
-                                    </label>
+                                    <div align="center">
+                                        <label>
+                                            <input type="radio" id="enrichedP" name="proteinRB" value="enriched"/>
+                                            Enriched
+                                        </label>
+                                        <label>
+                                            <input type="radio" id="depletedP" name="proteinRB" value="depleted"/>
+                                            Depleted
+                                        </label>
+                                        <label>
+                                            <input type="radio" id="bothP" name="proteinRB" checked="checked"
+                                                   value="both"/> Both
+                                        </label>
 
-                                </div>
+                                    </div>
 
-                                <br/>
-                                <div align="center">
-                                    <button type="button" class="btn btn-primary " id="btnSearchProtein" style="width: 104px;">Search
-                                    </button>
+                                    <br/>
+                                    <div align="center">
+                                        <button type="button" class="btn btn-primary " id="btnSearchProtein"
+                                                style="width: 104px;">Search
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="tab-pane" id="domainSearch">
-                    <p style="font-size: medium;">Search by domain</p>
-                    <div class="panel panel-default" style="display: block;">
-                        <div class="panel-heading panel-heading-custom text-center"><h3 class="panel-title">SEARCH</h3></div>
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="col-sm-10 col-sm-offset-1">
+                    <div class="tab-pane" id="domainSearch">
+                        <p style="font-size: medium;">Search by domain</p>
+                        <div class="panel panel-default" style="display: block;">
+                            <div class="panel-heading panel-heading-custom text-center"><h3 class="panel-title">
+                                SEARCH</h3></div>
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-sm-10 col-sm-offset-1">
                         <span style="float: right; font-size: 11px;">
                             <a href="#" style="text-decoration: underline; color: #62605E;"
                                onclick="setExampleDomain2()">#ex2</a>
                         </span>
-                                    <span style="float: right; font-size: 11px;">
+                                        <span style="float: right; font-size: 11px;">
                             <a href="#" style="text-decoration: underline; color: #62605E;"
                                onclick="setExampleDomain1()">#ex1</a>&#160;&#160;
                         </span>
-                                </div>
-                                <br/>
-                                <div class="input-group input-group-lg col-sm-10 col-sm-offset-1">
-                                    <input type="text" class="form-control" placeholder="PFAM id or domain description" id="domainAccession">
-                                </div>
-                                <br/>
-                                <div align="center">
-                                    <label >
-                                        <input type="radio" id="enrichedD" name="domainRB" value="enriched" /> Enriched
-                                    </label>
-                                    <label >
-                                        <input type="radio" id="depletedD" name="domainRB" value="depleted" /> Depleted
-                                    </label>
-                                    <label >
-                                        <input type="radio" id="bothD" name="domainRB" checked="checked" value="both" /> Both
-                                    </label>
+                                    </div>
+                                    <br/>
+                                    <div class="input-group input-group-lg col-sm-10 col-sm-offset-1">
+                                        <input type="text" class="form-control"
+                                               placeholder="PFAM id or domain description" id="domainAccession">
+                                    </div>
+                                    <br/>
+                                    <div align="center">
+                                        <label>
+                                            <input type="radio" id="enrichedD" name="domainRB" value="enriched"/>
+                                            Enriched
+                                        </label>
+                                        <label>
+                                            <input type="radio" id="depletedD" name="domainRB" value="depleted"/>
+                                            Depleted
+                                        </label>
+                                        <label>
+                                            <input type="radio" id="bothD" name="domainRB" checked="checked"
+                                                   value="both"/> Both
+                                        </label>
 
-                                </div>
+                                    </div>
 
-                                <br/>
-                                <div align="center">
-                                    <button type="button" class="btn btn-primary " id="btnSearchDomain" style="width: 104px;">Search
-                                    </button>
+                                    <br/>
+                                    <div align="center">
+                                        <button type="button" class="btn btn-primary " id="btnSearchDomain"
+                                                style="width: 104px;">Search
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
 
             <div class="modal" tabindex="-1" role="dialog" id="proteinModal" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-body">
-                            <button type="button" class="btn btn-default" style="float: right;" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-default" style="float: right;"
+                                    data-dismiss="modal">Close
+                            </button>
                             <p style="color:grey; font-style: italic;">Please search the protein of interest.</p>
                             <table class="table table-hover" id="proteinTable">
                                 <thead>
@@ -155,13 +195,13 @@
                                 <tbody>
                                 <th:block th:each="protein:${proteins}">
                                     <tr>
-                                    <td style="text-align: center; width: 3%">
-                                        <a th:href="'/index?protein=' +${protein.proteinAccession}">
-                                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                                        </a>
-                                    </td>
-                                    <td th:text="${protein.proteinAccession}" ></td>
-                                    <td th:text="${protein.proteinName}" ></td>
+                                        <td style="text-align: center; width: 3%">
+                                            <a th:href="'/index?protein=' +${protein.proteinAccession}">
+                                                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                            </a>
+                                        </td>
+                                        <td th:text="${protein.proteinAccession}"></td>
+                                        <td th:text="${protein.proteinName}"></td>
                                     </tr>
                                 </th:block>
                                 </tbody>
@@ -176,7 +216,9 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-body">
-                            <button type="button" class="btn btn-default" style="float: right;" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-default" style="float: right;"
+                                    data-dismiss="modal">Close
+                            </button>
                             <p style="color:grey; font-style: italic;">Please search the domain of interest.</p>
                             <table class="table table-hover" id="domainTable">
                                 <thead>
@@ -189,13 +231,13 @@
                                 <tbody>
                                 <th:block th:each="domain:${domains}">
                                     <tr>
-                                    <td style="text-align: center; width: 3%">
-                                        <a th:href="'/index?domain=' +${domain.domainAccession}">
-                                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                                        </a>
-                                    </td>
-                                    <td th:text="${domain.domainAccession}" ></td>
-                                    <td th:text="${domain.domainName}" ></td>
+                                        <td style="text-align: center; width: 3%">
+                                            <a th:href="'/index?domain=' +${domain.domainAccession}">
+                                                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                            </a>
+                                        </td>
+                                        <td th:text="${domain.domainAccession}"></td>
+                                        <td th:text="${domain.domainName}"></td>
                                     </tr>
                                 </th:block>
                                 </tbody>
@@ -204,69 +246,90 @@
                     </div>
                 </div>
             </div>
-
-
-
+        </div>
     </div>
+</main>
+<footer class="footer">
+    <div class="container">
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
+            <ul class="nav navbar-nav">
+                <li><a target="_blank" href="http://www.vib.be" style="padding-left: 15px;">
+                    <img border="0" th:src="@{/images/VIBLogo.png}" width="84px" height="50px"/>
+                </a></li>
+                <li><a target="_blank" href="http://www.ugent.be/en">
+                    <img border="0" th:src="@{/images/ugent-logo.png}" width="86px" height="67px"/>
+                </a></li>
 
-
-</div>
-</div>
-<div th:insert="~{fragments/footer :: footer}"></div>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a th:href="@{'/information'}">Information</a></li>
+                <li><a th:href="@{'/help'}">Help</a></li>
+            </ul>
+        </div>
+    </div>
+</footer>
 <script th:inline="javascript">
     //<![CDATA[
 
-        jQuery.noConflict();
-        $('#btnSearchProtein').on('click', function () {
+    jQuery.noConflict();
+    $('#btnSearchProtein').on('click', function () {
 
-            if($('#uniprotAccession').val() != ""){
-                if(isValidUniprotAcc($('#uniprotAccession').val().trim())){
-                    window.location = [[@{/index.html}]] + '?protein='+ $('#uniprotAccession').val().trim() + '&type=' + $("input[name='proteinRB']:checked").val();
-                }else{
+        if ($('#uniprotAccession').val() != "") {
+            if (isValidUniprotAcc($('#uniprotAccession').val().trim())) {
+                window.location = [[@{/index.html}]] + '?protein='+ $('#uniprotAccession').val().trim() + '&type=' + $("input[name='proteinRB']:checked").val();
+            }else
+                {
 
                     window.location = [[@{/detailedSearch.html}]] + '?protein='+ $('#uniprotAccession').val() + '&type=' + $("input[name='proteinRB']:checked").val();
                 }
 
-            }else{
-                var dialogInstance = new BootstrapDialog();
-                dialogInstance.setTitle('INPUT ERROR');
-                dialogInstance.setMessage('Accession cannot be empty!');
-                dialogInstance.setType(BootstrapDialog.TYPE_DANGER);
-                dialogInstance.open();
+                }
+            else
+                {
+                    var dialogInstance = new BootstrapDialog();
+                    dialogInstance.setTitle('INPUT ERROR');
+                    dialogInstance.setMessage('Accession cannot be empty!');
+                    dialogInstance.setType(BootstrapDialog.TYPE_DANGER);
+                    dialogInstance.open();
+                }
+                return false;
             }
-            return false;
-        });
-        $("#uniprotAccession").keyup(function(event){
-            if(event.keyCode == 13){
-                $("#btnSearchProtein").click();
-            }
-        });
+        );
+    $("#uniprotAccession").keyup(function (event) {
+        if (event.keyCode == 13) {
+            $("#btnSearchProtein").click();
+        }
+    });
 
-        $('#btnSearchDomain').on('click', function () {
-            if($('#domainAccession').val() != ""){
-                if(isValidDomainAcc($('#domainAccession').val().trim())){
-                    window.location = [[@{/index.html}]] + '?domain='+ $('#domainAccession').val().trim() + '&type=' + $("input[name='domainRB']:checked").val();
-                }else{
+    $('#btnSearchDomain').on('click', function () {
+        if ($('#domainAccession').val() != "") {
+            if (isValidDomainAcc($('#domainAccession').val().trim())) {
+                window.location = [[@{/index.html}]] + '?domain='+ $('#domainAccession').val().trim() + '&type=' + $("input[name='domainRB']:checked").val();
+            }else
+                {
                     window.location = [[@{/detailedSearch.html}]] + '?domain='+ $('#domainAccession').val() + '&type=' + $("input[name='domainRB']:checked").val();
                 }
 
-            }else{
-                var dialogInstance = new BootstrapDialog();
-                dialogInstance.setTitle('INPUT ERROR');
-                dialogInstance.setMessage('Accession cannot be empty!');
-                dialogInstance.setType(BootstrapDialog.TYPE_DANGER);
-                dialogInstance.open();
+                }
+            else
+                {
+                    var dialogInstance = new BootstrapDialog();
+                    dialogInstance.setTitle('INPUT ERROR');
+                    dialogInstance.setMessage('Accession cannot be empty!');
+                    dialogInstance.setType(BootstrapDialog.TYPE_DANGER);
+                    dialogInstance.open();
+                }
+                return false;
             }
-            return false;
-        });
-        $("#domainAccession").keyup(function(event){
-            if(event.keyCode == 13){
-                $("#btnSearchDomain").click();
-            }
-        });
+        );
+    $("#domainAccession").keyup(function (event) {
+        if (event.keyCode == 13) {
+            $("#btnSearchDomain").click();
+        }
+    });
 
 
-    function isValidUniprotAcc(accession){
+    function isValidUniprotAcc(accession) {
         if (accession.trim() == "") {
             return false;
         }
@@ -274,25 +337,25 @@
             return false;
         }
         var r = new RegExp("[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}", "i");
-        if(accession.match(r)){
+        if (accession.match(r)) {
             return true;
         }
         return false;
     }
 
-    function isValidDomainAcc(accession){
+    function isValidDomainAcc(accession) {
 
         if (accession.trim() == "") {
             return false;
         }
-        if (accession.trim().length != 7 ) {
+        if (accession.trim().length != 7) {
             return false;
         }
-        if(!accession.trim().startsWith("PF")){
+        if (!accession.trim().startsWith("PF")) {
             return false;
         }
         var r = new RegExp("[0-9]", "i");
-        if(accession.trim().substring(2).match(r)){
+        if (accession.trim().substring(2).match(r)) {
             return true;
         }
         return false;
@@ -307,6 +370,7 @@
         document.getElementById('uniprotAccession').value = 'Q02218';
         return false;
     }
+
     function setExampleDomain1() {
         document.getElementById('domainAccession').value = 'PF07710';
         return false;
@@ -316,8 +380,8 @@
         document.getElementById('domainAccession').value = 'PF07710';
         return false;
     }
+
     //]]>
 </script>
-
 </body>
 </html>

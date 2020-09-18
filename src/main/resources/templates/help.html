@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <meta http-equiv="Content-Security-Policy" content="default-src 'self';
       script-src 'self' 'unsafe-inline' https://code.jquery.com/jquery-2.1.4.min.js https://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js;
       style-src 'self' 'unsafe-inline' https://netdna.bootstrapcdn.com;
@@ -10,22 +10,54 @@
       object-src 'self' https://netdna.bootstrapcdn.com/bootstrap/3.0.0/fonts/"/>
     <title>SECRiFY</title>
     <link th:href="@{/css/bootstrap.min.css}"
-          rel="stylesheet" media="screen" />
-    <link th:href="@{/css/overview.css}"  rel="stylesheet" media="screen" />
+          rel="stylesheet" media="screen"/>
+    <link th:href="@{/css/overview.css}" rel="stylesheet" media="screen"/>
     <link href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
     <script th:src="@{/js/jquery-3.2.1.min.js}"></script>
 
     <script th:src="@{/js/bootstrap.min.js}"></script>
     <style>
-        .clickable
-        {
+        .clickable {
             cursor: pointer;
         }
     </style>
 </head>
-<body>
-<div th:insert="~{fragments/header :: header}"></div>
-<div class="container">
+<body style="margin-bottom: 87px">
+<header class="header">
+    <link href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.4/css/bootstrap.min.css"
+          th:href="@{/css/bootstrap.min.css}"
+          rel="stylesheet" media="screen"/>
+
+    <script src="https://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js"></script>
+
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a th:href="@{'/search'}" class="navbar-left"><img th:src="@{/images/protein.png}"
+                                                               style="width:60px; height: 66px;"/></a>
+            <a class="navbar-brand" th:href="@{'/search'}">SECRiFY – Secretability Screening of Recombinant
+                Fragments in Yeast</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#" th:href="@{/search}">Search<span class="sr-only">(current)</span></a></li>
+                <li><a th:href="@{/help}">Help</a></li>
+
+            </ul>
+        </div>
+    </div>
+</header>
+<main role="main" class="container">
     <div class="row">
         <h2>Help</h2>
         <div class="col-sm-3">
@@ -43,14 +75,19 @@
                             <div class="panel-heading">
                   	            <span class="clickable panel-collapsed">
                     	            <h3 class="panel-title">
-                    		            Where can I find the raw data of these experiments? <span class="pull-right glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                    		            Where can I find the raw data of these experiments? <span
+                                            class="pull-right glyphicon glyphicon-chevron-down"
+                                            aria-hidden="true"></span>
                     	            </h3>
                                 </span>
                             </div>
                             <div class="panel-body panel-collapse collapse ">
-                                <p>The fastq-files of the triplicate human proteome screens in S. cerevisiae and P. pastoris were deposited in SRA under SRP094995.
-                                    The corresponding fragment count tables can be found on Figshare (10.6084/m9.figshare.5349943 and 10.6084/m9.figshare.5349955),
-                                    as can the R code used for data processing (10.6084/m9.figshare.5349979). Other datasets are available by request.</p>
+                                <p>The fastq-files of the triplicate human proteome screens in S. cerevisiae and P.
+                                    pastoris were deposited in SRA under SRP094995.
+                                    The corresponding fragment count tables can be found on Figshare
+                                    (10.6084/m9.figshare.5349943 and 10.6084/m9.figshare.5349955),
+                                    as can the R code used for data processing (10.6084/m9.figshare.5349979). Other
+                                    datasets are available by request.</p>
                             </div>
                         </div>
 
@@ -58,20 +95,31 @@
                             <div class="panel-heading">
                   	            <span class="clickable panel-collapsed">
                     	            <h3 class="panel-title">
-                    		            How should I interpret the presence of a fragment matching a part of my favourite human protein? <span class="pull-right glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                    		            How should I interpret the presence of a fragment matching a part of my favourite human protein? <span
+                                            class="pull-right glyphicon glyphicon-chevron-down"
+                                            aria-hidden="true"></span>
                     	            </h3>
                                 </span>
                             </div>
                             <div class="panel-body panel-collapse collapse ">
-                                <p>TA fragment mapped to part of your protein and labeled ‘enriched’ means that a polypeptide of this sequence
-                                    was detected as consistently displayed by yeast (S. cerevisiae or P. pastoris as noted in the species) when
-                                    put in the context of an N-terminal secretory leader sequence (preproMF) and the Sag1 surface display anchor
-                                    at the C-terminus. This suggests that this polypeptide can traverse (or evade) the yeast secretory system without
-                                    being degraded, ie that this sequence is ‘secretable’, regardless of its original cellular localization in human cells.
-                                    On the other hand, ‘depleted’ fragments are not consistently detected as displayed. In that case, this could suggest
-                                    that the fragment can intrinsically not be secreted, that the context of the secretory leader or Sag1 interfered with
-                                    secretory passage, or that technical reasons hampered detection (eg low display levels compared to noise, inconsistencies
-                                    between replicates, clone loss during expansions, etc). Depleted fragments are thus not necessarily ‘non-secretable’. </p>
+                                <p>TA fragment mapped to part of your protein and labeled ‘enriched’ means that a
+                                    polypeptide of this sequence
+                                    was detected as consistently displayed by yeast (S. cerevisiae or P. pastoris as
+                                    noted in the species) when
+                                    put in the context of an N-terminal secretory leader sequence (preproMF) and the
+                                    Sag1 surface display anchor
+                                    at the C-terminus. This suggests that this polypeptide can traverse (or evade) the
+                                    yeast secretory system without
+                                    being degraded, ie that this sequence is ‘secretable’, regardless of its original
+                                    cellular localization in human cells.
+                                    On the other hand, ‘depleted’ fragments are not consistently detected as displayed.
+                                    In that case, this could suggest
+                                    that the fragment can intrinsically not be secreted, that the context of the
+                                    secretory leader or Sag1 interfered with
+                                    secretory passage, or that technical reasons hampered detection (eg low display
+                                    levels compared to noise, inconsistencies
+                                    between replicates, clone loss during expansions, etc). Depleted fragments are thus
+                                    not necessarily ‘non-secretable’. </p>
                             </div>
                         </div>
 
@@ -79,14 +127,19 @@
                             <div class="panel-heading">
                   	            <span class="clickable panel-collapsed">
                     	            <h3 class="panel-title">
-                    		            What source did you used for the fragment sequences? <span class="pull-right glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                    		            What source did you used for the fragment sequences? <span
+                                            class="pull-right glyphicon glyphicon-chevron-down"
+                                            aria-hidden="true"></span>
                     	            </h3>
                                 </span>
                             </div>
                             <div class="panel-body panel-collapse collapse ">
-                                <p>All fragments are derived from polyA+ transcripts extracted from human cell lines. For the secretion screens in S.
-                                    cerevisiae, we used HEK293T cells; for the secretion screens in P. pastoris, we pooled transcripts from 4 cell lines
-                                    of different origins (breast, brain, liver and blood) to cover a larger fraction of all human ORFs. </p>
+                                <p>All fragments are derived from polyA+ transcripts extracted from human cell lines.
+                                    For the secretion screens in S.
+                                    cerevisiae, we used HEK293T cells; for the secretion screens in P. pastoris, we
+                                    pooled transcripts from 4 cell lines
+                                    of different origins (breast, brain, liver and blood) to cover a larger fraction of
+                                    all human ORFs. </p>
                             </div>
                         </div>
 
@@ -94,13 +147,17 @@
                             <div class="panel-heading">
                   	            <span class="clickable panel-collapsed">
                     	            <h3 class="panel-title">
-                    		            Is there any information regarding the secretion level of the fragment? <span class="pull-right glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                    		            Is there any information regarding the secretion level of the fragment? <span
+                                            class="pull-right glyphicon glyphicon-chevron-down"
+                                            aria-hidden="true"></span>
                     	            </h3>
                                 </span>
                             </div>
                             <div class="panel-body panel-collapse collapse ">
-                                <p>No, the current output is binary (secretable/not detected as secretable) and fragment count levels are not correlated with display levels.
-                                    We are working on implementing this type of information in future versions of this platform. </p>
+                                <p>No, the current output is binary (secretable/not detected as secretable) and fragment
+                                    count levels are not correlated with display levels.
+                                    We are working on implementing this type of information in future versions of this
+                                    platform. </p>
                             </div>
                         </div>
 
@@ -108,12 +165,15 @@
                             <div class="panel-heading">
                   	            <span class="clickable panel-collapsed">
                     	            <h3 class="panel-title">
-                    		            Why is my favourite human protein, or part of it, not covered by any fragment? <span class="pull-right glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                    		            Why is my favourite human protein, or part of it, not covered by any fragment? <span
+                                            class="pull-right glyphicon glyphicon-chevron-down"
+                                            aria-hidden="true"></span>
                     	            </h3>
                                 </span>
                             </div>
                             <div class="panel-body panel-collapse collapse ">
-                                <p>Currently, our libraries covered between 25-40% of the human transcriptome. We working on expanding library size, screening scale and
+                                <p>Currently, our libraries covered between 25-40% of the human transcriptome. We
+                                    working on expanding library size, screening scale and
                                     sequencing depth in order to cover the human transcriptome to near-saturation.</p>
                             </div>
                         </div>
@@ -122,21 +182,33 @@
                             <div class="panel-heading">
                   	            <span class="clickable panel-collapsed">
                     	            <h3 class="panel-title">
-                    		            Why are the tested fragments so short? Aren’t full-length/larger fragments more relevant? <span class="pull-right glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                    		            Why are the tested fragments so short? Aren’t full-length/larger fragments more relevant? <span
+                                            class="pull-right glyphicon glyphicon-chevron-down"
+                                            aria-hidden="true"></span>
                     	            </h3>
                                 </span>
                             </div>
                             <div class="panel-body panel-collapse collapse ">
-                                <p>Failure to express a full-length heterologous protein in a recombinant host, be it yeast or any other organism, through secretion or intracellular
-                                    expression, is a very common issue. The culprit of such expression failures is often local, which is why many researchers resort to expressing
-                                    only a part of their protein of interest - for instance, only the soluble domain of a transmembrane protein. By focusing on protein fragments
-                                    instead of full-length proteins, given enough fragments covering the protein of interest in the input library, our method should allow to identify
-                                    exactly which regions of the proteins can be expressed (and in our case, secreted) and which ones are problematic, and this across entire proteomes.
-                                    Whether the resulting fragment, when expressed alone, has the same structural, biochemical, or functional properties as in the full-length protein
-                                    will depend on the protein itself and warrants an examination on a case-by-case basis.</p>
-                                <p>Regarding the length of the fragments, we aimed to generate fragments about the size of protein domains (50-100 amino acids), considering the structural,
-                                    functional and evolutionary modularity of proteins in domains. While we have countered many of the sizes biases that can accumulate during the procedure
-                                    (e.g. during PCR or cloning), we are still working on broadening the size range of the tested fragments and incorporating more longer (> 100 aa) fragments. </p>
+                                <p>Failure to express a full-length heterologous protein in a recombinant host, be it
+                                    yeast or any other organism, through secretion or intracellular
+                                    expression, is a very common issue. The culprit of such expression failures is often
+                                    local, which is why many researchers resort to expressing
+                                    only a part of their protein of interest - for instance, only the soluble domain of
+                                    a transmembrane protein. By focusing on protein fragments
+                                    instead of full-length proteins, given enough fragments covering the protein of
+                                    interest in the input library, our method should allow to identify
+                                    exactly which regions of the proteins can be expressed (and in our case, secreted)
+                                    and which ones are problematic, and this across entire proteomes.
+                                    Whether the resulting fragment, when expressed alone, has the same structural,
+                                    biochemical, or functional properties as in the full-length protein
+                                    will depend on the protein itself and warrants an examination on a case-by-case
+                                    basis.</p>
+                                <p>Regarding the length of the fragments, we aimed to generate fragments about the size
+                                    of protein domains (50-100 amino acids), considering the structural,
+                                    functional and evolutionary modularity of proteins in domains. While we have
+                                    countered many of the sizes biases that can accumulate during the procedure
+                                    (e.g. during PCR or cloning), we are still working on broadening the size range of
+                                    the tested fragments and incorporating more longer (> 100 aa) fragments. </p>
                             </div>
                         </div>
 
@@ -144,15 +216,21 @@
                             <div class="panel-heading">
                   	            <span class="clickable panel-collapsed">
                     	            <h3 class="panel-title">
-                    		            Will the fusion to the Sag1 anchor not affect secretion? <span class="pull-right glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                    		            Will the fusion to the Sag1 anchor not affect secretion? <span
+                                            class="pull-right glyphicon glyphicon-chevron-down"
+                                            aria-hidden="true"></span>
                     	            </h3>
                                 </span>
                             </div>
                             <div class="panel-body panel-collapse collapse ">
-                                <p>Results from our and other labs have indicated that for a wide variety of single proteins, Sag1 display efficiency correlates well
-                                    with relative secretion levels. Inevitably, it cannot be excluded that for certain fragments, C-terminal fusion to the +/- 300 amino
-                                    acid Sag1 anchor might differentially influence fragment folding, solubility, or stability, which can lead to false positives and
-                                    negatives when assessing secretability. Currently, we estimate the sensitivity of a single replicate screening experiment to lie
+                                <p>Results from our and other labs have indicated that for a wide variety of single
+                                    proteins, Sag1 display efficiency correlates well
+                                    with relative secretion levels. Inevitably, it cannot be excluded that for certain
+                                    fragments, C-terminal fusion to the +/- 300 amino
+                                    acid Sag1 anchor might differentially influence fragment folding, solubility, or
+                                    stability, which can lead to false positives and
+                                    negatives when assessing secretability. Currently, we estimate the sensitivity of a
+                                    single replicate screening experiment to lie
                                     around 90%, and likely higher when combining results from replicate screens.</p>
                             </div>
                         </div>
@@ -161,24 +239,34 @@
                 </div>
 
                 <div class="tab-pane" id="contact">
-                    <p>Lead contact: Nico Callewaert <a href="mailto:nico.callewaert@vib-ugent.be" style="text-decoration: underline;">nico.callewaert@vib-ugent.be</a></p>
-                    <p>Experiments and sequencing analysis: Morgane Boone <a href="mailto:morganeboone@gmail.com" style="text-decoration: underline;">morganeboone@gmail.com</a></p>
-                    <p>PDB and Pfam mapping: Pathmanaban Ramasamy <a href="mailto:pathmanaban.ramasamy@vib-ugent.be" style="text-decoration: underline;">pathmanaban.ramasamy@vib-ugent.be</a></p>
-                    <p>Dynamics predictions: Wim Vranken <a href="mailto:wvranken@vub.ac.be" style="text-decoration: underline;">wvranken@vub.ac.be</a></p>
-                    <p>Website: Demet Turan <a href="mailto:demet.turan@vib-ugent.be" style="text-decoration: underline;">demet.turan@vib-ugent.be</a>
-                        & Davy Maddelein <a href="mailto:davy.maddelein@vib-ugent.be" style="text-decoration: underline;">davy.maddelein@vib-ugent.be</a></p>
+                    <p>Lead contact: Nico Callewaert <a href="mailto:nico.callewaert@vib-ugent.be"
+                                                        style="text-decoration: underline;">nico.callewaert@vib-ugent.be</a>
+                    </p>
+                    <p>Experiments and sequencing analysis: Morgane Boone <a href="mailto:morganeboone@gmail.com"
+                                                                             style="text-decoration: underline;">morganeboone@gmail.com</a>
+                    </p>
+                    <p>PDB and Pfam mapping: Pathmanaban Ramasamy <a href="mailto:pathmanaban.ramasamy@vib-ugent.be"
+                                                                     style="text-decoration: underline;">pathmanaban.ramasamy@vib-ugent.be</a>
+                    </p>
+                    <p>Dynamics predictions: Wim Vranken <a href="mailto:wvranken@vub.ac.be"
+                                                            style="text-decoration: underline;">wvranken@vub.ac.be</a>
+                    </p>
+                    <p>Website: Demet Turan <a href="mailto:demet.turan@vib-ugent.be"
+                                               style="text-decoration: underline;">demet.turan@vib-ugent.be</a>
+                        & Davy Maddelein <a href="mailto:davy.maddelein@vib-ugent.be"
+                                            style="text-decoration: underline;">davy.maddelein@vib-ugent.be</a></p>
 
                 </div>
             </div>
         </div>
     </div>
-</div>
+</main>
 <script th:inline="javascript">
 
     //<![CDATA[
 
-    jQuery(function($) {
-        $('.panel-heading span.clickable').on("click", function(e) {
+    jQuery(function ($) {
+        $('.panel-heading span.clickable').on("click", function (e) {
             if ($(this).hasClass('panel-collapsed')) {
                 // expand the panel
                 $(this).parents('.panel').find('.panel-body').slideDown();
@@ -196,6 +284,23 @@
 
     //]]>
 </script>
-<div th:insert="~{fragments/footer :: footer}"></div>
+<footer class="footer">
+    <div class="container">
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
+            <ul class="nav navbar-nav">
+                <li><a target="_blank" href="http://www.vib.be" style="padding-left: 15px;">
+                    <img border="0" th:src="@{/images/VIBLogo.png}" width="84px" height="50px"/>
+                </a></li>
+                <li><a target="_blank" href="http://www.ugent.be/en">
+                    <img border="0" th:src="@{/images/ugent-logo.png}" width="86px" height="67px"/>
+                </a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a th:href="@{'/information'}">Information</a></li>
+                <li><a th:href="@{'/help'}">Help</a></li>
+            </ul>
+        </div>
+    </div>
+</footer>
 </body>
 </html>
